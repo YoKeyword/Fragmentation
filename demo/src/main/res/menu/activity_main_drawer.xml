@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_white_24dp"
+            android:title="@string/home"/>
+        <item
+            android:id="@+id/nav_discover"
+            android:icon="@drawable/ic_discover_white_24dp"
+            android:title="@string/discover"/>
+        <item
+            android:id="@+id/nav_msg"
+            android:icon="@drawable/ic_message_white_24dp"
+            android:title="@string/shop"/>
+    </group>
+
+    <item android:title="@string/system">
+        <menu>
+            <item
+                android:id="@+id/nav_login"
+                android:icon="@drawable/abc_ic_menu_share_mtrl_alpha"
+                android:title="@string/login"/>
+        </menu>
+    </item>
+</menu>

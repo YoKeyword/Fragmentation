@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_anim_veritical"
+        android:title="全局动画:竖向(默认)"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_anim_horizontal"
+        android:title="全局动画:横向"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_anim_none"
+        android:title="全局动画:无"
+        app:showAsAction="never"/>
+</menu>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_hierarchy"
+        android:title="栈视图"
+        android:icon="@drawable/ic_format_list_numbered_white_24dp"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_anim"
+        android:title="动画"
+        app:showAsAction="ifRoom"/>
+</menu>
