@@ -19,9 +19,6 @@ import me.yokeyword.sample.ui.BaseMainFragment;
  * Created by YoKeyword on 16/2/3.
  */
 public class DiscoverFragment extends BaseMainFragment {
-    private Toolbar mToolbar;
-    private TabLayout mTabLayout;
-    private ViewPager mViewPager;
 
     public static DiscoverFragment newInstance() {
         return new DiscoverFragment();
@@ -38,9 +35,9 @@ public class DiscoverFragment extends BaseMainFragment {
     }
 
     private void initView(View view) {
-        mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
+        Toolbar mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        TabLayout mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        ViewPager mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
         mToolbar.setTitle("发现");
         initToolbarNav(mToolbar);
