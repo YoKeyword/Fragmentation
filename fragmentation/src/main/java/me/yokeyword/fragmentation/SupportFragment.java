@@ -268,25 +268,6 @@ public class SupportFragment extends Fragment {
     protected void onHidden() {
     }
 
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        if (getChildFragmentManager().getFragments() != null) {
-            try {
-                Field childFragmentManager = Fragment.class
-                        .getDeclaredField("mChildFragmentManager");
-                childFragmentManager.setAccessible(true);
-                childFragmentManager.set(this, null);
-
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     /**
      * 按下返回键触发
      *
