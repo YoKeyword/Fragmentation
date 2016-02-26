@@ -77,6 +77,14 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        SupportFragment topFragment = getTopFragment();
+        if (topFragment != null) {
+            boolean result = topFragment.onBackPressedSupport();
+            if (result) {
+                return;
+            }
+        }
+
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             mFragmentation.back(getSupportFragmentManager());
         } else {
@@ -90,7 +98,7 @@ public abstract class SupportActivity extends AppCompatActivity {
      * @param fragmentClass
      */
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass,getSupportFragmentManager());
+        return mFragmentation.findStackFragment(fragmentClass, getSupportFragmentManager());
     }
 
     /**
@@ -107,11 +115,11 @@ public abstract class SupportActivity extends AppCompatActivity {
      * @param includeSelf   是否包含该fragment
      */
     public void popTo(Class<?> fragmentClass, boolean includeSelf) {
-        mFragmentation.popTo(fragmentClass, includeSelf, null,getSupportFragmentManager());
+        mFragmentation.popTo(fragmentClass, includeSelf, null, getSupportFragmentManager());
     }
 
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable,getSupportFragmentManager());
+        mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
     }
 
     public void start(SupportFragment toFragment) {
@@ -194,7 +202,7 @@ public abstract class SupportActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("栈视图")
                 .setView(container)
-                .setPositiveButton("关闭",null)
+                .setPositiveButton("关闭", null)
                 .setCancelable(true)
                 .show();
     }
@@ -219,8 +227,9 @@ public abstract class SupportActivity extends AppCompatActivity {
         List<Fragment> fragmentList = parentFragment.getChildFragmentManager().getFragments();
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
-        for (Fragment fragment : fragmentList) {
-            if (fragment == null) continue;
+
+        for(int i=fragmentList.size()-1;i>=0;i--){
+            Fragment fragment = fragmentList.get(i);
             fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
         }
         return fragmentRecords;
