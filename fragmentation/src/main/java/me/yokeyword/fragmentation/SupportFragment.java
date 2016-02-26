@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -145,7 +146,7 @@ public class SupportFragment extends Fragment {
             } else {
                 view.setBackgroundColor(Color.WHITE);
             }
-            view.setClickable(false);
+            view.setClickable(true);
         }
 
         mFragmentation = _mActivity.getFragmentation();
@@ -284,6 +285,19 @@ public class SupportFragment extends Fragment {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * 按下返回键触发
+     *
+     * @return
+     */
+    public boolean onBackPressedSupport() {
+        SupportFragment fragment = getTopChildFragment();
+        if (fragment != null) {
+            return fragment.onBackPressedSupport();
+        }
+        return false;
     }
 
     @IntDef({STANDARD, SINGLETOP, SINGLETASK})
@@ -505,6 +519,14 @@ public class SupportFragment extends Fragment {
         }
         return mFragmentation.getTopFragment(getFragmentManager());
     }
+
+    public SupportFragment getTopChildFragment() {
+        if (mFragmentation == null) {
+            throw new FragmentationNullException("getTopFragment()");
+        }
+        return mFragmentation.getTopFragment(getChildFragmentManager());
+    }
+
 
     void setNeedAnimListener(boolean needAnimListener, OnAnimEndListener onAnimEndListener) {
         this.mNeedAnimListener = needAnimListener;
