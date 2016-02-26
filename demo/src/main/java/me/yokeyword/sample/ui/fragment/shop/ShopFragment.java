@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import me.yokeyword.sample.ui.BaseMainFragment;
 /**
  * Created by YoKeyword on 16/2/4.
  */
-public class ShopFragment extends BaseMainFragment{
+public class ShopFragment extends BaseMainFragment {
     public static final String TAG = ShopFragment.class.getSimpleName();
 
     private Toolbar mToolbar;
@@ -66,6 +67,17 @@ public class ShopFragment extends BaseMainFragment{
             listFragment = MenuListFragment.newInstance(listMenus);
             startChildFragment(R.id.fl_list_container, listFragment, false);
         }
+    }
+
+    @Override
+    public boolean onBackPressedSupport() {
+        // ContentFragment是ShopFragment的栈顶子Fragment,会先调用ContentFragment的onBackPressedSupport方法
+        boolean result = super.onBackPressedSupport();
+        if (result) return true;
+
+        Toast.makeText(_mActivity, "onBackPressedSupport-->ShopFragment处理了返回!", Toast.LENGTH_SHORT).show();
+        pop();
+        return true;
     }
 
     /**

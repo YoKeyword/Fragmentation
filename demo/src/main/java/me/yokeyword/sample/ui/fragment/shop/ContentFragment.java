@@ -74,4 +74,10 @@ public class ContentFragment extends BaseFragment {
             }
         });
     }
+
+    @Override
+    public boolean onBackPressedSupport() {
+        // ContentFragment是ShopFragment的栈顶子Fragment,可以在此处理返回按键事件
+        return super.onBackPressedSupport();
+    }
 }
