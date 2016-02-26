@@ -213,10 +213,7 @@ public class SupportFragment extends Fragment {
     }
 
     /**
-     * 显示软键盘
-     * 如果在onCreateView方法中使用
-     * 请使用:
-     * editText.requestFocus();
+     * 隐藏软键盘
      */
     protected void hideSoftInput() {
         if (getView() != null) {
@@ -225,9 +222,7 @@ public class SupportFragment extends Fragment {
     }
 
     /**
-     * 隐藏软键盘
-     *
-     * @param view
+     * 显示软键盘
      */
     protected void showSoftInput(final View view) {
         if (view == null) return;
