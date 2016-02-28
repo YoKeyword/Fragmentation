@@ -73,9 +73,6 @@ public class ShopFragment extends BaseMainFragment {
     @Override
     public boolean onBackPressedSupport() {
         // ContentFragment是ShopFragment的栈顶子Fragment,会先调用ContentFragment的onBackPressedSupport方法
-        boolean result = super.onBackPressedSupport();
-        if (result) return true;
-
         Toast.makeText(_mActivity, "onBackPressedSupport-->ShopFragment处理了返回!", Toast.LENGTH_SHORT).show();
         pop();
         return true;

@@ -274,7 +274,8 @@ public class SupportFragment extends Fragment {
     public boolean onBackPressedSupport() {
         SupportFragment fragment = getTopChildFragment();
         if (fragment != null) {
-            return fragment.onBackPressedSupport();
+            boolean result =  fragment.onBackPressedSupport();
+            if(result) return true;
         }
         return false;
     }
