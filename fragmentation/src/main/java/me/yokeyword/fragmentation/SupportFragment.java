@@ -344,27 +344,18 @@ public class SupportFragment extends Fragment {
     }
 
     public void startForResult(SupportFragment to, int requestCode) {
-        startForResult(to, requestCode, STANDARD);
-    }
-
-    public void startForResult(SupportFragment to, int requestCode, @LaunchMode int launchMode) {
         if (mFragmentation == null) {
             throw new FragmentationNullException("startForResult()");
         }
 
-        mFragmentation.dispatchTransaction(this, to, requestCode, launchMode, Fragmentation.TYPE_ADD);
+        mFragmentation.dispatchTransaction(this, to, requestCode, STANDARD, Fragmentation.TYPE_ADD);
     }
-
 
     public void startWithFinish(SupportFragment to) {
-        startWithFinish(to, STANDARD);
-    }
-
-    public void startWithFinish(SupportFragment to, @LaunchMode int launchMode) {
         if (mFragmentation == null) {
             throw new FragmentationNullException("startWithFinish()");
         }
-        mFragmentation.dispatchTransaction(this, to, 0, launchMode, Fragmentation.TYPE_ADD_FINISH);
+        mFragmentation.dispatchTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
     protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {

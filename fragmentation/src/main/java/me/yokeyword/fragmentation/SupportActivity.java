@@ -131,20 +131,11 @@ public abstract class SupportActivity extends AppCompatActivity {
     }
 
     public void startForResult(SupportFragment to, int requestCode) {
-        startForResult(to, requestCode, SupportFragment.STANDARD);
+        mFragmentation.dispatchTransaction(getTopFragment(), to, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD);
     }
-
-    public void startForResult(SupportFragment to, int requestCode, @SupportFragment.LaunchMode int launchMode) {
-        mFragmentation.dispatchTransaction(getTopFragment(), to, requestCode, launchMode, Fragmentation.TYPE_ADD);
-    }
-
 
     public void startWithFinish(SupportFragment to) {
-        startWithFinish(to, SupportFragment.STANDARD);
-    }
-
-    public void startWithFinish(SupportFragment to, @SupportFragment.LaunchMode int launchMode) {
-        mFragmentation.dispatchTransaction(getTopFragment(), to, 0, launchMode, Fragmentation.TYPE_ADD_FINISH);
+        mFragmentation.dispatchTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
     public SupportFragment getTopFragment() {
