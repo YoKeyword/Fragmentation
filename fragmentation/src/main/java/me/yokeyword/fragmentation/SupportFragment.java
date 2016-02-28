@@ -1,5 +1,6 @@
 package me.yokeyword.fragmentation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,16 +8,13 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Field;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.FragmentationNullException;
@@ -60,13 +58,13 @@ public class SupportFragment extends Fragment {
     private boolean mNeedHideSoft;  // 隐藏软键盘
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-        if (context instanceof SupportActivity) {
-            this._mActivity = (SupportActivity) context;
+        if (activity instanceof SupportActivity) {
+            this._mActivity = (SupportActivity) activity;
         } else {
-            throw new ClassCastException(context.toString() + "must extends SupportActivity!");
+            throw new ClassCastException(activity.toString() + "must extends SupportActivity!");
         }
     }
 
@@ -367,40 +365,6 @@ public class SupportFragment extends Fragment {
             throw new FragmentationNullException("startWithFinish()");
         }
         mFragmentation.dispatchTransaction(this, to, 0, launchMode, Fragmentation.TYPE_ADD_FINISH);
-    }
-
-
-    public void replace(SupportFragment to) {
-        replace(to, STANDARD);
-    }
-
-    public void replace(SupportFragment to, @LaunchMode int launchMode) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("replace()");
-        }
-        mFragmentation.dispatchTransaction(this, to, 0, launchMode, Fragmentation.TYPE_REPLACE);
-    }
-
-    public void replaceForResult(SupportFragment to, int requestCode) {
-        replaceForResult(to, requestCode, STANDARD);
-    }
-
-    public void replaceForResult(SupportFragment to, int requestCode, @LaunchMode int launchMode) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("replaceForResult()");
-        }
-        mFragmentation.dispatchTransaction(this, to, requestCode, launchMode, Fragmentation.TYPE_REPLACE);
-    }
-
-    public void replaceWithFinish(SupportFragment to) {
-        replaceWithFinish(to, STANDARD);
-    }
-
-    public void replaceWithFinish(SupportFragment to, @LaunchMode int launchMode) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("replaceWithFinish()");
-        }
-        mFragmentation.dispatchTransaction(this, to, 0, launchMode, Fragmentation.TYPE_REPLACE_FINISH);
     }
 
     protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {

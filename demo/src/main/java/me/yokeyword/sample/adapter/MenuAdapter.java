@@ -83,7 +83,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
             mBooleanArray.put(mLastCheckedPosition, false);
             notifyItemChanged(mLastCheckedPosition);
         }
-        notifyItemChanged(position);
+        notifyDataSetChanged();
 
         mLastCheckedPosition = position;
     }

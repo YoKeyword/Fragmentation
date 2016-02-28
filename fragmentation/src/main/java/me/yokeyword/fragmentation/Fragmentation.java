@@ -1,17 +1,14 @@
 package me.yokeyword.fragmentation;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -33,8 +30,6 @@ public class Fragmentation {
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_ADD_FINISH = 1;
-    public static final int TYPE_REPLACE = 2;
-    public static final int TYPE_REPLACE_FINISH = 3;
 
     private static final int CLICK_SPACE_TIME = 400;
     private long mCurrentTime;
@@ -75,7 +70,7 @@ public class Fragmentation {
 
         FragmentTransactionBugFixHack.reorderIndices(mFragmentManager);
 
-        if (type == TYPE_ADD || type == TYPE_REPLACE) {
+        if (type == TYPE_ADD) {
             saveRequestCode(to, requestCode);
         }
 
@@ -90,16 +85,6 @@ public class Fragmentation {
                     startWithFinish(from, to);
                 } else {
                     throw new RuntimeException("startWithFinish(): getTopFragment() is null");
-                }
-                break;
-            case TYPE_REPLACE:
-                replace(from, to);
-                break;
-            case TYPE_REPLACE_FINISH:
-                if (from != null) {
-                    replaceWithFinish(from, to);
-                } else {
-                    throw new RuntimeException("replaceWithFinish(): getTopFragment() is null");
                 }
                 break;
         }
@@ -134,43 +119,6 @@ public class Fragmentation {
         FragmentTransaction ft = mFragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .add(mContainerId, to, toName)
-                .show(to)
-                .addToBackStack(toName);
-
-        if (preFragment != null) {
-            ft.hide(preFragment);
-        }
-        ft.commit();
-    }
-
-    void replace(SupportFragment from, SupportFragment to) {
-        String toName = to.getClass().getName();
-        FragmentTransaction ft = mFragmentManager.beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(mContainerId, to, toName)
-                .show(to)
-                .addToBackStack(toName);
-
-        if (from != null) {
-            ft.hide(from);
-        } else {
-            Bundle bundle = to.getArguments();
-            bundle.putBoolean(ARG_IS_ROOT, true);
-        }
-        ft.commit();
-    }
-
-    void replaceWithFinish(SupportFragment from, SupportFragment to) {
-        Fragment preFragment = handlerFinish(from, to);
-        passSaveResult(from, to);
-
-        mFragmentManager.beginTransaction().remove(from).commit();
-        mFragmentManager.popBackStack();
-
-        String toName = to.getClass().getName();
-        FragmentTransaction ft = mFragmentManager.beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(mContainerId, to, toName)
                 .show(to)
                 .addToBackStack(toName);
 
