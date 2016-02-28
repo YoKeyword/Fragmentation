@@ -34,6 +34,10 @@ public abstract class SupportActivity extends AppCompatActivity {
 
         mFragmentAnimator = onCreateFragmentAnimator();
 
+        onHandleSaveInstancState(savedInstanceState);
+    }
+
+    protected void onHandleSaveInstancState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
@@ -194,7 +198,7 @@ public abstract class SupportActivity extends AppCompatActivity {
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
 
-        for(int i=fragmentList.size()-1;i>=0;i--){
+        for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
             fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
         }

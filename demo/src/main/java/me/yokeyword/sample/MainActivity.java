@@ -49,12 +49,12 @@ public class MainActivity extends SupportActivity
 
     @Override
     protected FragmentAnimator onCreateFragmentAnimator() {
-        // 设置默认Fragment动画  默认横向
+        // 设置默认Fragment动画  默认竖向(和安卓5.0以上的动画相同)
         return super.onCreateFragmentAnimator();
-        // 设置竖向
-//        return new DefaultVerticalAnimator();
+        // 设置横向(和安卓4.x动画相同)
+//        return new DefaultHorizontalAnimator();
         // 设置自定义动画
-//        return new FragmentAnimator(0,0,0,0);
+//        return new FragmentAnimator(enter,exit,popEnter,popExit);
     }
 
     private void initView() {
@@ -84,6 +84,12 @@ public class MainActivity extends SupportActivity
                 }, 250);
             }
         });
+    }
+
+    @Override
+    protected void onHandleSaveInstancState(Bundle savedInstanceState) {
+        // 复写的时候 下面的super一定要删掉
+//        super.onHandleSaveInstancState(savedInstanceState);
     }
 
     @Override
