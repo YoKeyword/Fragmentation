@@ -29,6 +29,7 @@ A powerful library that manage Fragment for Android!
 1、项目下app的build.gradle中依赖：
 ````gradle
 compile 'me.yokeyword:fragmentation:0.2.5'
+// appcompat v7包也是必须的
 ````
 2、Activity继承SupportActivity：
 ````java
