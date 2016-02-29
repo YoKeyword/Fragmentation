@@ -3,7 +3,13 @@ A powerful library that manage Fragment for Android!
 
 如果你想使用多模块Activity + 多Fragment的架构，甚至你想使用单Activity ＋ 多Fragment的架构话，这个库不仅能帮你简化使用过程，便于调试功能外，最重要的是帮你修复了官方Fragment库存在的一些BUG。
 
+
+相关阅读：
+[Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)    ， 
+[Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
+
 # Demo演示：
+单Activity + 多Fragment
 
 <img src="/gif/demo.gif"/>
 
