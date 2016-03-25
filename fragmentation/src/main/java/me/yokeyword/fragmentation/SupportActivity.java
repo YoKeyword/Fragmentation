@@ -122,6 +122,9 @@ public abstract class SupportActivity extends AppCompatActivity {
         mFragmentation.popTo(fragmentClass, includeSelf, null, getSupportFragmentManager());
     }
 
+    /**
+     * 用于出栈后,立刻进行FragmentTransaction操作
+     */
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
     }
@@ -142,10 +145,18 @@ public abstract class SupportActivity extends AppCompatActivity {
         mFragmentation.dispatchTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
+    /**
+     * 得到位于栈顶Fragment
+     * @return
+     */
     public SupportFragment getTopFragment() {
         return mFragmentation.getTopFragment(getSupportFragmentManager());
     }
 
+    /**
+     * 获取设置的全局动画
+     * @return
+     */
     public FragmentAnimator getFragmentAnimator() {
         return new FragmentAnimator(
                 mFragmentAnimator.getEnter(), mFragmentAnimator.getExit(),
@@ -153,18 +164,25 @@ public abstract class SupportActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * 设置全局动画
+     * @param fragmentAnimator
+     */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
     }
 
-    public void preparePopMultiple() {
+    void preparePopMultiple() {
         mPopMulitpleNoAnim = true;
     }
 
-    public void popFinish() {
+    void popFinish() {
         mPopMulitpleNoAnim = false;
     }
 
+    /**
+     * 显示栈视图
+     */
     public void showFragmentStackHierarchyView() {
         HierarchyViewContainer container = new HierarchyViewContainer(this);
         container.bindFragmentRecords(getFragmentRecords());

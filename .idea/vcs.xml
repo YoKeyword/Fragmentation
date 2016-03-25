@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/demo" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/fragmentation" vcs="svn" />
+    <mapping directory="" vcs="Git" />
   </component>
 </project>

@@ -24,8 +24,6 @@ import me.yokeyword.fragmentation.helper.OnAnimEndListener;
  * Created by YoKeyword on 16/1/22.
  */
 public class SupportFragment extends Fragment {
-    private static final String TAG = SupportFragment.class.getSimpleName();
-
     private static final String STATE_SAVE_ENTER = "yokeyword_sate_save_enter";
     private static final String STATE_SAVE_EXIT = "yokeyword_sate_save_exit";
     private static final String STATE_SAVE_POP_ENTER = "yokeyword_sate_save_pop_enter";
@@ -71,7 +69,6 @@ public class SupportFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
 
         mIMM = (InputMethodManager) _mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -327,6 +324,9 @@ public class SupportFragment extends Fragment {
         mFragmentation.popTo(fragmentClass, includeSelf, null, getFragmentManager());
     }
 
+    /**
+     * 用于出栈后,立刻进行FragmentTransaction操作
+     */
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getFragmentManager());
     }
@@ -452,6 +452,10 @@ public class SupportFragment extends Fragment {
         ft.commit();
     }
 
+    /**
+     * 得到位于栈顶的Fragment
+     * @return
+     */
     public SupportFragment getTopFragment() {
         if (mFragmentation == null) {
             throw new FragmentationNullException("getTopFragment()");
@@ -459,6 +463,10 @@ public class SupportFragment extends Fragment {
         return mFragmentation.getTopFragment(getFragmentManager());
     }
 
+    /**
+     * 得到位于栈顶的子Fragment
+     * @return
+     */
     public SupportFragment getTopChildFragment() {
         if (mFragmentation == null) {
             throw new FragmentationNullException("getTopFragment()");
