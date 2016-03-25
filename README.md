@@ -70,7 +70,7 @@ public class MainActivity extends SupportActivity {
 # API
 
 **SupportActivity**
-打开 **栈视图** 的提示框，在复杂嵌套的时候，可以通过这个来清洗的理清不同阶级的栈视图。
+打开 **栈视图** 的提示框，在复杂嵌套的时候，可以通过这个来的查看不同阶级的栈视图。
 ````java
 // 弹出 栈视图 提示框
 showFragmentStackHierarchyView();
