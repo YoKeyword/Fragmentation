@@ -1,7 +1,7 @@
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
-如果你想使用多模块Activity + 多Fragment的架构，甚至你想使用单Activity ＋ 多Fragment的架构话，这个库不仅能帮你简化使用过程，便于调试功能外，最重要的是帮你修复了官方Fragment库存在的一些BUG。
+为"单Activity ＋ 多Fragment的架构","多模块Activity + 多Fragment的架构"而生，帮你简化使用过程，修复了官方Fragment库存在的一些BUG。
 
 
 相关阅读：
@@ -14,17 +14,19 @@ A powerful library that manage Fragment for Android!
 <img src="/gif/demo.gif"/>
 
 # 特性
-1、**提供了方便的管理Fragment的方法**
+1、**为重度使用Fragment而生**
 
-2、**有效解决Fragment重叠问题**
+2、**提供了方便的管理Fragment的方法**
 
-3、**实时查看Fragment的(包括嵌套Fragment)栈视图，方便Fragment嵌套时的调试**
+3、**有效解决Fragment重叠问题**
 
-4、**增加启动模式、startForResult等类似Activity方法**
+4、**实时查看Fragment的(包括嵌套Fragment)栈视图，方便Fragment嵌套时的调试**
 
-5、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
+5、**增加启动模式、startForResult等类似Activity方法**
 
-6、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
+6、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
+
+7、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
