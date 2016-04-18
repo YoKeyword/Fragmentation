@@ -121,8 +121,8 @@ public boolean onBackPressedSupport() {
 protected FragmentAnimator onCreateFragmentAnimation() {
     // 获取在SupportActivity里设置的全局动画对象
     FragmentAnimator fragmentAnimator = _mActivity.getFragmentAnimator();
-    fragmentAnimator.setEnter(0);
-    fragmentAnimator.setExit(0);
+    fragmentAnimator.setEnter(R.anim.enter);
+    fragmentAnimator.setExit(R.anim.exit);
     return fragmentAnimator;
 
     // 也可以直接通过
