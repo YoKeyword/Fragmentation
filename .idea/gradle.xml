@@ -13,6 +13,13 @@
             <option value="$PROJECT_DIR$/fragmentation" />
           </set>
         </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/demo" />
+            <option value="$PROJECT_DIR$/fragmentation" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
