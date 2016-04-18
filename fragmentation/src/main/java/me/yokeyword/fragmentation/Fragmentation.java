@@ -275,8 +275,9 @@ public class Fragmentation {
      * handle result
      */
     private void handleBack(FragmentManager fragmentManager) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
+        fragmentManager.popBackStack();
 
+        List<Fragment> fragmentList = fragmentManager.getFragments();
         int count = 0;
         int requestCode = 0, resultCode = 0;
         Bundle data = null;
@@ -303,7 +304,6 @@ public class Fragmentation {
                 }
             }
         }
-        fragmentManager.popBackStack();
     }
 
     /**

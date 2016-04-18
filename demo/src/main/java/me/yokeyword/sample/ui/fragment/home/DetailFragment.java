@@ -1,5 +1,7 @@
 package me.yokeyword.sample.ui.fragment.home;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -11,11 +13,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.ui.BaseBackFragment;
+import me.yokeyword.sample.ui.fragment.discover.DiscoverFragment;
 
 /**
  * Created by YoKeyword on 16/2/3.
