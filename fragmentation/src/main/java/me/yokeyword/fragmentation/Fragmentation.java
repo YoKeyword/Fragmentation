@@ -94,8 +94,7 @@ public class Fragmentation {
         String toName = to.getClass().getName();
         FragmentTransaction ft = mFragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .add(mContainerId, to, toName)
-                .show(to);
+                .add(mContainerId, to, toName);
 
         if (from != null) {
             ft.hide(from);
@@ -119,7 +118,6 @@ public class Fragmentation {
         FragmentTransaction ft = mFragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .add(mContainerId, to, toName)
-                .show(to)
                 .addToBackStack(toName);
 
         if (preFragment != null) {
@@ -264,18 +262,24 @@ public class Fragmentation {
     }
 
     void back(FragmentManager fragmentManager) {
+        back(fragmentManager, false);
+    }
+
+    void back(FragmentManager fragmentManager, boolean immediate) {
         int count = fragmentManager.getBackStackEntryCount();
 
         if (count > 1) {
-            handleBack(fragmentManager);
+            handleBack(fragmentManager, immediate);
         }
     }
 
     /**
      * handle result
      */
-    private void handleBack(FragmentManager fragmentManager) {
-        fragmentManager.popBackStack();
+    private void handleBack(FragmentManager fragmentManager, boolean immediate) {
+        if (!immediate) {
+            fragmentManager.popBackStack();
+        }
 
         List<Fragment> fragmentList = fragmentManager.getFragments();
         int count = 0;
@@ -303,6 +307,9 @@ public class Fragmentation {
                     break;
                 }
             }
+        }
+        if (immediate) {
+            fragmentManager.popBackStackImmediate();
         }
     }
 

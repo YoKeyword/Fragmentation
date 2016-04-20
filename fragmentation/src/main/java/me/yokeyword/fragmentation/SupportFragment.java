@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -54,6 +55,7 @@ public class SupportFragment extends Fragment {
 
     private int mBgColor;
     private boolean mNeedHideSoft;  // 隐藏软键盘
+    protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
 
     @Override
     public void onAttach(Activity activity) {
@@ -137,16 +139,28 @@ public class SupportFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         View view = getView();
+        initFragmentBackground(view, mBgColor);
+        assert view != null;
+        view.setClickable(true);
+
+        mFragmentation = _mActivity.getFragmentation();
+    }
+
+    protected void initFragmentBackground(View view, int bgColor) {
         if (view != null && view.getBackground() == null) {
-            if (mBgColor != 0) {
-                view.setBackgroundColor(mBgColor);
+            if (bgColor != 0) {
+                view.setBackgroundColor(bgColor);
             } else {
                 view.setBackgroundColor(Color.WHITE);
             }
-            view.setClickable(true);
         }
+    }
 
-        mFragmentation = _mActivity.getFragmentation();
+    /**
+     * 设置Fragment背景色
+     */
+    protected void setFragmentBackground(int color) {
+        mBgColor = color;
     }
 
     /**
@@ -158,7 +172,7 @@ public class SupportFragment extends Fragment {
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (_mActivity.mPopMulitpleNoAnim) {
+        if (_mActivity.mPopMulitpleNoAnim || mLocking) {
             return mNoAnim;
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
@@ -200,14 +214,6 @@ public class SupportFragment extends Fragment {
             }
         }
         return null;
-    }
-
-    /**
-     * 设置Fragment背景色
-     */
-
-    protected void setFragmentBackground(int color) {
-        mBgColor = color;
     }
 
     /**
@@ -273,8 +279,8 @@ public class SupportFragment extends Fragment {
     public boolean onBackPressedSupport() {
         SupportFragment fragment = getTopChildFragment();
         if (fragment != null) {
-            boolean result =  fragment.onBackPressedSupport();
-            if(result) return true;
+            boolean result = fragment.onBackPressedSupport();
+            if (result) return true;
         }
         return false;
     }
@@ -312,6 +318,12 @@ public class SupportFragment extends Fragment {
      */
     public void pop() {
         mFragmentation.back(getFragmentManager());
+    }
+
+    void popForSwipeBack() {
+        mLocking = true;
+        mFragmentation.back(getFragmentManager(),true);
+        mLocking = false;
     }
 
     /**
@@ -454,6 +466,7 @@ public class SupportFragment extends Fragment {
 
     /**
      * 得到位于栈顶的Fragment
+     *
      * @return
      */
     public SupportFragment getTopFragment() {
@@ -465,6 +478,7 @@ public class SupportFragment extends Fragment {
 
     /**
      * 得到位于栈顶的子Fragment
+     *
      * @return
      */
     public SupportFragment getTopChildFragment() {
