@@ -158,18 +158,24 @@ public class SwipeBackLayout extends FrameLayout {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             boolean dragEnable = mHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT);
-            if (dragEnable && mPreFragment == null && mFragment != null) {
-                List<Fragment> fragmentList = mFragment.getFragmentManager().getFragments();
-                if (fragmentList != null && fragmentList.size() > 1) {
-                    int index = fragmentList.indexOf(mFragment);
-                    for (int i = index - 1; i >= 0; i--) {
-                        Fragment fragment = fragmentList.get(i);
-                        if (fragment != null && fragment.getView() != null) {
-                            fragment.getView().setVisibility(VISIBLE);
-                            mPreFragment = (SupportFragment) fragment;
-                            break;
+            if (mPreFragment == null) {
+                if (dragEnable && mFragment != null) {
+                    List<Fragment> fragmentList = mFragment.getFragmentManager().getFragments();
+                    if (fragmentList != null && fragmentList.size() > 1) {
+                        int index = fragmentList.indexOf(mFragment);
+                        for (int i = index - 1; i >= 0; i--) {
+                            Fragment fragment = fragmentList.get(i);
+                            if (fragment != null && fragment.getView() != null) {
+                                fragment.getView().setVisibility(VISIBLE);
+                                mPreFragment = (SupportFragment) fragment;
+                                break;
+                            }
                         }
                     }
+                }
+            } else {
+                if (mPreFragment.getView() != null) {
+                    mPreFragment.getView().setVisibility(VISIBLE);
                 }
             }
             return dragEnable;
