@@ -3,6 +3,7 @@ A powerful library that manage Fragment for Android!
 
 为"单Activity ＋ 多Fragment的架构","多模块Activity + 多Fragment的架构"而生，帮你简化使用过程，修复了官方Fragment库存在的一些BUG。
 
+（新：Fragmentation-SwipeBack库，支持类似IOS的滑动边缘返回功能）
 
 相关阅读：
 [Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)    ， 
@@ -28,7 +29,7 @@ A powerful library that manage Fragment for Android!
 
 7、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
 
-8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README]())**
+8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
