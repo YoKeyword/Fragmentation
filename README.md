@@ -72,7 +72,7 @@ public class MainActivity extends SupportActivity {
 # API
 
 **SupportActivity**
-打开 **栈视图** 的提示框，在复杂嵌套的时候，可以通过这个来的查看不同阶级的栈视图。
+打开 **栈视图** 的提示框，在开发时，有复杂嵌套的场景下，可以通过下面的方法查看不同阶级的栈视图。
 ````java
 // 弹出 栈视图 提示框
 showFragmentStackHierarchyView();
@@ -80,6 +80,7 @@ showFragmentStackHierarchyView();
 除此之外包含大部分SupportFragment的方法，请自行查看。
 
 **SupportFragment**
+
 1、启动相关：
 ````java
 // 启动新的Fragment
@@ -120,8 +121,8 @@ public boolean onBackPressedSupport() {
 protected FragmentAnimator onCreateFragmentAnimation() {
     // 获取在SupportActivity里设置的全局动画对象
     FragmentAnimator fragmentAnimator = _mActivity.getFragmentAnimator();
-    fragmentAnimator.setEnter(0);
-    fragmentAnimator.setExit(0);
+    fragmentAnimator.setEnter(R.anim.enter);
+    fragmentAnimator.setExit(R.anim.exit);
     return fragmentAnimator;
 
     // 也可以直接通过
