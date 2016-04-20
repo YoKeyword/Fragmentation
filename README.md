@@ -30,6 +30,8 @@ A powerful library that manage Fragment for Android!
 7、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
 
 8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
+
+<img src="/gif/SwipeBack.jpg" width="150px"/>
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
