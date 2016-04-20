@@ -3,6 +3,9 @@
 
 Activity内Fragment数大于1时，滑动返回的是Fragment，否则滑动返回的是Activity。
 
+# 截图
+<img src="../gif/SwipeBack.jpg" width="300px"/>
+
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
