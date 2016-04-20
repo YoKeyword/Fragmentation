@@ -40,6 +40,13 @@ public class ThirdSwipeBackFragment extends SwipeBackFragment {
                 pop();
             }
         });
+
+        view.findViewById(R.id.tv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                start(SwipeBackSampleFragment.newInstance());
+            }
+        });
         return toSwipeBackFragment(view);
     }
 }

@@ -35,9 +35,6 @@ public class SwipeBackSampleFragment extends SwipeBackFragment {
         super.onAttach(context);
         if (context instanceof OnLockDrawLayoutListener) {
             mListener = (OnLockDrawLayoutListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
         }
     }
 

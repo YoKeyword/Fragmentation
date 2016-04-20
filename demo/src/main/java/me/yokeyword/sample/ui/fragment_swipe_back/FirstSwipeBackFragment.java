@@ -47,6 +47,6 @@ public class FirstSwipeBackFragment extends SwipeBackFragment {
                 start(SecondSwipeBackFragment.newInstance());
             }
         });
-        return view;
+        return toSwipeBackFragment(view);
     }
 }
