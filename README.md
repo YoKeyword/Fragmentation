@@ -27,11 +27,15 @@ A powerful library that manage Fragment for Android!
 6、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
 
 7、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
+
+8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README]())**
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
-compile 'me.yokeyword:fragmentation:0.4.0'
-// appcompat v7包也是必须的
+// appcompat v7包是必须的
+compile 'me.yokeyword:fragmentation:0.4.1'
+// 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请使用下面的库
+// compile 'me.yokeyword:fragmentation-swipeback:0.1.0'
 ````
 2、Activity继承SupportActivity：
 ````java
