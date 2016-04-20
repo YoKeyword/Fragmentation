@@ -10,6 +10,9 @@
     <string name="shop">商店(Fragment嵌套)</string>
     <string name="login">登录</string>
     <string name="system">系统</string>
+    <string name="swipe">侧滑返回Sample</string>
+    <string name="go_swipe_back">SwipeBackActivity+Fragment</string>
+    <string name="go_swipe_back_f">SwipeBackFragment</string>
 
     <string name="action_search">搜索</string>
     <string name="action_settings">设置</string>
@@ -112,4 +115,7 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

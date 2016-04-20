@@ -1,5 +1,6 @@
 package me.yokeyword.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -21,13 +22,14 @@ import me.yokeyword.sample.ui.fragment.account.LoginFragment;
 import me.yokeyword.sample.ui.fragment.discover.DiscoverFragment;
 import me.yokeyword.sample.ui.fragment.home.HomeFragment;
 import me.yokeyword.sample.ui.fragment.shop.ShopFragment;
+import me.yokeyword.sample.ui.fragment_swipe_back.SwipeBackSampleFragment;
 
 /**
  * Created by YoKeyword on 16/1/29.
  */
 public class MainActivity extends SupportActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseMainFragment.OnFragmentOpenDrawerListener
-        , LoginFragment.OnLoginSuccessListener {
+        , LoginFragment.OnLoginSuccessListener, SwipeBackSampleFragment.OnLockDrawLayoutListener {
     public static final String TAG = MainActivity.class.getSimpleName();
 
     private DrawerLayout mDrawer;
@@ -179,6 +181,10 @@ public class MainActivity extends SupportActivity
                     }
                 } else if (id == R.id.nav_login) {
                     goLogin();
+                } else if (id == R.id.nav_swipe_back) {
+                    startActivity(new Intent(MainActivity.this, SwipeBackSampleActivity.class));
+                }else if(id == R.id.nav_swipe_back_f){
+                    start(SwipeBackSampleFragment.newInstance());
                 }
             }
         }, 250);
@@ -195,5 +201,14 @@ public class MainActivity extends SupportActivity
         mTvName.setText(account);
         mImgNav.setImageResource(R.drawable.ic_account_circle_white_48dp);
         Toast.makeText(this, "登录成功,NavigationView的用户名已经更改!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLockDrawLayout(boolean lock) {
+        if(lock) {
+            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }else{
+            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
     }
 }

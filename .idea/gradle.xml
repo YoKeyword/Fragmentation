@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/demo" />
             <option value="$PROJECT_DIR$/fragmentation" />
+            <option value="$PROJECT_DIR$/fragmentation_swipeback" />
           </set>
         </option>
         <option name="myModules">
@@ -18,6 +19,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/demo" />
             <option value="$PROJECT_DIR$/fragmentation" />
+            <option value="$PROJECT_DIR$/fragmentation_swipeback" />
           </set>
         </option>
       </GradleProjectSettings>

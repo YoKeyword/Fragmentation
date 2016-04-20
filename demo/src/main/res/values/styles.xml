@@ -22,6 +22,7 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
     <style name="Toolbar_TextAppearance_Expanded">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@android:color/white</item>
@@ -32,4 +33,7 @@
 
     <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="AppTheme.NoActionBar.SwipeBack">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

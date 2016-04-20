@@ -8,4 +8,4 @@
     android:background="?attr/colorPrimary"
     app:titleTextAppearance="@style/Toolbar_TextAppearance_White"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:popupTheme="@style/AppTheme.PopupOverlay"/>
+    app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay"/>

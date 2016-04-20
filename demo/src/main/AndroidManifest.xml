@@ -18,6 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".SwipeBackSampleActivity"
+            android:theme="@style/AppTheme.NoActionBar.SwipeBack"/>
     </application>
 
 </manifest>
