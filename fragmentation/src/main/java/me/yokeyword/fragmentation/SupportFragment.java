@@ -2,6 +2,7 @@ package me.yokeyword.fragmentation;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,7 +54,6 @@ public class SupportFragment extends Fragment {
     private int mEnter, mExit, mPopEnter, mPopExit;
     private Animation mNoAnim, mEnterAnim, mExitAnim, mPopEnterAnim, mPopExitAnim;
 
-    private int mBgColor;
     private boolean mNeedHideSoft;  // 隐藏软键盘
     protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
 
@@ -139,28 +139,27 @@ public class SupportFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         View view = getView();
-        initFragmentBackground(view, mBgColor);
+        initFragmentBackground(view);
         assert view != null;
         view.setClickable(true);
 
         mFragmentation = _mActivity.getFragmentation();
     }
 
-    protected void initFragmentBackground(View view, int bgColor) {
+    protected void initFragmentBackground(View view) {
         if (view != null && view.getBackground() == null) {
-            if (bgColor != 0) {
-                view.setBackgroundColor(bgColor);
-            } else {
-                view.setBackgroundColor(Color.WHITE);
-            }
+            int background = getWindowBackground();
+            view.setBackgroundResource(background);
         }
     }
 
-    /**
-     * 设置Fragment背景色
-     */
-    protected void setFragmentBackground(int color) {
-        mBgColor = color;
+    protected int getWindowBackground() {
+        TypedArray a = _mActivity.getTheme().obtainStyledAttributes(new int[]{
+                android.R.attr.windowBackground
+        });
+        int background = a.getResourceId(0, 0);
+        a.recycle();
+        return background;
     }
 
     /**
@@ -322,7 +321,7 @@ public class SupportFragment extends Fragment {
 
     void popForSwipeBack() {
         mLocking = true;
-        mFragmentation.back(getFragmentManager(),true);
+        mFragmentation.back(getFragmentManager(), true);
         mLocking = false;
     }
 
