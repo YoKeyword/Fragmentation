@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="我是SwipeBackActivity\n里的第2个Fragment\n\n点击屏幕跳转\n边缘滑动返回"
+        android:text="我是SwipeBackActivity\n里的Fragment\n\n点击屏幕跳转\n边缘滑动返回"
         android:textSize="28sp"/>
 
     <Button

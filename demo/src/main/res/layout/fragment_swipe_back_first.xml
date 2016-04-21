@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="我是SwipeBackActivity\n里的第1个Fragment\n\n点击屏幕跳转\n边缘右滑退出Activity"
+        android:text="我是SwipeBackActivity\n里的Fragment\n\n点击屏幕跳转\n边缘右滑退出Activity"
         android:textSize="28sp"/>
 
 </LinearLayout>
