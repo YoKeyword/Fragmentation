@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SwipeBackLayout;
 
 
 /**
+ * SwipeBackActivity
  * Created by YoKeyword on 16/4/19.
  */
 public abstract class SwipeBackActivity extends SupportActivity {
@@ -27,7 +27,8 @@ public abstract class SwipeBackActivity extends SupportActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        onActivityPostCreate();
+
+        mSwipeBackLayout.attachToActivity(this);
     }
 
     @Override
@@ -39,14 +40,6 @@ public abstract class SwipeBackActivity extends SupportActivity {
         return view;
     }
 
-    public SwipeBackLayout getSwipeBackLayout() {
-        return mSwipeBackLayout;
-    }
-
-    public void setSwipeBackEnable(boolean enable) {
-        mSwipeBackLayout.setEnableGesture(enable);
-    }
-
     void onActivityCreate() {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackgroundDrawable(null);
@@ -55,7 +48,7 @@ public abstract class SwipeBackActivity extends SupportActivity {
         mSwipeBackLayout.setLayoutParams(params);
     }
 
-    void onActivityPostCreate() {
-        mSwipeBackLayout.attachToActivity(this);
+    public SwipeBackLayout getSwipeBackLayout() {
+        return mSwipeBackLayout;
     }
 }

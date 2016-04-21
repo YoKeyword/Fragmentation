@@ -1,6 +1,8 @@
 package me.yokeyword.fragmentation_swipeback;
 
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -8,19 +10,28 @@ import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.SwipeBackLayout;
 
 /**
+ * SwipeBackFragment
  * Created by YoKeyword on 16/4/19.
  */
-public abstract class SwipeBackFragment extends SupportFragment {
+public class SwipeBackFragment extends SupportFragment {
     private SwipeBackLayout mSwipeBackLayout;
 
-    protected View toSwipeBackFragment(View view) {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        onFragmentCreate();
+    }
+
+    private void onFragmentCreate() {
         mSwipeBackLayout = new SwipeBackLayout(_mActivity);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mSwipeBackLayout.setLayoutParams(params);
         mSwipeBackLayout.setBackgroundColor(Color.TRANSPARENT);
-        mSwipeBackLayout.addView(view);
-        mSwipeBackLayout.setFragment(this, view);
+    }
 
+    protected View attachToSwipeBack(View view) {
+        mSwipeBackLayout.attachToFragment(this,view);
         return mSwipeBackLayout;
     }
 
@@ -32,33 +43,27 @@ public abstract class SwipeBackFragment extends SupportFragment {
         }
     }
 
+    @Override
+    protected void initFragmentBackground(View view) {
+        if (!(view instanceof SwipeBackLayout) && view != null && view.getBackground() == null) {
+            int background = getWindowBackground();
+            view.setBackgroundResource(background);
+        } else {
+            if (view instanceof SwipeBackLayout) {
+                View childView = ((SwipeBackLayout) view).getChildAt(0);
+                if (childView != null && childView.getBackground() == null) {
+                    int background = getWindowBackground();
+                    childView.setBackgroundResource(background);
+                }
+            }
+        }
+    }
+
     public SwipeBackLayout getSwipeBackLayout() {
         return mSwipeBackLayout;
     }
 
     public void setSwipeBackEnable(boolean enable) {
         mSwipeBackLayout.setEnableGesture(enable);
-    }
-
-    @Override
-    protected void initFragmentBackground(View view, int bgColor) {
-        if (!(view instanceof SwipeBackLayout) && view != null && view.getBackground() == null) {
-            if (bgColor != 0) {
-                view.setBackgroundColor(bgColor);
-            } else {
-                view.setBackgroundColor(Color.WHITE);
-            }
-        } else {
-            if (view instanceof SwipeBackLayout) {
-                View childView = ((SwipeBackLayout) view).getChildAt(0);
-                if (childView != null && childView.getBackground() == null) {
-                    if (bgColor != 0) {
-                        childView.setBackgroundColor(bgColor);
-                    } else {
-                        childView.setBackgroundColor(Color.WHITE);
-                    }
-                }
-            }
-        }
     }
 }
