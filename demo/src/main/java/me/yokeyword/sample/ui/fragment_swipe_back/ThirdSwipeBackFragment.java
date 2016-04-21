@@ -44,22 +44,6 @@ public class ThirdSwipeBackFragment extends BaseSwipeBackFragment {
             }
         });
 
-        getSwipeBackLayout().addSwipeListener(new SwipeBackLayout.OnSwipeListener() {
-            @Override
-            public void onDragStateChange(int state) {
-                System.out.println("SecondSwipeBackFragment.onDragStateChange--->" + state);
-            }
-
-            @Override
-            public void onEdgeTouch(int edgeFlag) {
-                System.out.println("SecondSwipeBackFragment.onEdgeTouch-->" + edgeFlag);
-            }
-
-            @Override
-            public void onDragScrolled(float scrollPercent) {
-                System.out.println("SecondSwipeBackFragment.onDragScrolled--->" + scrollPercent);
-            }
-        });
         return attachToSwipeBack(view);
     }
 
