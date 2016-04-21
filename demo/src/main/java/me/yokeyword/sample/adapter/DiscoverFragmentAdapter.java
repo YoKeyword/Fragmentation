@@ -4,9 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import me.yokeyword.sample.ui.fragment.discover.PagerFavoriteFragment;
-import me.yokeyword.sample.ui.fragment.discover.PagerHotFragment;
-import me.yokeyword.sample.ui.fragment.discover.PagerRecommendFragment;
+import me.yokeyword.sample.ui.fragment.discover.PagerChildFragment;
 
 /**
  * Created by YoKeyword on 16/2/5.
@@ -21,11 +19,11 @@ public class DiscoverFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return PagerRecommendFragment.newInstance(0);
+            return PagerChildFragment.newInstance(0);
         } else if (position == 1) {
-            return PagerHotFragment.newInstance(1);
+            return PagerChildFragment.newInstance(1);
         } else {
-            return PagerFavoriteFragment.newInstance(2);
+            return PagerChildFragment.newInstance(2);
         }
     }
 

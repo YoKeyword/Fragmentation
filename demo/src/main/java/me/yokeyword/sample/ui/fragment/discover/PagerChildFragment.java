@@ -18,7 +18,7 @@ import me.yokeyword.sample.helper.OnItemClickListener;
 import me.yokeyword.sample.ui.BaseFragment;
 
 
-public class PagerHotFragment extends BaseFragment {
+public class PagerChildFragment extends BaseFragment {
     private static final String ARG_FROM = "arg_from";
 
     private int mFrom;
@@ -26,11 +26,11 @@ public class PagerHotFragment extends BaseFragment {
     private RecyclerView mRecy;
     private PagerAdapter mAdapter;
 
-    public static PagerHotFragment newInstance(int from) {
+    public static PagerChildFragment newInstance(int from) {
         Bundle args = new Bundle();
         args.putInt(ARG_FROM, from);
 
-        PagerHotFragment fragment = new PagerHotFragment();
+        PagerChildFragment fragment = new PagerChildFragment();
         fragment.setArguments(args);
         return fragment;
     }

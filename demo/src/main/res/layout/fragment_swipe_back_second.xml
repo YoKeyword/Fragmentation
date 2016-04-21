@@ -9,9 +9,18 @@
     <TextView
         android:id="@+id/tv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center"
-        android:text="我是SwipeBackActivity\n里的第2个Fragment\n\n点击屏幕跳转\n边缘右滑返回"
+        android:text="我是SwipeBackActivity\n里的第2个Fragment\n\n点击屏幕跳转\n边缘滑动返回"
         android:textSize="28sp"/>
 
+    <Button
+        android:id="@+id/btn_set"
+        android:layout_width="match_parent"
+        android:text="设置滑动方向"
+        android:layout_marginRight="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginBottom="16dp"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

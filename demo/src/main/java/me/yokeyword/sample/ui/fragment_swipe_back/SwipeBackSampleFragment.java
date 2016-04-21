@@ -1,6 +1,7 @@
 package me.yokeyword.sample.ui.fragment_swipe_back;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
 import me.yokeyword.sample.R;
+import me.yokeyword.sample.SwipeBackSampleActivity;
 
 /**
  * SwipeBackSampleFragment
@@ -23,11 +25,12 @@ public class SwipeBackSampleFragment extends SwipeBackFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_swipe_back, container, false);
 
         if (mListener != null) {
             mListener.onLockDrawLayout(true);
         }
-        return toSwipeBackFragment(inflater.inflate(R.layout.fragment_swipe_back, container, false));
+        return attachToSwipeBack(view);
     }
 
     @Override

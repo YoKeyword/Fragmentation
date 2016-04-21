@@ -2,6 +2,7 @@ package me.yokeyword.sample;
 
 import android.os.Bundle;
 
+import me.yokeyword.fragmentation.SwipeBackLayout;
 import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
@@ -20,6 +21,8 @@ public class SwipeBackSampleActivity extends SwipeBackActivity {
         if (savedInstanceState == null) {
             start(FirstSwipeBackFragment.newInstance());
         }
+
+        getSwipeBackLayout().setEdgeOrientation(SwipeBackLayout.EDGE_ALL);
     }
 
     @Override
