@@ -68,7 +68,8 @@ public class Fragmentation {
             mFragmentManager = from.getFragmentManager();
         }
 
-        FragmentTransactionBugFixHack.reorderIndices(mFragmentManager);
+        // 移动到popTo 后
+//        FragmentTransactionBugFixHack.reorderIndices(mFragmentManager);
 
         if (type == TYPE_ADD) {
             saveRequestCode(to, requestCode);
@@ -319,12 +320,15 @@ public class Fragmentation {
      * @return
      */
     SupportFragment getTopFragment(FragmentManager fragmentManager) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
-        if (fragmentList != null) {
-            for (int i = fragmentList.size() - 1; i >= 0; i--) {
-                Fragment fragment = fragmentList.get(i);
-                if (fragment != null && fragment instanceof SupportFragment) {
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count > 0) {
+            String tag = fragmentManager.getBackStackEntryAt(count - 1).getName();
+            Fragment fragment = fragmentManager.findFragmentByTag(tag);
+            if (fragment != null) {
+                if (fragment instanceof SupportFragment) {
                     return (SupportFragment) fragment;
+                } else {
+                    throw new RuntimeException("The top Fragment is not a SupportFragment!");
                 }
             }
         }
@@ -415,9 +419,16 @@ public class Fragmentation {
      * @param fragmentClass
      * @param flag
      */
-    private void popBackFix(Class<?> fragmentClass, int flag, FragmentManager fragmentManager) {
+    private void popBackFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
         mActivity.preparePopMultiple();
         fragmentManager.popBackStackImmediate(fragmentClass.getName(), flag);
         mActivity.popFinish();
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
+            }
+        });
     }
 }
