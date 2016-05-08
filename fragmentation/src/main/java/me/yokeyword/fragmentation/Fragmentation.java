@@ -289,7 +289,7 @@ public class Fragmentation {
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment != null && fragment instanceof SupportFragment) {
+            if (fragment instanceof SupportFragment) {
                 SupportFragment supportFragment = (SupportFragment) fragment;
                 if (count == 0) {
                     requestCode = supportFragment.getRequestCode();
