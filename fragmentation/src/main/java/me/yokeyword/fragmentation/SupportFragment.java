@@ -17,6 +17,8 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.FragmentationNullException;
@@ -161,6 +163,15 @@ public class SupportFragment extends Fragment {
         a.recycle();
         return background;
     }
+
+    long getExitAnimDuration() {
+        return mExitAnim.getDuration();
+    }
+
+    long getPopEnterAnimDuration() {
+        return mPopEnterAnim.getDuration();
+    }
+
 
     /**
      * 设定当前Fragmemt动画,优先级比在SupportActivity里高
@@ -321,7 +332,7 @@ public class SupportFragment extends Fragment {
 
     void popForSwipeBack() {
         mLocking = true;
-        mFragmentation.back(getFragmentManager(), true);
+        mFragmentation.back(getFragmentManager());
         mLocking = false;
     }
 

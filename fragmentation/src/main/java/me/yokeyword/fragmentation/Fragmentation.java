@@ -263,57 +263,63 @@ public class Fragmentation {
     }
 
     void back(FragmentManager fragmentManager) {
-        back(fragmentManager, false);
-    }
-
-    void back(FragmentManager fragmentManager, boolean immediate) {
         int count = fragmentManager.getBackStackEntryCount();
 
         if (count > 1) {
-            handleBack(fragmentManager, immediate);
+            handleBack(fragmentManager);
         }
     }
 
     /**
      * handle result
      */
-    private void handleBack(FragmentManager fragmentManager, boolean immediate) {
-        if (!immediate) {
-            fragmentManager.popBackStack();
-        }
-
+    private void handleBack(final FragmentManager fragmentManager) {
         List<Fragment> fragmentList = fragmentManager.getFragments();
         int count = 0;
         int requestCode = 0, resultCode = 0;
+        long lastAnimTime = 0;
         Bundle data = null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
             if (fragment instanceof SupportFragment) {
-                SupportFragment supportFragment = (SupportFragment) fragment;
+                final SupportFragment supportFragment = (SupportFragment) fragment;
                 if (count == 0) {
                     requestCode = supportFragment.getRequestCode();
                     resultCode = supportFragment.getResultCode();
                     data = supportFragment.getResultBundle();
 
+                    lastAnimTime = supportFragment.getExitAnimDuration();
+
                     count++;
                 } else {
-                    if (requestCode != 0) {
-                        supportFragment.onFragmentResult(requestCode, resultCode, data);
-                    }
                     // 解决在app因资源问题被回收后 重新进入app 在Fragment嵌套时,返回到嵌套的Fragment时,导致的错误问题
                     if (supportFragment.getChildFragmentManager().getFragments() != null) {
                         fragmentManager.beginTransaction().show(supportFragment).commit();
+                    }
+
+                    if (requestCode != 0 && resultCode != 0) {
+                        final int finalRequestCode = requestCode;
+                        final int finalResultCode = resultCode;
+                        final Bundle finalData = data;
+
+                        long animTime = supportFragment.getPopEnterAnimDuration();
+
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                supportFragment.onFragmentResult(finalRequestCode, finalResultCode, finalData);
+                            }
+                        }, Math.max(animTime, lastAnimTime));
                     }
                     break;
                 }
             }
         }
 
-        if (immediate) {
-            fragmentManager.popBackStackImmediate();
-        }
+        fragmentManager.popBackStackImmediate();
     }
+
 
     /**
      * 获得栈顶Fragment
@@ -412,6 +418,17 @@ public class Fragmentation {
         if (afterPopTransactionRunnable != null) {
             mHandler.post(afterPopTransactionRunnable);
         }
+    }
+
+    /**
+     * 解决onFragmentResult时,立即start新Fragment时,导致的栈内顺序不正确问题
+     *
+     * @param fragmentManager
+     */
+    private void popBackFix(FragmentManager fragmentManager) {
+        mActivity.preparePopMultiple();
+        fragmentManager.popBackStackImmediate();
+        mActivity.popFinish();
     }
 
     /**
