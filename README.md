@@ -216,5 +216,7 @@ protected void onNewBundle(Bundle newBundle){
 
 而如果你有Fragment嵌套，那么不管是“同级”式还是“流程”式，你都需要自己去恢复处理。
 
+这2块内容，后续会持续想办法解决，如果你有比较好的建议，随时可以提出哈～
+
 # 最后
-有任何问题欢迎一起探讨，欢迎Fork！
+有任何问题欢迎一起探讨，欢迎Fork，PR！
