@@ -305,12 +305,15 @@ public class Fragmentation {
 
                         long animTime = supportFragment.getPopEnterAnimDuration();
 
+                        fragmentManager.popBackStackImmediate();
+
                         mHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 supportFragment.onFragmentResult(finalRequestCode, finalResultCode, finalData);
                             }
-                        }, Math.max(animTime, lastAnimTime) + 50);
+                        }, Math.max(animTime, lastAnimTime));
+                        return;
                     }
                     break;
                 }
