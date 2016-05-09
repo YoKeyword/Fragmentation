@@ -146,6 +146,18 @@ public class SupportFragment extends Fragment {
         view.setClickable(true);
 
         mFragmentation = _mActivity.getFragmentation();
+
+        // 解决在Fragment使用AppBarLayout时,导致app被系统强杀重启后,导致的Fragment视图不可见问题
+        if (savedInstanceState != null) {
+            _mActivity.getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    if (getView() != null && getView().getVisibility() != View.VISIBLE) {
+                        getView().setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
     }
 
     protected void initFragmentBackground(View view) {

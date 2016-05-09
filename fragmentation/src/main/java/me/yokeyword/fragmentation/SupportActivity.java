@@ -1,6 +1,7 @@
 package me.yokeyword.fragmentation;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -25,6 +26,8 @@ public abstract class SupportActivity extends AppCompatActivity {
     private FragmentAnimator mFragmentAnimator;
 
     boolean mPopMulitpleNoAnim = false;
+
+    private Handler mHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +75,13 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     Fragmentation getFragmentation() {
         return mFragmentation;
+    }
+
+    Handler getHandler() {
+        if (mHandler == null) {
+            mHandler = new Handler();
+        }
+        return mHandler;
     }
 
     /**
@@ -147,6 +157,7 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     /**
      * 得到位于栈顶Fragment
+     *
      * @return
      */
     public SupportFragment getTopFragment() {
@@ -155,6 +166,7 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     /**
      * 获取设置的全局动画
+     *
      * @return
      */
     public FragmentAnimator getFragmentAnimator() {
@@ -166,6 +178,7 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     /**
      * 设置全局动画
+     *
      * @param fragmentAnimator
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
