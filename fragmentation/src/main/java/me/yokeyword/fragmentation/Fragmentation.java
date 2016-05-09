@@ -310,7 +310,7 @@ public class Fragmentation {
                             public void run() {
                                 supportFragment.onFragmentResult(finalRequestCode, finalResultCode, finalData);
                             }
-                        }, Math.max(animTime, lastAnimTime));
+                        }, Math.max(animTime, lastAnimTime) + 50);
                     }
                     break;
                 }
