@@ -293,10 +293,6 @@ public class Fragmentation {
 
                     count++;
                 } else {
-                    // 解决在app因资源问题被回收后 重新进入app 在Fragment嵌套时,返回到嵌套的Fragment时,导致的错误问题
-                    if (supportFragment.getChildFragmentManager().getFragments() != null) {
-                        fragmentManager.beginTransaction().show(supportFragment).commit();
-                    }
 
                     if (requestCode != 0 && resultCode != 0) {
                         final int finalRequestCode = requestCode;
@@ -421,17 +417,6 @@ public class Fragmentation {
         if (afterPopTransactionRunnable != null) {
             mHandler.post(afterPopTransactionRunnable);
         }
-    }
-
-    /**
-     * 解决onFragmentResult时,立即start新Fragment时,导致的栈内顺序不正确问题
-     *
-     * @param fragmentManager
-     */
-    private void popBackFix(FragmentManager fragmentManager) {
-        mActivity.preparePopMultiple();
-        fragmentManager.popBackStackImmediate();
-        mActivity.popFinish();
     }
 
     /**

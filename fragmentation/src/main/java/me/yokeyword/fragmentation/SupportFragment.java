@@ -147,13 +147,15 @@ public class SupportFragment extends Fragment {
 
         mFragmentation = _mActivity.getFragmentation();
 
-        // 解决在Fragment使用AppBarLayout时,导致app被系统强杀重启后,导致的Fragment视图不可见问题
+        // 解决栈内有嵌套Fragment时,APP被强杀后恢复BUG问题(顶层Fragment为hidden状态)
         if (savedInstanceState != null) {
             _mActivity.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
-                    if (getView() != null && getView().getVisibility() != View.VISIBLE) {
-                        getView().setVisibility(View.VISIBLE);
+                    if (SupportFragment.this == getTopFragment() && isHidden()) {
+                        getFragmentManager().beginTransaction()
+                                .show(SupportFragment.this)
+                                .commit();
                     }
                 }
             });
