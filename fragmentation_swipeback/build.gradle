@@ -21,5 +21,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided 'com.android.support:appcompat-v7:23.1.1'
-    compile project(':fragmentation')
+    provided 'me.yokeyword:fragmentation:0.5.4'
 }
