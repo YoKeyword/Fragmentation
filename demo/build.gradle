@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile project(':fragmentation_swipeback')
+    compile project(':fragmentation')
 }
