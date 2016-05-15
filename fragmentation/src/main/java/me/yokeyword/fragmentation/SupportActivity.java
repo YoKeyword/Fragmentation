@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -73,6 +74,11 @@ public abstract class SupportActivity extends AppCompatActivity {
         return new DefaultVerticalAnimator();
     }
 
+    /**
+     * Set Container's id
+     */
+    protected abstract int setContainerId();
+
     Fragmentation getFragmentation() {
         return mFragmentation;
     }
@@ -85,9 +91,25 @@ public abstract class SupportActivity extends AppCompatActivity {
     }
 
     /**
-     * Set Container's id
+     * 获取设置的全局动画
+     *
+     * @return
      */
-    protected abstract int setContainerId();
+    public FragmentAnimator getFragmentAnimator() {
+        return new FragmentAnimator(
+                mFragmentAnimator.getEnter(), mFragmentAnimator.getExit(),
+                mFragmentAnimator.getPopEnter(), mFragmentAnimator.getPopExit()
+        );
+    }
+
+    /**
+     * 设置全局动画
+     *
+     * @param fragmentAnimator
+     */
+    public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
+        this.mFragmentAnimator = fragmentAnimator;
+    }
 
     @Override
     public void onBackPressed() {
@@ -104,6 +126,15 @@ public abstract class SupportActivity extends AppCompatActivity {
         } else {
             finish();
         }
+    }
+
+    /**
+     * 得到位于栈顶Fragment
+     *
+     * @return
+     */
+    public SupportFragment getTopFragment() {
+        return mFragmentation.getTopFragment(getSupportFragmentManager());
     }
 
     /**
@@ -155,36 +186,6 @@ public abstract class SupportActivity extends AppCompatActivity {
         mFragmentation.dispatchTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
-    /**
-     * 得到位于栈顶Fragment
-     *
-     * @return
-     */
-    public SupportFragment getTopFragment() {
-        return mFragmentation.getTopFragment(getSupportFragmentManager());
-    }
-
-    /**
-     * 获取设置的全局动画
-     *
-     * @return
-     */
-    public FragmentAnimator getFragmentAnimator() {
-        return new FragmentAnimator(
-                mFragmentAnimator.getEnter(), mFragmentAnimator.getExit(),
-                mFragmentAnimator.getPopEnter(), mFragmentAnimator.getPopExit()
-        );
-    }
-
-    /**
-     * 设置全局动画
-     *
-     * @param fragmentAnimator
-     */
-    public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
-        this.mFragmentAnimator = fragmentAnimator;
-    }
-
     void preparePopMultiple() {
         mPopMulitpleNoAnim = true;
     }
@@ -194,11 +195,11 @@ public abstract class SupportActivity extends AppCompatActivity {
     }
 
     /**
-     * 显示栈视图
+     * 显示栈视图,调试时使用
      */
     public void showFragmentStackHierarchyView() {
         HierarchyViewContainer container = new HierarchyViewContainer(this);
-        container.bindFragmentRecords(getFragmentRecords());
+        container.bindFragmentRecords(mFragmentation.getFragmentRecords());
         container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         new AlertDialog.Builder(this)
                 .setTitle("栈视图")
@@ -208,31 +209,47 @@ public abstract class SupportActivity extends AppCompatActivity {
                 .show();
     }
 
-    private List<FragmentRecord> getFragmentRecords() {
-        List<FragmentRecord> fragmentRecords = new ArrayList<>();
+    /**
+     * 显示栈视图 日志 ,调试时使用
+     */
+    public void logFragmentStackHierarchy(String TAG) {
+        List<FragmentRecord> fragmentRecordList = mFragmentation.getFragmentRecords();
+        if (fragmentRecordList == null) return;
 
-        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-        if (fragmentList == null || fragmentList.size() < 1) return null;
+        StringBuilder sb = new StringBuilder();
 
-        for (Fragment fragment : fragmentList) {
-            if (fragment == null) continue;
-            fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+        for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
+            FragmentRecord fragmentRecord = fragmentRecordList.get(i);
+
+            if (i == fragmentRecordList.size() - 1) {
+                sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
+                sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n\n");
+            } else if (i == 0) {
+                sb.append("\t栈底\t\t\t" + fragmentRecord.fragmentName + "\n");
+                sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+            } else {
+                sb.append("\t↓\t\t\t" + fragmentRecord.fragmentName + "\n\n");
+            }
+
+            processChildLog(fragmentRecord.childFragmentRecord, sb);
         }
 
-        return fragmentRecords;
+        Log.i(TAG, sb.toString());
     }
 
-    private List<FragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
-        List<FragmentRecord> fragmentRecords = new ArrayList<>();
+    private void processChildLog(List<FragmentRecord> fragmentRecordList, StringBuilder sb) {
+        if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
 
-        List<Fragment> fragmentList = parentFragment.getChildFragmentManager().getFragments();
-        if (fragmentList == null || fragmentList.size() < 1) return null;
-
-
-        for (int i = fragmentList.size() - 1; i >= 0; i--) {
-            Fragment fragment = fragmentList.get(i);
-            fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+        for (int j = 0; j < fragmentRecordList.size(); j++) {
+            FragmentRecord childFragmentRecord = fragmentRecordList.get(j);
+            if (j == 0) {
+                sb.append("\t \t\t\t\t子栈顶\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
+            } else if (j == fragmentRecordList.size() - 1) {
+                sb.append("\t \t\t\t\t子栈底\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
+            } else {
+                sb.append("\t \t\t\t\t↓\t\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
+            }
+            processChildLog(childFragmentRecord.childFragmentRecord, sb);
         }
-        return fragmentRecords;
     }
 }

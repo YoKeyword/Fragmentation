@@ -12,13 +12,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.fragmentation.helper.FragmentRecord;
 import me.yokeyword.fragmentation.helper.OnAnimEndListener;
 
 
 /**
- * Fragment Manager
+ * Controller
  * Created by YoKeyword on 16/1/22.
  */
 public class Fragmentation {
@@ -27,6 +29,7 @@ public class Fragmentation {
     static final String ARG_RESULT_BUNDLE = "yokeyword_arg_bundle";
     static final String ARG_IS_ROOT = "yokeyword_arg_is_root";
 
+    public static final long BUFFER_TIME = 200L;
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_ADD_FINISH = 1;
@@ -205,6 +208,9 @@ public class Fragmentation {
         return preFragment;
     }
 
+    /**
+     * find Fragment from FragmentStack
+     */
     @SuppressWarnings("unchecked")
     <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, FragmentManager fragmentManager) {
         Fragment fragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
@@ -342,7 +348,7 @@ public class Fragmentation {
     }
 
     /**
-     * fix popTp anim
+     * fix popTo anim
      */
     @Nullable
     private void fixPopToAnim(Fragment rootFragment, SupportFragment fromFragment) {
@@ -377,7 +383,7 @@ public class Fragmentation {
                                 public void run() {
                                     finalViewGroup.removeView(fromView);
                                 }
-                            }, 200);
+                            }, BUFFER_TIME);
                         }
                     }
                 }
@@ -436,5 +442,33 @@ public class Fragmentation {
                 FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
             }
         });
+    }
+
+    List<FragmentRecord> getFragmentRecords() {
+        List<FragmentRecord> fragmentRecords = new ArrayList<>();
+
+        List<Fragment> fragmentList = mActivity.getSupportFragmentManager().getFragments();
+        if (fragmentList == null || fragmentList.size() < 1) return null;
+
+        for (Fragment fragment : fragmentList) {
+            if (fragment == null) continue;
+            fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+        }
+
+        return fragmentRecords;
+    }
+
+    private List<FragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
+        List<FragmentRecord> fragmentRecords = new ArrayList<>();
+
+        List<Fragment> fragmentList = parentFragment.getChildFragmentManager().getFragments();
+        if (fragmentList == null || fragmentList.size() < 1) return null;
+
+
+        for (int i = fragmentList.size() - 1; i >= 0; i--) {
+            Fragment fragment = fragmentList.get(i);
+            fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+        }
+        return fragmentRecords;
     }
 }

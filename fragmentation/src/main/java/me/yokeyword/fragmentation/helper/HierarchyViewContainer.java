@@ -21,7 +21,6 @@ import me.yokeyword.fragmentation.R;
  */
 public class HierarchyViewContainer extends ScrollView {
     private Context mContext;
-    private List<FragmentRecord> mFragmentRecords;
 
     private LinearLayout mLinearLayout;
 
@@ -59,8 +58,6 @@ public class HierarchyViewContainer extends ScrollView {
     }
 
     public void bindFragmentRecords(List<FragmentRecord> fragmentRecords) {
-        mFragmentRecords = fragmentRecords;
-
         mLinearLayout.removeAllViews();
 
         if (fragmentRecords == null) return;

@@ -295,6 +295,13 @@ public class SupportFragment extends Fragment {
     protected void onHidden() {
     }
 
+
+    @IntDef({STANDARD, SINGLETOP, SINGLETASK})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LaunchMode {
+    }
+
+
     /**
      * 按下返回键触发
      *
@@ -307,11 +314,6 @@ public class SupportFragment extends Fragment {
             if (result) return true;
         }
         return false;
-    }
-
-    @IntDef({STANDARD, SINGLETOP, SINGLETASK})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LaunchMode {
     }
 
     /**
@@ -327,14 +329,48 @@ public class SupportFragment extends Fragment {
     }
 
     /**
-     * 添加NewBundle,用于启动模式为SingleTask/SingleTop时
+     * 获取栈内的子framgent对象
+     *
+     * @param fragmentClass
      */
-    public void putNewBundle(Bundle newBundle) {
-        this.mNewBundle = newBundle;
+    @SuppressWarnings("unchecked")
+    public <T extends Fragment> T findChildFragment(Class<T> fragmentClass) {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag(fragmentClass.getName());
+        if (fragment == null) {
+            return null;
+        }
+        return (T) fragment;
     }
 
-    Bundle getNewBundle() {
-        return mNewBundle;
+
+    /**
+     * 得到位于栈顶的Fragment
+     *
+     * @return
+     */
+    public SupportFragment getTopFragment() {
+        if (mFragmentation == null) {
+            throw new FragmentationNullException("getTopFragment()");
+        }
+        return mFragmentation.getTopFragment(getFragmentManager());
+    }
+
+    /**
+     * 得到位于栈顶的子Fragment
+     *
+     * @return
+     */
+    public SupportFragment getTopChildFragment() {
+        if (mFragmentation == null) {
+            throw new FragmentationNullException("getTopFragment()");
+        }
+        return mFragmentation.getTopFragment(getChildFragmentManager());
+    }
+
+    void popForSwipeBack() {
+        mLocking = true;
+        mFragmentation.back(getFragmentManager());
+        mLocking = false;
     }
 
     /**
@@ -342,12 +378,6 @@ public class SupportFragment extends Fragment {
      */
     public void pop() {
         mFragmentation.back(getFragmentManager());
-    }
-
-    void popForSwipeBack() {
-        mLocking = true;
-        mFragmentation.back(getFragmentManager());
-        mLocking = false;
     }
 
     /**
@@ -365,9 +395,6 @@ public class SupportFragment extends Fragment {
      */
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getFragmentManager());
-    }
-
-    protected void onNewBundle(Bundle args) {
     }
 
     public void start(SupportFragment toFragment) {
@@ -397,33 +424,14 @@ public class SupportFragment extends Fragment {
         mFragmentation.dispatchTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
-    protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {
-    }
-
-    public void setFramgentResult(int resultCode, Bundle bundle) {
-        mResultCode = resultCode;
-        mResultBundle = bundle;
-
-        Bundle args = getArguments();
-        if (args == null) {
-            args = new Bundle();
+    public void startChildFragment(int childContainer, Fragment childFragment, boolean addToBack) {
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ft.add(childContainer, childFragment, childFragment.getClass().getName())
+                .show(childFragment);
+        if (addToBack) {
+            ft.addToBackStack(childFragment.getClass().getName());
         }
-        args.putInt(Fragmentation.ARG_RESULT_CODE, mResultCode);
-        args.putBundle(Fragmentation.ARG_RESULT_BUNDLE, mResultBundle);
-    }
-
-    /**
-     * 获取栈内的子framgent对象
-     *
-     * @param fragmentClass
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Fragment> T findChildFragment(Class<T> fragmentClass) {
-        Fragment fragment = getChildFragmentManager().findFragmentByTag(fragmentClass.getName());
-        if (fragment == null) {
-            return null;
-        }
-        return (T) fragment;
+        ft.commit();
     }
 
     /**
@@ -443,79 +451,30 @@ public class SupportFragment extends Fragment {
         ft.commit();
     }
 
+    /**
+     * 设置Result数据 (通过startForResult)
+     * @param resultCode  resultCode
+     * @param bundle    设置Result数据
+     */
+    public void setFramgentResult(int resultCode, Bundle bundle) {
+        mResultCode = resultCode;
+        mResultBundle = bundle;
 
-    public void startChildFragment(int childContainer, Fragment childFragment, boolean addToBack) {
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        ft.add(childContainer, childFragment, childFragment.getClass().getName())
-                .show(childFragment);
-        if (addToBack) {
-            ft.addToBackStack(childFragment.getClass().getName());
+        Bundle args = getArguments();
+        if (args == null) {
+            args = new Bundle();
         }
-        ft.commit();
+        args.putInt(Fragmentation.ARG_RESULT_CODE, mResultCode);
+        args.putBundle(Fragmentation.ARG_RESULT_BUNDLE, mResultBundle);
     }
 
     /**
-     * 替换 兄弟Fragment
-     *
-     * @param brotherContainer
-     * @param brotherFragment
-     * @param addToBack
+     * 接受Result数据 (通过startForResult的返回数据)
+     * @param requestCode   requestCode
+     * @param resultCode    resultCode
+     * @param data          Result数据
      */
-    public void replaceBrotherFragment(int brotherContainer, Fragment brotherFragment, boolean addToBack) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(brotherContainer, brotherFragment, brotherFragment.getClass().getName())
-                .show(brotherFragment);
-        if (addToBack) {
-            ft.addToBackStack(brotherFragment.getClass().getName());
-        }
-        ft.commit();
-    }
-
-    /**
-     * 添加 兄弟Fragment
-     *
-     * @param brotherContainer
-     * @param brotherFragment
-     * @param addToBack
-     */
-    public void startBrotherFragment(int brotherContainer, Fragment brotherFragment, boolean addToBack) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add(brotherContainer, brotherFragment, brotherFragment.getClass().getName())
-                .show(brotherFragment);
-        if (addToBack) {
-            ft.addToBackStack(brotherFragment.getClass().getName());
-        }
-        ft.commit();
-    }
-
-    /**
-     * 得到位于栈顶的Fragment
-     *
-     * @return
-     */
-    public SupportFragment getTopFragment() {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("getTopFragment()");
-        }
-        return mFragmentation.getTopFragment(getFragmentManager());
-    }
-
-    /**
-     * 得到位于栈顶的子Fragment
-     *
-     * @return
-     */
-    public SupportFragment getTopChildFragment() {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("getTopFragment()");
-        }
-        return mFragmentation.getTopFragment(getChildFragmentManager());
-    }
-
-
-    void setNeedAnimListener(boolean needAnimListener, OnAnimEndListener onAnimEndListener) {
-        this.mNeedAnimListener = needAnimListener;
-        this.mOnAnimEndListener = onAnimEndListener;
+    protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {
     }
 
     int getRequestCode() {
@@ -526,7 +485,31 @@ public class SupportFragment extends Fragment {
         return mResultCode;
     }
 
+    /**
+     * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, TargetFragment回调该方法
+     * @param args 通过上个Fragment的putNewBundle(Bundle newBundle)时传递的数据
+     */
+    protected void onNewBundle(Bundle args) {
+    }
+
+    /**
+     * 添加NewBundle,用于启动模式为SingleTask/SingleTop时
+     */
+    public void putNewBundle(Bundle newBundle) {
+        this.mNewBundle = newBundle;
+    }
+
+    Bundle getNewBundle() {
+        return mNewBundle;
+    }
+
+
     Bundle getResultBundle() {
         return mResultBundle;
+    }
+
+    void setNeedAnimListener(boolean needAnimListener, OnAnimEndListener onAnimEndListener) {
+        this.mNeedAnimListener = needAnimListener;
+        this.mOnAnimEndListener = onAnimEndListener;
     }
 }

@@ -3,7 +3,7 @@ package me.yokeyword.fragmentation.helper;
 import java.util.List;
 
 /**
- * 查看栈视图 的实体类
+ * 为了调试时 查看栈视图
  * Created by YoKeyword on 16/2/21.
  */
 public class FragmentRecord {
