@@ -32,6 +32,8 @@ import me.yokeyword.sample.ui.BaseMainFragment;
 
 
 public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItemClickListener {
+    private static final String TAG = "Fragmentation";
+
     private String[] mTitles = new String[]{
             "航拍“摩托大军”返乡高峰 如蚂蚁搬家（组图）",
             "苹果因漏电召回部分电源插头",
@@ -141,6 +143,7 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
         switch (item.getItemId()) {
             case R.id.action_hierarchy:
                 _mActivity.showFragmentStackHierarchyView();
+                _mActivity.logFragmentStackHierarchy(TAG);
                 break;
             case R.id.action_anim:
                 final PopupMenu popupMenu = new PopupMenu(_mActivity,mToolbar, GravityCompat.END);

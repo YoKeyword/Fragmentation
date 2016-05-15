@@ -13,6 +13,7 @@ import me.yokeyword.sample.R;
  * Created by YoKeyword on 16/2/3.
  */
 public class BaseFragment extends SupportFragment {
+    private static final String TAG = "Fragmentation";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class BaseFragment extends SupportFragment {
                 switch (item.getItemId()) {
                     case R.id.action_hierarchy:
                         _mActivity.showFragmentStackHierarchyView();
+                        _mActivity.logFragmentStackHierarchy(TAG);
                         break;
                 }
                 return true;
