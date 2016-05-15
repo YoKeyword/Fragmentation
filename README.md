@@ -6,6 +6,7 @@ A powerful library that manage Fragment for Android!
 （新：Fragmentation-SwipeBack库，支持类似IOS的滑动边缘返回功能，[实现分析](http://www.jianshu.com/p/626229ca4dc2)）
 
 为了更好的使用和了解该库,推荐你阅读下面2篇文章:
+
 相关阅读：
 [Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)    ， 
 [Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
@@ -22,7 +23,7 @@ A powerful library that manage Fragment for Android!
 
 3、**有效解决Fragment重叠问题**
 
-4、**实时查看Fragment的(包括嵌套Fragment)栈视图，方便Fragment嵌套时的调试**
+4、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
 
 5、**增加启动模式、startForResult等类似Activity方法**
 
@@ -32,12 +33,13 @@ A powerful library that manage Fragment for Android!
 
 8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
-<img src="/gif/SwipeBack.jpg" width="150px"/>
+<img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
+
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.5.4'
+compile 'me.yokeyword:fragmentation:0.5.5'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.0'
 ````
@@ -84,6 +86,8 @@ public class MainActivity extends SupportActivity {
 ````java
 // 弹出 栈视图 提示框
 showFragmentStackHierarchyView();
+// 打印 栈视图 Log
+logFragmentStackHierarchy(TAG);
 ````
 除此之外包含大部分SupportFragment的方法，请自行查看。
 
