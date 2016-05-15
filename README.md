@@ -5,6 +5,7 @@ A powerful library that manage Fragment for Android!
 
 （新：Fragmentation-SwipeBack库，支持类似IOS的滑动边缘返回功能，[实现分析](http://www.jianshu.com/p/626229ca4dc2)）
 
+为了更好的使用和了解该库,推荐你阅读下面2篇文章:
 相关阅读：
 [Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)    ， 
 [Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
@@ -162,6 +163,7 @@ showSoftInput(View view);
 DetailFragment.class里:
 
 startForResult(ModifyDetailFragment.newInstance(mTitle), REQ_CODE);
+
 @Override
 public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
     super.onFragmentResult(requestCode, resultCode, data);
@@ -204,15 +206,7 @@ protected void onNewBundle(Bundle newBundle){
 
 对于Activity内的“流程”式Fragments（比如登录->注册/忘记密码->填写信息->跳转到主页Activity），Fragmentation帮助你处理了栈内的恢复，保证Fragment不会重叠，你不需要再自己处理了。
 
-但是如果你的Activity内的Fragments是“同级”的，那么需要你复写`onHandleSaveInstanceState()`使用`findFragmentByTag(tag)`或`getFragments()`去恢复处理。
-````
- @Override
-    protected void onHandleSaveInstancState(Bundle savedInstanceState) {
-        // 复写的时候 下面的super一定要删掉
-        // super.onHandleSaveInstancState(savedInstanceState);
-        // 在此处 通过findFragmentByTag或getFraments来恢复，详情参考第二篇文章
-    }
-````
+但是如果你的Activity内的Fragments是“同级”的，那么你需要自己去恢复处理，因为库并不能知道你想恢复哪个Fragment。
 
 而如果你有Fragment嵌套，那么不管是“同级”式还是“流程”式，你都需要自己去恢复处理。
 
