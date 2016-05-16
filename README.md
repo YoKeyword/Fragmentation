@@ -75,6 +75,13 @@ public class MainActivity extends SupportActivity {
         // return new DefaultHorizontalAnimator();
         // 设置自定义动画
         // return new FragmentAnimator(enter,exit,popEnter,popExit);
+        
+        // 这里注意
+        // new FragmentAnimator(enter,exit,popEnter,popExit)的4个参数与官方setCustomAnimations(enter,exit,popEnter,popExit)
+        // 并不一致，对于官方来说Fragment出栈时的动画对应的是popExit（即第4个参数）
+        // 对于FragmentAnimator来说Fragment出栈时的动画对应的是exit参数（即第2个参数）
+        
+        // 这里和官方不一致的原因主要出于我们绝大多数人认为enter,exit才是对应进出栈动画的想法考虑的。
     }
 ````
 3、Fragment继承SupportFragment
