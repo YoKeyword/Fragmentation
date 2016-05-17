@@ -325,7 +325,7 @@ public class SupportFragment extends Fragment {
      * @param fragmentClass
      */
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getFragmentManager());
+        return mFragmentation.findStackFragment(fragmentClass, getFragmentManager(), false);
     }
 
     /**
@@ -333,13 +333,8 @@ public class SupportFragment extends Fragment {
      *
      * @param fragmentClass
      */
-    @SuppressWarnings("unchecked")
-    public <T extends Fragment> T findChildFragment(Class<T> fragmentClass) {
-        Fragment fragment = getChildFragmentManager().findFragmentByTag(fragmentClass.getName());
-        if (fragment == null) {
-            return null;
-        }
-        return (T) fragment;
+    public <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass) {
+        return mFragmentation.findStackFragment(fragmentClass, getChildFragmentManager(), true);
     }
 
 

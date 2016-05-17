@@ -212,8 +212,24 @@ public class Fragmentation {
      * find Fragment from FragmentStack
      */
     @SuppressWarnings("unchecked")
-    <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, FragmentManager fragmentManager) {
-        Fragment fragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+    <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, FragmentManager fragmentManager, boolean isChild) {
+        Fragment fragment = null;
+        if (isChild) {
+            // 如果是 查找子Fragment,则有可能是在FragmentPagerAdapter/FragmentStatePagerAdapter中,这种情况下,
+            // 它们的Tag是以android:switcher开头,所以这里我们使用下面的方式
+            List<Fragment> childFragmentList = fragmentManager.getFragments();
+            if (childFragmentList == null) return null;
+
+            for (int i = childFragmentList.size() - 1; i >= 0; i--) {
+                Fragment childFragment = childFragmentList.get(i);
+                if (childFragment.getClass().getName().equals(fragmentClass.getName())) {
+                    fragment = childFragment;
+                    break;
+                }
+            }
+        } else {
+            fragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+        }
         if (fragment == null) {
             return null;
         }
