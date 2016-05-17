@@ -1,12 +1,14 @@
 package me.yokeyword.fragmentation.anim;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.AnimRes;
 
 /**
  * Fragment动画实体类
  * Created by YoKeyword on 16/2/4.
  */
-public class FragmentAnimator {
+public class FragmentAnimator implements Parcelable{
     @AnimRes
     protected int enter;
     @AnimRes
@@ -30,6 +32,25 @@ public class FragmentAnimator {
         this.popEnter = popEnter;
         this.popExit = popExit;
     }
+
+    protected FragmentAnimator(Parcel in) {
+        enter = in.readInt();
+        exit = in.readInt();
+        popEnter = in.readInt();
+        popExit = in.readInt();
+    }
+
+    public static final Creator<FragmentAnimator> CREATOR = new Creator<FragmentAnimator>() {
+        @Override
+        public FragmentAnimator createFromParcel(Parcel in) {
+            return new FragmentAnimator(in);
+        }
+
+        @Override
+        public FragmentAnimator[] newArray(int size) {
+            return new FragmentAnimator[size];
+        }
+    };
 
     public int getEnter() {
         return enter;
@@ -61,5 +82,18 @@ public class FragmentAnimator {
 
     public void setPopExit(int popExit) {
         this.popExit = popExit;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(enter);
+        dest.writeInt(exit);
+        dest.writeInt(popEnter);
+        dest.writeInt(popExit);
     }
 }

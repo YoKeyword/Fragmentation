@@ -23,10 +23,7 @@ import me.yokeyword.fragmentation.helper.OnAnimEndListener;
  * Created by YoKeyword on 16/1/22.
  */
 public class SupportFragment extends Fragment {
-    private static final String STATE_SAVE_ENTER = "yokeyword_sate_save_enter";
-    private static final String STATE_SAVE_EXIT = "yokeyword_sate_save_exit";
-    private static final String STATE_SAVE_POP_ENTER = "yokeyword_sate_save_pop_enter";
-    private static final String STATE_SAVE_POP_EXIT = "yokeyword_sate_save_pop_exit";
+    private static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_sate_save_animator";
 
     // LaunchMode
     public static final int STANDARD = 0;
@@ -49,7 +46,7 @@ public class SupportFragment extends Fragment {
     protected SupportActivity _mActivity;
     protected Fragmentation mFragmentation;
 
-    private int mEnter, mExit, mPopEnter, mPopExit;
+    private FragmentAnimator mFragmentAnimator;
     private Animation mNoAnim, mEnterAnim, mExitAnim, mPopEnterAnim, mPopExitAnim;
 
     private boolean mNeedHideSoft;  // 隐藏软键盘
@@ -82,54 +79,47 @@ public class SupportFragment extends Fragment {
         }
 
         if (savedInstanceState == null) {
-            FragmentAnimator fragmentAnimator = onCreateFragmentAnimation();
-            if (fragmentAnimator == null) {
+            mFragmentAnimator = onCreateFragmentAnimation();
+            if (mFragmentAnimator == null) {
                 SupportActivity activity = _mActivity;
-                fragmentAnimator = activity.getFragmentAnimator();
+                mFragmentAnimator = activity.getFragmentAnimator();
             }
-
-            mEnter = fragmentAnimator.getEnter();
-            mExit = fragmentAnimator.getExit();
-            mPopEnter = fragmentAnimator.getPopEnter();
-            mPopExit = fragmentAnimator.getPopExit();
         } else {
-            mEnter = savedInstanceState.getInt(STATE_SAVE_ENTER);
-            mExit = savedInstanceState.getInt(STATE_SAVE_EXIT);
-            mPopEnter = savedInstanceState.getInt(STATE_SAVE_POP_ENTER);
-            mPopExit = savedInstanceState.getInt(STATE_SAVE_POP_EXIT);
+            mFragmentAnimator = savedInstanceState.getParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR);
         }
 
+        initAnim();
+    }
+
+    private void initAnim() {
         handleNoAnim();
 
         mNoAnim = AnimationUtils.loadAnimation(_mActivity, R.anim.no_anim);
-        mEnterAnim = AnimationUtils.loadAnimation(_mActivity, mEnter);
-        mExitAnim = AnimationUtils.loadAnimation(_mActivity, mExit);
-        mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mPopEnter);
-        mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mPopExit);
+        mEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getEnter());
+        mExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getExit());
+        mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
+        mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
     }
 
     private void handleNoAnim() {
-        if (mEnter == 0) {
-            mEnter = R.anim.no_anim;
+        if (mFragmentAnimator.getEnter() == 0) {
+            mFragmentAnimator.setEnter(R.anim.no_anim);
         }
-        if (mExit == 0) {
-            mExit = R.anim.no_anim;
+        if (mFragmentAnimator.getExit() == 0) {
+            mFragmentAnimator.setExit(R.anim.no_anim);
         }
-        if (mPopEnter == 0) {
-            mPopEnter = R.anim.no_anim;
+        if (mFragmentAnimator.getPopEnter() == 0) {
+            mFragmentAnimator.setPopEnter(R.anim.no_anim);
         }
-        if (mPopExit == 0) {
-            mPopExit = R.anim.pop_exit_no_anim;
+        if (mFragmentAnimator.getPopExit() == 0) {
+            mFragmentAnimator.setPopExit(R.anim.pop_exit_no_anim);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SAVE_ENTER, mEnter);
-        outState.putInt(STATE_SAVE_EXIT, mExit);
-        outState.putInt(STATE_SAVE_POP_ENTER, mPopEnter);
-        outState.putInt(STATE_SAVE_POP_EXIT, mPopExit);
+        outState.putParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
     }
 
     @Override
