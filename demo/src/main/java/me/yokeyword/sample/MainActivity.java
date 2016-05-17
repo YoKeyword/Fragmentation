@@ -89,12 +89,6 @@ public class MainActivity extends SupportActivity
     }
 
     @Override
-    protected void onHandleSaveInstancState(Bundle savedInstanceState) {
-        // 复写的时候 下面的super一定要删掉
-//        super.onHandleSaveInstancState(savedInstanceState);
-    }
-
-    @Override
     public int setContainerId() {
         return R.id.fl_container;
     }
