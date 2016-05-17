@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
@@ -34,7 +33,7 @@ public abstract class SupportActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFragmentation = new Fragmentation(this, setContainerId());
+        mFragmentation = getFragmentation();
 
         mFragmentAnimator = onCreateFragmentAnimator();
 
@@ -80,6 +79,9 @@ public abstract class SupportActivity extends AppCompatActivity {
     protected abstract int setContainerId();
 
     Fragmentation getFragmentation() {
+        if (mFragmentation == null) {
+            mFragmentation = new Fragmentation(this, setContainerId());
+        }
         return mFragmentation;
     }
 
@@ -143,7 +145,7 @@ public abstract class SupportActivity extends AppCompatActivity {
      * @param fragmentClass
      */
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getSupportFragmentManager());
+        return mFragmentation.findStackFragment(fragmentClass, getSupportFragmentManager(), false);
     }
 
     /**
@@ -175,15 +177,15 @@ public abstract class SupportActivity extends AppCompatActivity {
     }
 
     public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
-        mFragmentation.dispatchTransaction(getTopFragment(), toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+        mFragmentation.dispatchStartTransaction(getTopFragment(), toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
     }
 
     public void startForResult(SupportFragment to, int requestCode) {
-        mFragmentation.dispatchTransaction(getTopFragment(), to, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD);
+        mFragmentation.dispatchStartTransaction(getTopFragment(), to, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD);
     }
 
     public void startWithFinish(SupportFragment to) {
-        mFragmentation.dispatchTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_FINISH);
+        mFragmentation.dispatchStartTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
     void preparePopMultiple() {

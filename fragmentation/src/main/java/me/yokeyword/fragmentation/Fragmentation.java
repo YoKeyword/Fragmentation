@@ -34,7 +34,7 @@ public class Fragmentation {
     public static final int TYPE_ADD = 0;
     public static final int TYPE_ADD_FINISH = 1;
 
-    private static final int CLICK_SPACE_TIME = 400;
+    public static final long CLICK_DEBOUNCE_TIME = 300L;
     private long mCurrentTime;
 
     private SupportActivity mActivity;
@@ -60,9 +60,9 @@ public class Fragmentation {
      * @param launchMode
      * @param type
      */
-    void dispatchTransaction(SupportFragment from, SupportFragment to, int requestCode,
-                             int launchMode, int type) {
-        if (System.currentTimeMillis() - mCurrentTime < CLICK_SPACE_TIME) {
+    void dispatchStartTransaction(SupportFragment from, SupportFragment to, int requestCode,
+                                  int launchMode, int type) {
+        if (System.currentTimeMillis() - mCurrentTime < CLICK_DEBOUNCE_TIME) {
             return;
         }
         mCurrentTime = System.currentTimeMillis();

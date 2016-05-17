@@ -3,9 +3,7 @@ package me.yokeyword.fragmentation;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,11 +15,8 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
-import me.yokeyword.fragmentation.helper.FragmentationNullException;
 import me.yokeyword.fragmentation.helper.OnAnimEndListener;
 
 /**
@@ -40,6 +35,7 @@ public class SupportFragment extends Fragment {
 
     public static final int RESULT_CANCELED = 0;
     public static final int RESULT_OK = -1;
+    private static final long SHOW_SPACE = 200L;
 
     private int mRequestCode = 0, mResultCode = RESULT_CANCELED;
     private Bundle mResultBundle;
@@ -65,15 +61,15 @@ public class SupportFragment extends Fragment {
 
         if (activity instanceof SupportActivity) {
             this._mActivity = (SupportActivity) activity;
+            mFragmentation = _mActivity.getFragmentation();
         } else {
-            throw new ClassCastException(activity.toString() + "must extends SupportActivity!");
+            throw new RuntimeException(activity.toString() + "must extends SupportActivity!");
         }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         mIMM = (InputMethodManager) _mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -144,8 +140,6 @@ public class SupportFragment extends Fragment {
         initFragmentBackground(view);
         assert view != null;
         view.setClickable(true);
-
-        mFragmentation = _mActivity.getFragmentation();
 
         // 解决栈内有嵌套Fragment时,APP被强杀后恢复BUG问题(顶层Fragment为hidden状态)
         if (savedInstanceState != null) {
@@ -241,6 +235,15 @@ public class SupportFragment extends Fragment {
     }
 
     /**
+     * (因为防抖动以及事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop方法,请使用该方法把任务入队
+     *
+     * @param runnable 需要执行的任务
+     */
+    protected void enqueueAction(Runnable runnable) {
+        _mActivity.getHandler().postDelayed(runnable, Fragmentation.CLICK_DEBOUNCE_TIME);
+    }
+
+    /**
      * 隐藏软键盘
      */
     protected void hideSoftInput() {
@@ -261,7 +264,7 @@ public class SupportFragment extends Fragment {
             public void run() {
                 mIMM.showSoftInput(view, InputMethodManager.SHOW_FORCED);
             }
-        }, 200);
+        }, SHOW_SPACE);
     }
 
     @Override
@@ -322,9 +325,6 @@ public class SupportFragment extends Fragment {
      * @param fragmentClass
      */
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("findFragment()");
-        }
         return mFragmentation.findStackFragment(fragmentClass, getFragmentManager());
     }
 
@@ -349,9 +349,6 @@ public class SupportFragment extends Fragment {
      * @return
      */
     public SupportFragment getTopFragment() {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("getTopFragment()");
-        }
         return mFragmentation.getTopFragment(getFragmentManager());
     }
 
@@ -361,9 +358,6 @@ public class SupportFragment extends Fragment {
      * @return
      */
     public SupportFragment getTopChildFragment() {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("getTopFragment()");
-        }
         return mFragmentation.getTopFragment(getChildFragmentManager());
     }
 
@@ -387,7 +381,7 @@ public class SupportFragment extends Fragment {
      * @param includeSelf   是否包含该fragment
      */
     public void popTo(Class<?> fragmentClass, boolean includeSelf) {
-        mFragmentation.popTo(fragmentClass, includeSelf, null, getFragmentManager());
+        popTo(fragmentClass, includeSelf, null);
     }
 
     /**
@@ -401,27 +395,16 @@ public class SupportFragment extends Fragment {
         start(toFragment, STANDARD);
     }
 
-    public void start(SupportFragment toFragment, @LaunchMode int launchMode) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("start()");
-        }
-
-        mFragmentation.dispatchTransaction(this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+    public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
+        mFragmentation.dispatchStartTransaction(this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
     }
 
     public void startForResult(SupportFragment to, int requestCode) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("startForResult()");
-        }
-
-        mFragmentation.dispatchTransaction(this, to, requestCode, STANDARD, Fragmentation.TYPE_ADD);
+        mFragmentation.dispatchStartTransaction(this, to, requestCode, STANDARD, Fragmentation.TYPE_ADD);
     }
 
     public void startWithFinish(SupportFragment to) {
-        if (mFragmentation == null) {
-            throw new FragmentationNullException("startWithFinish()");
-        }
-        mFragmentation.dispatchTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_FINISH);
+        mFragmentation.dispatchStartTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_FINISH);
     }
 
     public void startChildFragment(int childContainer, Fragment childFragment, boolean addToBack) {
@@ -453,8 +436,9 @@ public class SupportFragment extends Fragment {
 
     /**
      * 设置Result数据 (通过startForResult)
-     * @param resultCode  resultCode
-     * @param bundle    设置Result数据
+     *
+     * @param resultCode resultCode
+     * @param bundle     设置Result数据
      */
     public void setFramgentResult(int resultCode, Bundle bundle) {
         mResultCode = resultCode;
@@ -470,9 +454,10 @@ public class SupportFragment extends Fragment {
 
     /**
      * 接受Result数据 (通过startForResult的返回数据)
-     * @param requestCode   requestCode
-     * @param resultCode    resultCode
-     * @param data          Result数据
+     *
+     * @param requestCode requestCode
+     * @param resultCode  resultCode
+     * @param data        Result数据
      */
     protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {
     }
@@ -487,6 +472,7 @@ public class SupportFragment extends Fragment {
 
     /**
      * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, TargetFragment回调该方法
+     *
      * @param args 通过上个Fragment的putNewBundle(Bundle newBundle)时传递的数据
      */
     protected void onNewBundle(Bundle args) {
