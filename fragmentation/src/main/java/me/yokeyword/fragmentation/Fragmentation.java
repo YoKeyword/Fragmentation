@@ -48,7 +48,7 @@ public class Fragmentation {
         this.mContainerId = containerId;
         this.mFragmentManager = activity.getSupportFragmentManager();
 
-        mHandler = new Handler();
+        mHandler = mActivity.getHandler();
     }
 
     /**
