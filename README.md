@@ -39,7 +39,7 @@ A powerful library that manage Fragment for Android!
 1、项目下app的build.gradle中依赖：
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.5.5'
+compile 'me.yokeyword:fragmentation:0.5.7'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.0'
 ````
@@ -80,8 +80,7 @@ public class MainActivity extends SupportActivity {
         // new FragmentAnimator(enter,exit,popEnter,popExit)的4个参数与官方setCustomAnimations(enter,exit,popEnter,popExit)
         // 并不一致，对于官方来说Fragment出栈时的动画对应的是popExit（即第4个参数）
         // 对于FragmentAnimator来说Fragment出栈时的动画对应的是exit参数（即第2个参数）
-        
-        // 这里和官方不一致的原因主要出于我们绝大多数人认为enter,exit才是对应进出栈动画的想法考虑的。
+        // 这里和官方不一致的原因主要出于我们绝大多数人认为enter,exit才是对应进出栈动画的角度考虑的。
     }
 ````
 3、Fragment继承SupportFragment
@@ -162,6 +161,7 @@ findChildFragment(Class fragmentClass);
 ````
 
 **更多**
+
 隐藏/显示 输入法:
 ````java
 // 隐藏软键盘 一般用在onHiden里
