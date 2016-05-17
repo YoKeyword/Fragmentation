@@ -327,19 +327,20 @@ public class Fragmentation {
 
 
     /**
-     * 获得栈顶Fragment
+     * 获得栈顶SupportFragment
      *
      * @return
      */
     SupportFragment getTopFragment(FragmentManager fragmentManager) {
-        int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            String tag = fragmentManager.getBackStackEntryAt(count - 1).getName();
-            Fragment fragment = fragmentManager.findFragmentByTag(tag);
-            if (fragment != null) {
-                if (fragment instanceof SupportFragment) {
-                    return (SupportFragment) fragment;
-                } else {
+        List<Fragment> fragmentList = fragmentManager.getFragments();
+        if (fragmentList == null) return null;
+
+        for (int i = fragmentList.size() - 1; i >= 0; i--) {
+            Fragment fragment = fragmentList.get(i);
+            if (fragment instanceof SupportFragment) {
+                return (SupportFragment) fragment;
+            } else {
+                if (fragment != null) {
                     throw new RuntimeException("The top Fragment is not a SupportFragment!");
                 }
             }
