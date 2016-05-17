@@ -235,7 +235,7 @@ public class SupportFragment extends Fragment {
     }
 
     /**
-     * (因为防抖动以及事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop方法,请使用该方法把任务入队
+     * (因为防抖动以及事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop 方法,请使用该方法把你的任务入队
      *
      * @param runnable 需要执行的任务
      */
