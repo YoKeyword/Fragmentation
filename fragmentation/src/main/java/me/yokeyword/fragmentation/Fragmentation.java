@@ -195,17 +195,16 @@ public class Fragmentation {
      */
     private Fragment getPreFragment(Fragment fragment) {
         List<Fragment> fragmentList = mFragmentManager.getFragments();
-        Fragment preFragment = null;
-        if (fragmentList != null) {
-            int index = fragmentList.indexOf(fragment);
-            for (int i = index - 1; i >= 0; i--) {
-                preFragment = fragmentList.get(i);
-                if (preFragment != null) {
-                    break;
-                }
+        if (fragmentList == null) return null;
+
+        int index = fragmentList.indexOf(fragment);
+        for (int i = index - 1; i >= 0; i--) {
+            Fragment preFragment = fragmentList.get(i);
+            if (preFragment instanceof SupportFragment) {
+                return preFragment;
             }
         }
-        return preFragment;
+        return null;
     }
 
     /**
@@ -222,7 +221,7 @@ public class Fragmentation {
 
             for (int i = childFragmentList.size() - 1; i >= 0; i--) {
                 Fragment childFragment = childFragmentList.get(i);
-                if (childFragment.getClass().getName().equals(fragmentClass.getName())) {
+                if (childFragment != null && childFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = childFragment;
                     break;
                 }
@@ -355,10 +354,6 @@ public class Fragmentation {
             Fragment fragment = fragmentList.get(i);
             if (fragment instanceof SupportFragment) {
                 return (SupportFragment) fragment;
-            } else {
-                if (fragment != null) {
-                    throw new RuntimeException("The top Fragment is not a SupportFragment!");
-                }
             }
         }
         return null;
