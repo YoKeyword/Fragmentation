@@ -37,10 +37,12 @@ public abstract class SupportActivity extends AppCompatActivity {
 
         mFragmentAnimator = onCreateFragmentAnimator();
 
-        onHandleSaveInstancState(savedInstanceState);
+        if (restoreInstanceState()) {
+            processRestoreInstanceState(savedInstanceState);
+        }
     }
 
-    protected void onHandleSaveInstancState(Bundle savedInstanceState) {
+    private void processRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
@@ -62,6 +64,15 @@ public abstract class SupportActivity extends AppCompatActivity {
                 ft.commit();
             }
         }
+    }
+
+    /**
+     * 内存重启后,是否恢复Fragment状态
+     *
+     * @return
+     */
+    protected boolean restoreInstanceState() {
+        return true;
     }
 
     /**
@@ -228,7 +239,7 @@ public abstract class SupportActivity extends AppCompatActivity {
                 if (i == 0) {
                     sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n");
                     sb.append("═══════════════════════════════════════════════════════════════════════════════════");
-                }else{
+                } else {
                     sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n\n");
                 }
             } else if (i == 0) {
