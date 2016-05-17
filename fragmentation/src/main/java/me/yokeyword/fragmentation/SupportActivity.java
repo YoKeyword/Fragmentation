@@ -225,7 +225,12 @@ public abstract class SupportActivity extends AppCompatActivity {
 
             if (i == fragmentRecordList.size() - 1) {
                 sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
-                sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n\n");
+                if (i == 0) {
+                    sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n");
+                    sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+                }else{
+                    sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n\n");
+                }
             } else if (i == 0) {
                 sb.append("\t栈底\t\t\t" + fragmentRecord.fragmentName + "\n");
                 sb.append("═══════════════════════════════════════════════════════════════════════════════════");
