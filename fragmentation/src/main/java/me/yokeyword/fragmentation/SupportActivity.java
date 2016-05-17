@@ -67,7 +67,7 @@ public abstract class SupportActivity extends AppCompatActivity {
     }
 
     /**
-     * 内存重启后,是否恢复Fragment状态
+     * 内存重启后,是否让Fragmentation帮你恢复Fragment状态
      *
      * @return
      */

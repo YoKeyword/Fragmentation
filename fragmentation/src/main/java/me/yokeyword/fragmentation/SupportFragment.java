@@ -131,7 +131,7 @@ public class SupportFragment extends Fragment {
         assert view != null;
         view.setClickable(true);
 
-        // 解决栈内有嵌套Fragment时,APP被强杀后恢复BUG问题(顶层Fragment为hidden状态)
+        // 解决某些情况栈内有嵌套Fragment时,APP被强杀后恢复BUG问题(顶层Fragment为hidden状态)
         if (savedInstanceState != null) {
             _mActivity.getHandler().post(new Runnable() {
                 @Override
