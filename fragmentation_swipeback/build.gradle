@@ -19,7 +19,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    provided 'com.android.support:appcompat-v7:23.1.1'
+    provided 'com.android.support:appcompat-v7:23.3.0'
     provided project(':fragmentation')
 }
