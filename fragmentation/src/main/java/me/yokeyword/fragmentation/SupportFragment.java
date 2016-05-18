@@ -327,6 +327,14 @@ public class SupportFragment extends Fragment {
         return mFragmentation.findStackFragment(fragmentClass, getChildFragmentManager(), true);
     }
 
+    /**
+     * 得到位于栈顶的Fragment
+     *
+     * @return
+     */
+    public SupportFragment getPreFragment(Fragment from) {
+        return mFragmentation.getPreFragment(from);
+    }
 
     /**
      * 得到位于栈顶的Fragment

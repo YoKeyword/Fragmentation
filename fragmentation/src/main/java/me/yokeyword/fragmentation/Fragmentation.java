@@ -190,10 +190,12 @@ public class Fragmentation {
     }
 
     /**
-     * @param fragment
+     * 获取目标Fragment的前一个Fragment
+     *
+     * @param fragment 目标Fragment
      * @return
      */
-    private Fragment getPreFragment(Fragment fragment) {
+    SupportFragment getPreFragment(Fragment fragment) {
         List<Fragment> fragmentList = mFragmentManager.getFragments();
         if (fragmentList == null) return null;
 
@@ -201,7 +203,7 @@ public class Fragmentation {
         for (int i = index - 1; i >= 0; i--) {
             Fragment preFragment = fragmentList.get(i);
             if (preFragment instanceof SupportFragment) {
-                return preFragment;
+                return (SupportFragment) preFragment;
             }
         }
         return null;
