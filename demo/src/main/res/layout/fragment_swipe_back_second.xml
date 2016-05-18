@@ -12,8 +12,19 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="我是SwipeBackActivity\n里的Fragment\n\n点击屏幕跳转\n边缘滑动返回"
+        android:text="我是SwipeBackActivity\n里的Fragment\n\n"
         android:textSize="28sp"/>
+
+
+    <TextView
+        android:id="@+id/tv_btn"
+        android:layout_width="wrap_content"
+        android:text="点击我跳转\n边缘退出"
+        android:textSize="28sp"
+        android:layout_marginBottom="50dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/btn_set"

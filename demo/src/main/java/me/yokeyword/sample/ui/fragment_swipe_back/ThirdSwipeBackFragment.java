@@ -37,7 +37,7 @@ public class ThirdSwipeBackFragment extends BaseSwipeBackFragment {
         View view = inflater.inflate(R.layout.fragment_swipe_back_third, container, false);
 
         initToolbar(view);
-        view.findViewById(R.id.tv).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.tv_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start(RecyclerSwipeBackFragment.newInstance());

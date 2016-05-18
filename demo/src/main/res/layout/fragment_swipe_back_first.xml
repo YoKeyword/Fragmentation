@@ -8,9 +8,19 @@
     <TextView
         android:id="@+id/tv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
         android:gravity="center"
-        android:text="我是SwipeBackActivity\n里的Fragment\n\n点击屏幕跳转\n边缘右滑退出Activity"
+        android:text="我是SwipeBackActivity\n里的Fragment\n\n"
         android:textSize="28sp"/>
+
+    <TextView
+        android:id="@+id/tv_btn"
+        android:layout_width="wrap_content"
+        android:text="点击我跳转\n边缘右滑退出"
+        android:textSize="28sp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

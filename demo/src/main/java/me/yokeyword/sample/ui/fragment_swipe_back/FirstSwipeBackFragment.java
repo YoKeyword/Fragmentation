@@ -41,7 +41,7 @@ public class FirstSwipeBackFragment extends SwipeBackFragment {
             }
         });
 
-        view.findViewById(R.id.tv).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.tv_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start(SecondSwipeBackFragment.newInstance());

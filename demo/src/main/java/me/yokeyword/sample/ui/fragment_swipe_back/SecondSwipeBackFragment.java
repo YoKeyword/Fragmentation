@@ -42,7 +42,7 @@ public class SecondSwipeBackFragment extends BaseSwipeBackFragment {
 
         initToolbar(view);
 
-        view.findViewById(R.id.tv).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.tv_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start(ThirdSwipeBackFragment.newInstance());
