@@ -162,6 +162,11 @@ public class SupportFragment extends Fragment {
         return background;
     }
 
+    long getEnterAnimDuration() {
+        return mEnterAnim.getDuration();
+    }
+
+
     long getExitAnimDuration() {
         return mExitAnim.getDuration();
     }
@@ -230,7 +235,7 @@ public class SupportFragment extends Fragment {
      * @param runnable 需要执行的任务
      */
     protected void enqueueAction(Runnable runnable) {
-        _mActivity.getHandler().postDelayed(runnable, Fragmentation.CLICK_DEBOUNCE_TIME);
+        _mActivity.getHandler().postDelayed(runnable, getEnterAnimDuration());
     }
 
     /**

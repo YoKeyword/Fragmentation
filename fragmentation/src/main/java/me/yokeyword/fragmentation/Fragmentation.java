@@ -43,8 +43,6 @@ public class Fragmentation {
 
     private Handler mHandler;
 
-    private String mLastFragmentName = "";
-
     public Fragmentation(SupportActivity activity, int containerId) {
         this.mActivity = activity;
         this.mContainerId = containerId;
@@ -64,11 +62,9 @@ public class Fragmentation {
      */
     void dispatchStartTransaction(SupportFragment from, SupportFragment to, int requestCode,
                                   int launchMode, int type) {
-        String toName = to.getClass().getName();
-        if (mLastFragmentName.equals(toName) && System.currentTimeMillis() - mCurrentTime < CLICK_DEBOUNCE_TIME) {
+        if (System.currentTimeMillis() - mCurrentTime < CLICK_DEBOUNCE_TIME) {
             return;
         }
-        mLastFragmentName = toName;
         mCurrentTime = System.currentTimeMillis();
 
         if (from != null) {
