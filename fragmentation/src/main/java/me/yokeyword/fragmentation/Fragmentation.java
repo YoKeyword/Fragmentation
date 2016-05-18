@@ -29,7 +29,7 @@ public class Fragmentation {
     static final String ARG_RESULT_BUNDLE = "fragmentation_arg_bundle";
     static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
 
-    public static final long BUFFER_TIME = 200L;
+    public static final long BUFFER_TIME = 300L;
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_ADD_FINISH = 1;
@@ -42,6 +42,8 @@ public class Fragmentation {
     private int mContainerId;
 
     private Handler mHandler;
+
+    private String mLastFragmentName = "";
 
     public Fragmentation(SupportActivity activity, int containerId) {
         this.mActivity = activity;
@@ -62,9 +64,11 @@ public class Fragmentation {
      */
     void dispatchStartTransaction(SupportFragment from, SupportFragment to, int requestCode,
                                   int launchMode, int type) {
-        if (System.currentTimeMillis() - mCurrentTime < CLICK_DEBOUNCE_TIME) {
+        String toName = to.getClass().getName();
+        if (mLastFragmentName.equals(toName) && System.currentTimeMillis() - mCurrentTime < CLICK_DEBOUNCE_TIME) {
             return;
         }
+        mLastFragmentName = toName;
         mCurrentTime = System.currentTimeMillis();
 
         if (from != null) {
