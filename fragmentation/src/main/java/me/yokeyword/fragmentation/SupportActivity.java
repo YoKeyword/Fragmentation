@@ -47,17 +47,17 @@ public abstract class SupportActivity extends AppCompatActivity {
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
             if (fragments != null && fragments.size() > 0) {
-                boolean showFlag = false;
 
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 for (int i = fragments.size() - 1; i >= 0; i--) {
                     Fragment fragment = fragments.get(i);
-                    if (fragment != null) {
-                        if (!showFlag) {
-                            ft.show(fragments.get(i));
-                            showFlag = true;
+
+                    if (fragment instanceof SupportFragment) {
+                        SupportFragment supportFragment = (SupportFragment) fragment;
+                        if (supportFragment.isSupportHidden()) {
+                            ft.hide(supportFragment);
                         } else {
-                            ft.hide(fragments.get(i));
+                            ft.show(supportFragment);
                         }
                     }
                 }

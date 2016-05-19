@@ -23,7 +23,8 @@ import me.yokeyword.fragmentation.helper.OnAnimEndListener;
  * Created by YoKeyword on 16/1/22.
  */
 public class SupportFragment extends Fragment {
-    private static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_sate_save_animator";
+    private static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
+    private static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
 
     // LaunchMode
     public static final int STANDARD = 0;
@@ -51,6 +52,8 @@ public class SupportFragment extends Fragment {
 
     private boolean mNeedHideSoft;  // 隐藏软键盘
     protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
+
+    private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
 
     @Override
     public void onAttach(Activity activity) {
@@ -86,6 +89,7 @@ public class SupportFragment extends Fragment {
             }
         } else {
             mFragmentAnimator = savedInstanceState.getParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR);
+            mIsHidden = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
         }
 
         initAnim();
@@ -120,6 +124,11 @@ public class SupportFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
+        outState.putBoolean(FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
+    }
+
+    boolean isSupportHidden() {
+        return mIsHidden;
     }
 
     @Override
@@ -130,20 +139,6 @@ public class SupportFragment extends Fragment {
         initFragmentBackground(view);
         assert view != null;
         view.setClickable(true);
-
-        // 解决某些情况栈内有嵌套Fragment时,APP被强杀后恢复BUG问题(顶层Fragment为hidden状态)
-        if (savedInstanceState != null) {
-            _mActivity.getHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    if (SupportFragment.this == getTopFragment() && isHidden()) {
-                        getFragmentManager().beginTransaction()
-                                .show(SupportFragment.this)
-                                .commit();
-                    }
-                }
-            });
-        }
     }
 
     protected void initFragmentBackground(View view) {
