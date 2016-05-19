@@ -18,7 +18,7 @@ import me.yokeyword.sample.ui.BaseBackFragment;
 /**
  * Created by YoKeyword on 16/2/14.
  */
-public class RegisterFragment extends BaseBackFragment{
+public class RegisterFragment extends BaseBackFragment {
     private EditText mEtAccount, mEtPassword, mEtPasswordConfirm;
     private Button mBtnRegister;
     private LoginFragment.OnLoginSuccessListener mOnLoginSuccessListener;
@@ -52,7 +52,7 @@ public class RegisterFragment extends BaseBackFragment{
     }
 
     private void initView(View view) {
-        Toolbar toolbar = (Toolbar)view.findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mEtAccount = (EditText) view.findViewById(R.id.et_account);
         mEtPassword = (EditText) view.findViewById(R.id.et_password);
         mEtPasswordConfirm = (EditText) view.findViewById(R.id.et_password_confirm);
@@ -90,9 +90,11 @@ public class RegisterFragment extends BaseBackFragment{
     }
 
     @Override
-    protected void onHidden() {
-        super.onHidden();
-        hideSoftInput();
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            hideSoftInput();
+        }
     }
 
     @Override

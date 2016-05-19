@@ -84,8 +84,10 @@ public class ModifyDetailFragment extends BaseBackFragment {
     }
 
     @Override
-    protected void onHidden() {
-        super.onHidden();
-        hideSoftInput();
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            hideSoftInput();
+        }
     }
 }
