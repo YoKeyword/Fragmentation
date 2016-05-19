@@ -263,17 +263,6 @@ public class SupportFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-
-        if (hidden) {
-            onHidden();
-        } else {
-            onShow();
-        }
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         if (mNeedHideSoft) {
@@ -281,24 +270,11 @@ public class SupportFragment extends Fragment {
         }
     }
 
-    /**
-     * 显示
-     */
-    protected void onShow() {
-    }
-
-    /**
-     * 隐藏 不可见
-     */
-    protected void onHidden() {
-    }
-
 
     @IntDef({STANDARD, SINGLETOP, SINGLETASK})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchMode {
     }
-
 
     /**
      * 按下返回键触发
