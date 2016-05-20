@@ -82,8 +82,7 @@ public class SupportFragment extends Fragment {
         if (savedInstanceState == null) {
             mFragmentAnimator = onCreateFragmentAnimation();
             if (mFragmentAnimator == null) {
-                SupportActivity activity = _mActivity;
-                mFragmentAnimator = activity.getFragmentAnimator();
+                mFragmentAnimator = _mActivity.getFragmentAnimator();
             }
         } else {
             mFragmentAnimator = savedInstanceState.getParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR);
@@ -174,7 +173,7 @@ public class SupportFragment extends Fragment {
      * 设定当前Fragmemt动画,优先级比在SupportActivity里高
      */
     protected FragmentAnimator onCreateFragmentAnimation() {
-        return null;
+        return _mActivity.getFragmentAnimator();
     }
 
     @Override
@@ -380,8 +379,8 @@ public class SupportFragment extends Fragment {
         mFragmentation.dispatchStartTransaction(this, to, requestCode, STANDARD, Fragmentation.TYPE_ADD);
     }
 
-    public void startWithFinish(SupportFragment to) {
-        mFragmentation.dispatchStartTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_FINISH);
+    public void startWithPop(SupportFragment to) {
+        mFragmentation.dispatchStartTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
     }
 
     public void startChildFragment(int childContainer, Fragment childFragment, boolean addToBack) {

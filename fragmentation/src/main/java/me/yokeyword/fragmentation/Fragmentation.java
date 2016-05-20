@@ -84,11 +84,11 @@ public class Fragmentation {
             case TYPE_ADD:
                 start(from, to);
                 break;
-            case TYPE_ADD_FINISH:
+            case TYPE_ADD_WITH_POP:
                 if (from != null) {
                     startWithFinish(from, to);
                 } else {
-                    throw new RuntimeException("startWithFinish(): getTopFragment() is null");
+                    throw new RuntimeException("startWithPop(): getTopFragment() is null");
                 }
                 break;
         }

@@ -70,7 +70,7 @@ public class CycleFragment extends BaseBackFragment {
         mBtnNextWithFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWithFinish(CycleFragment.newInstance(mNumber + 1));
+                startWithPop(CycleFragment.newInstance(mNumber + 1));
             }
         });
     }

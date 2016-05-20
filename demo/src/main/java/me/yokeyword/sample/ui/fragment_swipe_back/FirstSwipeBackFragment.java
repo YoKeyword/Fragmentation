@@ -13,7 +13,7 @@ import me.yokeyword.sample.R;
 /**
  * Created by YoKeyword on 16/4/19.
  */
-public class FirstSwipeBackFragment extends SwipeBackFragment {
+public class FirstSwipeBackFragment extends BaseSwipeBackFragment {
     private Toolbar mToolbar;
 
     public static FirstSwipeBackFragment newInstance() {
@@ -33,13 +33,7 @@ public class FirstSwipeBackFragment extends SwipeBackFragment {
 
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mToolbar.setTitle("SwipeBackActivity的Fragment");
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                _mActivity.finish();
-            }
-        });
+        _initToolbar(mToolbar);
 
         view.findViewById(R.id.tv_btn).setOnClickListener(new View.OnClickListener() {
             @Override

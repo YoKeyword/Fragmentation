@@ -195,8 +195,8 @@ public abstract class SupportActivity extends AppCompatActivity {
         mFragmentation.dispatchStartTransaction(getTopFragment(), to, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD);
     }
 
-    public void startWithFinish(SupportFragment to) {
-        mFragmentation.dispatchStartTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_FINISH);
+    public void startWithPop(SupportFragment to) {
+        mFragmentation.dispatchStartTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
     }
 
     void preparePopMultiple() {
