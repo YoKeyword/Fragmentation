@@ -201,16 +201,13 @@ bundle.putString("title", "xxxx");
 setFramgentResult(RESULT_OK, bundle);
 ````
 
-下面是以一个singleTask模式`start`一个Fragment的标准代码：
+下面是以一个singleTask模式`start`一个已存在的Fragment的标准代码：
 ````java
 HomeFragment fragment = findFragment(HomeFragment.class);
-if (fragment == null) {
-    fragment = HomeFragment.newInstance();
-}else{
-    Bundle newBundle = new Bundle();
-    // 传递的bundle数据，会调用目标Fragment的onNewBundle(Bundle newBundle)方法
-    fragment.putNewBundle(newBundle);
-}
+Bundle newBundle = new Bundle();
+// 传递的bundle数据，会调用目标Fragment的onNewBundle(Bundle newBundle)方法
+fragment.putNewBundle(newBundle);
+
 // homeFragment以SingleTask方式启动
 start(fragment, SupportFragment.SINGLETASK);
 
