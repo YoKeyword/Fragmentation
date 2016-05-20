@@ -196,7 +196,7 @@ public class Fragmentation {
      * @return
      */
     SupportFragment getPreFragment(Fragment fragment) {
-        List<Fragment> fragmentList = mFragmentManager.getFragments();
+        List<Fragment> fragmentList = fragment.getFragmentManager().getFragments();
         if (fragmentList == null) return null;
 
         int index = fragmentList.indexOf(fragment);

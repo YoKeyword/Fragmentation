@@ -71,8 +71,6 @@ public class SupportFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mIMM = (InputMethodManager) _mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-
         Bundle bundle = getArguments();
         if (bundle != null) {
             mRequestCode = bundle.getInt(Fragmentation.ARG_REQUEST_CODE, 0);
@@ -137,6 +135,7 @@ public class SupportFragment extends Fragment {
 
         View view = getView();
         initFragmentBackground(view);
+        // 防止某种情况 上一个Fragment仍可点击问题
         assert view != null;
         view.setClickable(true);
     }
@@ -238,15 +237,17 @@ public class SupportFragment extends Fragment {
      */
     protected void hideSoftInput() {
         if (getView() != null) {
+            initImm();
             mIMM.hideSoftInputFromWindow(getView().getWindowToken(), 0);
         }
     }
 
     /**
-     * 显示软键盘
+     * 显示软键盘,调用该方法后,会在onPause时自动隐藏软键盘
      */
     protected void showSoftInput(final View view) {
         if (view == null) return;
+        initImm();
         view.requestFocus();
         mNeedHideSoft = true;
         view.postDelayed(new Runnable() {
@@ -256,6 +257,13 @@ public class SupportFragment extends Fragment {
             }
         }, SHOW_SPACE);
     }
+
+    private void initImm() {
+        if (mIMM == null) {
+            mIMM = (InputMethodManager) _mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
+    }
+
 
     @Override
     public void onPause() {
@@ -308,8 +316,8 @@ public class SupportFragment extends Fragment {
      *
      * @return
      */
-    public SupportFragment getPreFragment(Fragment from) {
-        return mFragmentation.getPreFragment(from);
+    public SupportFragment getPreFragment() {
+        return mFragmentation.getPreFragment(this);
     }
 
     /**
