@@ -17,7 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
-import me.yokeyword.fragmentation.helper.OnAnimEndListener;
+import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 
 /**
  * Created by YoKeyword on 16/1/22.
@@ -41,8 +41,7 @@ public class SupportFragment extends Fragment {
     private boolean mIsRoot;
 
     private InputMethodManager mIMM;
-    private boolean mNeedAnimListener;
-    private OnAnimEndListener mOnAnimEndListener;
+    private OnEnterAnimEndListener mOnAnimEndListener;
 
     protected SupportActivity _mActivity;
     protected Fragmentation mFragmentation;
@@ -100,6 +99,9 @@ public class SupportFragment extends Fragment {
         mExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getExit());
         mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
         mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
+
+        mEnterAnim.setAnimationListener(new DebounceAnimListener(true));
+        mPopEnterAnim.setAnimationListener(new DebounceAnimListener(false));
     }
 
     private void handleNoAnim() {
@@ -185,28 +187,6 @@ public class SupportFragment extends Fragment {
             if (enter) {
                 if (mIsRoot) {
                     return mNoAnim;
-                }
-                if (mNeedAnimListener) {
-                    mEnterAnim.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            mEnterAnim.setAnimationListener(null);
-                            mNeedAnimListener = false;
-                            if (mOnAnimEndListener != null) {
-                                mOnAnimEndListener.onAnimationEnd();
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
                 }
                 return mEnterAnim;
             } else {
@@ -470,8 +450,36 @@ public class SupportFragment extends Fragment {
         return mResultBundle;
     }
 
-    void setNeedAnimListener(boolean needAnimListener, OnAnimEndListener onAnimEndListener) {
-        this.mNeedAnimListener = needAnimListener;
+    void setEnterAnimEndListener(OnEnterAnimEndListener onAnimEndListener) {
         this.mOnAnimEndListener = onAnimEndListener;
+    }
+
+    /**
+     * 为了防抖动(点击过快)的动画监听器
+     */
+    private class DebounceAnimListener implements Animation.AnimationListener {
+        boolean isEnterAnim;
+
+        public DebounceAnimListener(boolean isEnterAnim) {
+            this.isEnterAnim = isEnterAnim;
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+            _mActivity.setFragmentClickable(false);
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            if (isEnterAnim && mOnAnimEndListener != null) {
+                mOnAnimEndListener.onAnimationEnd();
+            }
+            _mActivity.setFragmentClickable(true);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
     }
 }

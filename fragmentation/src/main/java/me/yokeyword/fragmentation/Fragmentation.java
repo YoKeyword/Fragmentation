@@ -15,8 +15,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.yokeyword.fragmentation.helper.FragmentRecord;
-import me.yokeyword.fragmentation.helper.OnAnimEndListener;
+import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
+import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 
 
 /**
@@ -32,10 +32,7 @@ public class Fragmentation {
     public static final long BUFFER_TIME = 300L;
 
     public static final int TYPE_ADD = 0;
-    public static final int TYPE_ADD_FINISH = 1;
-
-    public static final long CLICK_DEBOUNCE_TIME = 300L;
-    private long mCurrentTime;
+    public static final int TYPE_ADD_WITH_POP = 1;
 
     private SupportActivity mActivity;
     private FragmentManager mFragmentManager;
@@ -62,11 +59,6 @@ public class Fragmentation {
      */
     void dispatchStartTransaction(SupportFragment from, SupportFragment to, int requestCode,
                                   int launchMode, int type) {
-        if (System.currentTimeMillis() - mCurrentTime < CLICK_DEBOUNCE_TIME) {
-            return;
-        }
-        mCurrentTime = System.currentTimeMillis();
-
         if (from != null) {
             mFragmentManager = from.getFragmentManager();
         }
@@ -112,7 +104,10 @@ public class Fragmentation {
     }
 
     void startWithFinish(SupportFragment from, SupportFragment to) {
-        Fragment preFragment = handlerFinish(from, to);
+        SupportFragment preFragment = getPreFragment(from);
+        if (preFragment != null) {
+            handlerFinish(preFragment, from, to);
+        }
         passSaveResult(from, to);
 
         mFragmentManager.beginTransaction().remove(from).commit();
@@ -147,46 +142,40 @@ public class Fragmentation {
      * fix anim
      */
     @Nullable
-    private Fragment handlerFinish(SupportFragment from, SupportFragment to) {
-        Fragment preFragment = getPreFragment(from);
-        if (preFragment != null) {
-            View view = preFragment.getView();
-            if (view != null) {
-                // 不调用 会闪屏
-                view.setVisibility(View.VISIBLE);
+    private void handlerFinish(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
+        View view = preFragment.getView();
+        if (view != null) {
+            // 不调用 会闪屏
+            view.setVisibility(View.VISIBLE);
 
-                ViewGroup viewGroup;
-                final View fromView = from.getView();
+            ViewGroup viewGroup;
+            final View fromView = from.getView();
 
-                if (fromView != null) {
-                    if (view instanceof ViewGroup) {
-                        viewGroup = (ViewGroup) view;
-                        ViewGroup container = (ViewGroup) mActivity.findViewById(mContainerId);
-                        if (container != null) {
-                            container.removeView(fromView);
-                            if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                                fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                            }
-
-                            if (viewGroup instanceof LinearLayout) {
-                                viewGroup.addView(fromView, 0);
-                            } else {
-                                viewGroup.addView(fromView);
-                            }
-
-                            final ViewGroup finalViewGroup = viewGroup;
-                            to.setNeedAnimListener(true, new OnAnimEndListener() {
-                                @Override
-                                public void onAnimationEnd() {
-                                    finalViewGroup.removeView(fromView);
-                                }
-                            });
-                        }
+            if (fromView != null && view instanceof ViewGroup) {
+                viewGroup = (ViewGroup) view;
+                ViewGroup container = (ViewGroup) mActivity.findViewById(mContainerId);
+                if (container != null) {
+                    container.removeView(fromView);
+                    if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                        fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
                     }
+
+                    if (viewGroup instanceof LinearLayout) {
+                        viewGroup.addView(fromView, 0);
+                    } else {
+                        viewGroup.addView(fromView);
+                    }
+
+                    final ViewGroup finalViewGroup = viewGroup;
+                    to.setEnterAnimEndListener(new OnEnterAnimEndListener() {
+                        @Override
+                        public void onAnimationEnd() {
+                            finalViewGroup.removeView(fromView);
+                        }
+                    });
                 }
             }
         }
-        return preFragment;
     }
 
     /**
@@ -375,30 +364,28 @@ public class Fragmentation {
                 ViewGroup viewGroup;
                 final View fromView = fromFragment.getView();
 
-                if (fromView != null) {
-                    if (view instanceof ViewGroup) {
-                        viewGroup = (ViewGroup) view;
-                        ViewGroup container = (ViewGroup) mActivity.findViewById(mContainerId);
-                        if (container != null) {
-                            container.removeView(fromView);
-                            if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                                fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                            }
-
-                            if (viewGroup instanceof LinearLayout) {
-                                viewGroup.addView(fromView, 0);
-                            } else {
-                                viewGroup.addView(fromView);
-                            }
-
-                            final ViewGroup finalViewGroup = viewGroup;
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finalViewGroup.removeView(fromView);
-                                }
-                            }, BUFFER_TIME);
+                if (fromView != null && view instanceof ViewGroup) {
+                    viewGroup = (ViewGroup) view;
+                    ViewGroup container = (ViewGroup) mActivity.findViewById(mContainerId);
+                    if (container != null) {
+                        container.removeView(fromView);
+                        if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                            fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
                         }
+
+                        if (viewGroup instanceof LinearLayout) {
+                            viewGroup.addView(fromView, 0);
+                        } else {
+                            viewGroup.addView(fromView);
+                        }
+
+                        final ViewGroup finalViewGroup = viewGroup;
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finalViewGroup.removeView(fromView);
+                            }
+                        }, Math.max(fromFragment.getExitAnimDuration(), BUFFER_TIME));
                     }
                 }
             }
@@ -458,22 +445,22 @@ public class Fragmentation {
         });
     }
 
-    List<FragmentRecord> getFragmentRecords() {
-        List<FragmentRecord> fragmentRecords = new ArrayList<>();
+    List<DebugFragmentRecord> getFragmentRecords() {
+        List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
 
         List<Fragment> fragmentList = mActivity.getSupportFragmentManager().getFragments();
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
         for (Fragment fragment : fragmentList) {
             if (fragment == null) continue;
-            fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+            fragmentRecords.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
         }
 
         return fragmentRecords;
     }
 
-    private List<FragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
-        List<FragmentRecord> fragmentRecords = new ArrayList<>();
+    private List<DebugFragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
+        List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
 
         List<Fragment> fragmentList = parentFragment.getChildFragmentManager().getFragments();
         if (fragmentList == null || fragmentList.size() < 1) return null;
@@ -482,7 +469,7 @@ public class Fragmentation {
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
             if (fragment != null) {
-                fragmentRecords.add(new FragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+                fragmentRecords.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
             }
         }
         return fragmentRecords;

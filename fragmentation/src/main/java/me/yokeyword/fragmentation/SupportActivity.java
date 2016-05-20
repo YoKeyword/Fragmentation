@@ -8,14 +8,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import java.util.List;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
-import me.yokeyword.fragmentation.helper.FragmentRecord;
-import me.yokeyword.fragmentation.helper.HierarchyViewContainer;
+import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
+import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 
 /**
  * Created by YoKeyword on 16/1/22.
@@ -26,6 +27,8 @@ public abstract class SupportActivity extends AppCompatActivity {
     private FragmentAnimator mFragmentAnimator;
 
     boolean mPopMulitpleNoAnim = false;
+
+    private boolean mFragmentClickable = true;
 
     private Handler mHandler;
 
@@ -207,11 +210,27 @@ public abstract class SupportActivity extends AppCompatActivity {
         mPopMulitpleNoAnim = false;
     }
 
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        // 防抖动(防止点击速度过快)
+        if (!mFragmentClickable) return true;
+
+        return super.dispatchTouchEvent(ev);
+    }
+
+    /**
+     * 防抖动(防止点击速度过快)
+     */
+    void setFragmentClickable(boolean clickable) {
+        mFragmentClickable = clickable;
+    }
+
     /**
      * 显示栈视图,调试时使用
      */
     public void showFragmentStackHierarchyView() {
-        HierarchyViewContainer container = new HierarchyViewContainer(this);
+        DebugHierarchyViewContainer container = new DebugHierarchyViewContainer(this);
         container.bindFragmentRecords(mFragmentation.getFragmentRecords());
         container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         new AlertDialog.Builder(this)
@@ -226,13 +245,13 @@ public abstract class SupportActivity extends AppCompatActivity {
      * 显示栈视图 日志 ,调试时使用
      */
     public void logFragmentStackHierarchy(String TAG) {
-        List<FragmentRecord> fragmentRecordList = mFragmentation.getFragmentRecords();
+        List<DebugFragmentRecord> fragmentRecordList = mFragmentation.getFragmentRecords();
         if (fragmentRecordList == null) return;
 
         StringBuilder sb = new StringBuilder();
 
         for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
-            FragmentRecord fragmentRecord = fragmentRecordList.get(i);
+            DebugFragmentRecord fragmentRecord = fragmentRecordList.get(i);
 
             if (i == fragmentRecordList.size() - 1) {
                 sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
@@ -255,11 +274,11 @@ public abstract class SupportActivity extends AppCompatActivity {
         Log.i(TAG, sb.toString());
     }
 
-    private void processChildLog(List<FragmentRecord> fragmentRecordList, StringBuilder sb) {
+    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb) {
         if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
 
         for (int j = 0; j < fragmentRecordList.size(); j++) {
-            FragmentRecord childFragmentRecord = fragmentRecordList.get(j);
+            DebugFragmentRecord childFragmentRecord = fragmentRecordList.get(j);
             if (j == 0) {
                 sb.append("\t \t\t\t\t子栈顶\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
             } else if (j == fragmentRecordList.size() - 1) {

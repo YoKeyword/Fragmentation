@@ -1,4 +1,4 @@
-package me.yokeyword.fragmentation.helper;
+package me.yokeyword.fragmentation.debug;
 
 import java.util.List;
 
@@ -6,11 +6,11 @@ import java.util.List;
  * 为了调试时 查看栈视图
  * Created by YoKeyword on 16/2/21.
  */
-public class FragmentRecord {
+public class DebugFragmentRecord {
     public String fragmentName;
-    public List<FragmentRecord> childFragmentRecord;
+    public List<DebugFragmentRecord> childFragmentRecord;
 
-    public FragmentRecord(String fragmentName, List<FragmentRecord> childFragmentRecord) {
+    public DebugFragmentRecord(String fragmentName, List<DebugFragmentRecord> childFragmentRecord) {
         this.fragmentName = fragmentName;
         this.childFragmentRecord = childFragmentRecord;
     }

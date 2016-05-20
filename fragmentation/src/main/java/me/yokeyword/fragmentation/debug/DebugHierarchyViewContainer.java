@@ -1,4 +1,4 @@
-package me.yokeyword.fragmentation.helper;
+package me.yokeyword.fragmentation.debug;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -19,7 +19,7 @@ import me.yokeyword.fragmentation.R;
 /**
  * Created by YoKeyword on 16/2/21.
  */
-public class HierarchyViewContainer extends ScrollView {
+public class DebugHierarchyViewContainer extends ScrollView {
     private Context mContext;
 
     private LinearLayout mLinearLayout;
@@ -27,17 +27,17 @@ public class HierarchyViewContainer extends ScrollView {
     private int mItemHeight;
     private int mPadding;
 
-    public HierarchyViewContainer(Context context) {
+    public DebugHierarchyViewContainer(Context context) {
         super(context);
         initView(context);
     }
 
-    public HierarchyViewContainer(Context context, AttributeSet attrs) {
+    public DebugHierarchyViewContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
     }
 
-    public HierarchyViewContainer(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DebugHierarchyViewContainer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
     }
@@ -57,24 +57,24 @@ public class HierarchyViewContainer extends ScrollView {
         return (int) (dp * scale + 0.5f);
     }
 
-    public void bindFragmentRecords(List<FragmentRecord> fragmentRecords) {
+    public void bindFragmentRecords(List<DebugFragmentRecord> fragmentRecords) {
         mLinearLayout.removeAllViews();
 
         if (fragmentRecords == null) return;
 
-        HierarchyViewContainer.this.setView(fragmentRecords, 0, null);
+        DebugHierarchyViewContainer.this.setView(fragmentRecords, 0, null);
     }
 
-    private void setView(final List<FragmentRecord> fragmentRecordList, final int hierarchy, final TextView tvItem) {
+    private void setView(final List<DebugFragmentRecord> fragmentRecordList, final int hierarchy, final TextView tvItem) {
         for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
-            FragmentRecord child = fragmentRecordList.get(i);
+            DebugFragmentRecord child = fragmentRecordList.get(i);
             int tempHierarchy = hierarchy;
 
             final TextView childTvItem;
             childTvItem = getTextView(child, tempHierarchy);
             childTvItem.setTag(R.id.hierarchy, tempHierarchy);
 
-            final List<FragmentRecord> childFragmentRecord = child.childFragmentRecord;
+            final List<DebugFragmentRecord> childFragmentRecord = child.childFragmentRecord;
             if (childFragmentRecord != null && childFragmentRecord.size() > 0) {
                 tempHierarchy++;
                 childTvItem.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right, 0, 0, 0);
@@ -86,7 +86,7 @@ public class HierarchyViewContainer extends ScrollView {
                             boolean isExpand = (boolean) v.getTag(R.id.isexpand);
                             if (isExpand) {
                                 childTvItem.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right, 0, 0, 0);
-                                HierarchyViewContainer.this.removeView(finalChilHierarchy);
+                                DebugHierarchyViewContainer.this.removeView(finalChilHierarchy);
                             } else {
                                 handleExpandView(childFragmentRecord, finalChilHierarchy, childTvItem);
 
@@ -110,8 +110,8 @@ public class HierarchyViewContainer extends ScrollView {
         }
     }
 
-    private void handleExpandView(List<FragmentRecord> childFragmentRecord, int finalChilHierarchy, TextView childTvItem) {
-        HierarchyViewContainer.this.setView(childFragmentRecord, finalChilHierarchy, childTvItem);
+    private void handleExpandView(List<DebugFragmentRecord> childFragmentRecord, int finalChilHierarchy, TextView childTvItem) {
+        DebugHierarchyViewContainer.this.setView(childFragmentRecord, finalChilHierarchy, childTvItem);
         childTvItem.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_expandable, 0, 0, 0);
     }
 
@@ -125,7 +125,7 @@ public class HierarchyViewContainer extends ScrollView {
         }
     }
 
-    private TextView getTextView(FragmentRecord fragmentRecord, int hierarchy) {
+    private TextView getTextView(DebugFragmentRecord fragmentRecord, int hierarchy) {
         TextView tvItem = new TextView(mContext);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight);
