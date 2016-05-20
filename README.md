@@ -201,20 +201,20 @@ bundle.putString("title", "xxxx");
 setFramgentResult(RESULT_OK, bundle);
 ````
 
-下面是以一个singleTask模式`start`一个已存在的Fragment的标准代码：
+下面是以SingleTask模式重新启动一个已存在的Fragment的标准代码：
+比如：HomeFragment->BFragment->CFragment   CFragment以SingleTask模式重新启动HomeFragment
 ````java
 HomeFragment fragment = findFragment(HomeFragment.class);
 Bundle newBundle = new Bundle();
 // 传递的bundle数据，会调用目标Fragment的onNewBundle(Bundle newBundle)方法
 fragment.putNewBundle(newBundle);
-
-// homeFragment以SingleTask方式启动
+// 栈内的homeFragment以SingleTask模式启动
 start(fragment, SupportFragment.SINGLETASK);
 
 // 在HomeFragment.class中：
 @Override
 protected void onNewBundle(Bundle newBundle){
-    // 在此可以接收到数据
+    // 在此可以接收到数据  类似Activity中的onNewIntent()
 }
 ````
 # 关于Fragmentation帮你恢复Fragment，你需要知道的
