@@ -17,11 +17,11 @@ A powerful library that manage Fragment for Android!
 <img src="/gif/demo.gif"/>
 
 # 特性
-1、**为重度使用Fragment而生**
+1、**为重度使用Fragment而生，提供了方便的管理Fragment的方法**
 
-2、**提供了方便的管理Fragment的方法**
+2、**有效解决Fragment重叠问题**
 
-3、**有效解决Fragment重叠问题**
+3、**完美的防抖动解决方案(防止用户点击速度过快,导致启动多个Fragment)**
 
 4、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
 
@@ -39,7 +39,7 @@ A powerful library that manage Fragment for Android!
 1、项目下app的build.gradle中依赖：
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.5.8'
+compile 'me.yokeyword:fragmentation:0.6.0'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.0'
 ````
@@ -85,6 +85,16 @@ public class MainActivity extends SupportActivity {
 ````
 3、Fragment继承SupportFragment
 
+# 重大更新日志
+
+## 0.6.0:
+
+1、完美的防抖动解决方案：使用Activity的dispatchTouchEvent方案替换了原来的通过时间判断方案（为0.7版本，管理Fragment嵌套等复杂场景的更新作铺垫）
+
+2、进行了一些方法的重构
+
+3、进行了debug相关类的包迁移
+
 # API
 
 **SupportActivity**
@@ -108,13 +118,13 @@ start(SupportFragment fragment, int launchMode)
 // 启动新的Fragment，并能接收到新Fragment的数据返回
 startForResult(SupportFragment fragment,int requestCode)
 // 启动目标Fragment，并关闭当前Fragment
-startWithFinish(SupportFragment fragment)
+startWithPop(SupportFragment fragment)
 ````
 
 
 2、关闭Fragment：
 ````java
-// 关闭当前Fragment
+// 关闭当前Fragment(在当前Fragment所在栈内pop)
 pop();
 
 // 关闭某一个Fragment栈内之上的Fragments
@@ -137,36 +147,37 @@ public boolean onBackPressedSupport() {
 ````java
 @Override
 protected FragmentAnimator onCreateFragmentAnimation() {
-    // 获取在SupportActivity里设置的全局动画对象
-    FragmentAnimator fragmentAnimator = _mActivity.getFragmentAnimator();
-    fragmentAnimator.setEnter(R.anim.enter);
-    fragmentAnimator.setExit(R.anim.exit);
+    // 获取在SupportActivity里设置的全局动画对象 或者通过 _mActivity.getFragmentAnimator()获取
+    FragmentAnimator fragmentAnimator = super.onCreateFragmentAnimation();
+    fragmentAnimator.setEnter(0);
+    fragmentAnimator.setExit(0);
     return fragmentAnimator;
 
     // 也可以直接通过
     // return new FragmentAnimator(enter,exit,popEnter,popExit)设置一个全新的动画
 }
 ````
-5、获取当前Activity/Fragment内栈顶(子)Fragment：
-````java
+5、获取Fragment
+````
+// 获取所在栈内的栈顶(子)Fragment：
 getTopFragment();
-````
+getTopChildFragment();
 
-6、获取栈内某个Fragment对象：
-````java
+// 获取所在栈内的某个(子)Fragment对象：
 findFragment(Class fragmentClass);
-
-// 获取某个子Fragment对象
 findChildFragment(Class fragmentClass);
+
+// 获取所在栈内的前一个Fragment对象：
+getPreFragment();
 ````
 
-**更多**
+**其他**
 
-隐藏/显示 输入法:
+隐藏/显示 输入法:(因为Fragment被销毁时,不会自动隐藏软键盘,以及弹出软键盘有些麻烦,故提供下面2个方法)
 ````java
 // 隐藏软键盘 一般用在onHiden里
 hideSoftInput();
-// 显示软键盘
+// 显示软键盘,调用该方法后,会在onPause时自动隐藏软键盘
 showSoftInput(View view);
 ````
 下面是DetailFragment  `startForResult`  ModifyTitleFragment的代码：
