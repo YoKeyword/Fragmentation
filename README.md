@@ -39,7 +39,7 @@ A powerful library that manage Fragment for Android!
 1、项目下app的build.gradle中依赖：
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.6.0'
+compile 'me.yokeyword:fragmentation:0.6.1'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.0'
 ````
@@ -87,13 +87,15 @@ public class MainActivity extends SupportActivity {
 
 # 重大更新日志
 
-## 0.6.0:
+## 0.6.X:
 
 1、完美的防抖动解决方案：使用Activity的dispatchTouchEvent方案替换了原来的通过时间判断方案（为0.7版本，管理Fragment嵌套等复杂场景的更新作铺垫）
 
-2、进行了一些方法的重构
+2、对执行popTo()、start(F,SingleTask)等方法时的动画作了进一步优化兼容
 
-3、进行了debug相关类的包迁移
+3、进行了一些方法的重构
+
+4、进行了debug相关类的包迁移
 
 # API
 
