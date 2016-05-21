@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
+import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.ui.BaseMainFragment;
 import me.yokeyword.sample.ui.fragment.account.LoginFragment;
@@ -133,10 +134,6 @@ public class MainActivity extends SupportActivity
                 if (id == R.id.nav_home) {
 
                     HomeFragment fragment = findFragment(HomeFragment.class);
-                    if (fragment == null) {
-                        fragment = HomeFragment.newInstance();
-                    }
-
                     Bundle newBundle = new Bundle();
                     newBundle.putString("from", "主页-->来自:" + topFragment.getClass().getSimpleName());
                     fragment.putNewBundle(newBundle);
@@ -166,7 +163,8 @@ public class MainActivity extends SupportActivity
                         });
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start
-                        start(fragment, SupportFragment.SINGLETASK);
+//                        start(fragment, SupportFragment.SINGLETASK);
+                        popTo(ShopFragment.class, false);
                     }
                 } else if (id == R.id.nav_login) {
                     goLogin();
