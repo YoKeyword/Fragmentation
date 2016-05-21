@@ -13,6 +13,7 @@ import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.ui.BaseFragment;
+import me.yokeyword.sample.ui.fragment.CycleFragment;
 
 /**
  * Created by YoKeyword on 16/2/9.
@@ -69,7 +70,7 @@ public class ContentFragment extends BaseFragment {
             public void onClick(View v) {
                 // 和MsgFragment同级别的跳转 交给MsgFragment处理
                 if (getParentFragment() instanceof ShopFragment) {
-                    ((ShopFragment) getParentFragment()).start(CycleShopFragment.newInstance(1));
+                    ((ShopFragment) getParentFragment()).start(CycleFragment.newInstance(1));
                 }
             }
         });

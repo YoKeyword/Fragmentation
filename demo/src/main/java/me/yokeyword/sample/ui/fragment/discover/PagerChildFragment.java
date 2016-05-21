@@ -16,6 +16,7 @@ import me.yokeyword.sample.R;
 import me.yokeyword.sample.adapter.PagerAdapter;
 import me.yokeyword.sample.helper.OnItemClickListener;
 import me.yokeyword.sample.ui.BaseFragment;
+import me.yokeyword.sample.ui.fragment.CycleFragment;
 
 
 public class PagerChildFragment extends BaseFragment {
@@ -72,7 +73,7 @@ public class PagerChildFragment extends BaseFragment {
             @Override
             public void onItemClick(int position, View view) {
                 if (getParentFragment() instanceof DiscoverFragment) {
-                    ((DiscoverFragment) getParentFragment()).start(CycleDiscoverFragment.newInstance(1));
+                    ((DiscoverFragment) getParentFragment()).start(CycleFragment.newInstance(1));
                 }
             }
         });

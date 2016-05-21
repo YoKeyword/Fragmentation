@@ -119,7 +119,6 @@ public class MainActivity extends SupportActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(final MenuItem item) {
         mDrawer.closeDrawer(GravityCompat.START);
@@ -153,9 +152,7 @@ public class MainActivity extends SupportActivity
                             }
                         });
                     } else {
-                        Bundle newBundle = new Bundle();
-                        newBundle.putString("from", "来自:" + topFragment.getClass().getName());
-                        fragment.putNewBundle(newBundle);
+                        // 如果已经在栈内,则以SingleTask模式start
                         start(fragment, SupportFragment.SINGLETASK);
                     }
                 } else if (id == R.id.nav_msg) {
@@ -168,16 +165,14 @@ public class MainActivity extends SupportActivity
                             }
                         });
                     } else {
-                        Bundle newBundle = new Bundle();
-                        newBundle.putString("from", "来自:" + topFragment.getClass().getName());
-                        fragment.putNewBundle(newBundle);
+                        // 如果已经在栈内,则以SingleTask模式start
                         start(fragment, SupportFragment.SINGLETASK);
                     }
                 } else if (id == R.id.nav_login) {
                     goLogin();
                 } else if (id == R.id.nav_swipe_back) {
                     startActivity(new Intent(MainActivity.this, SwipeBackSampleActivity.class));
-                }else if(id == R.id.nav_swipe_back_f){
+                } else if (id == R.id.nav_swipe_back_f) {
                     start(SwipeBackSampleFragment.newInstance());
                 }
             }
@@ -199,9 +194,9 @@ public class MainActivity extends SupportActivity
 
     @Override
     public void onLockDrawLayout(boolean lock) {
-        if(lock) {
+        if (lock) {
             mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }else{
+        } else {
             mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
     }

@@ -1,7 +1,5 @@
 package me.yokeyword.sample.ui;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -14,11 +12,6 @@ import me.yokeyword.sample.R;
  */
 public class BaseFragment extends SupportFragment {
     private static final String TAG = "Fragmentation";
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     protected void initToolbarMenu(Toolbar toolbar) {
         toolbar.inflateMenu(R.menu.hierarchy);

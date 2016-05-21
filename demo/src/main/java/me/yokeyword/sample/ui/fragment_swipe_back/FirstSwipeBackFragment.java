@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
 import me.yokeyword.sample.R;
 
@@ -25,7 +26,6 @@ public class FirstSwipeBackFragment extends BaseSwipeBackFragment {
         return fragment;
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class FirstSwipeBackFragment extends BaseSwipeBackFragment {
         view.findViewById(R.id.tv_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                start(SecondSwipeBackFragment.newInstance());
+                start(RecyclerSwipeBackFragment.newInstance());
             }
         });
 

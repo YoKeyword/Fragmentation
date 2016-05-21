@@ -131,6 +131,9 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
         });
     }
 
+    /**
+     * 类似于 Activity的 onNewIntent()
+     */
     @Override
     protected void onNewBundle(Bundle args) {
         super.onNewBundle(args);
@@ -146,7 +149,7 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
                 _mActivity.logFragmentStackHierarchy(TAG);
                 break;
             case R.id.action_anim:
-                final PopupMenu popupMenu = new PopupMenu(_mActivity,mToolbar, GravityCompat.END);
+                final PopupMenu popupMenu = new PopupMenu(_mActivity, mToolbar, GravityCompat.END);
                 popupMenu.inflate(R.menu.home_pop);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override

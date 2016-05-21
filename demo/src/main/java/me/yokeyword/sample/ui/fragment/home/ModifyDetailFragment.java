@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.ui.BaseBackFragment;
+import me.yokeyword.sample.ui.fragment.CycleFragment;
 
 /**
  * Created by YoKeyword on 16/2/7.

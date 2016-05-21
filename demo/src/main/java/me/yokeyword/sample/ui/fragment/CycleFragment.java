@@ -1,4 +1,4 @@
-package me.yokeyword.sample.ui.fragment.shop;
+package me.yokeyword.sample.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +15,7 @@ import me.yokeyword.sample.ui.BaseBackFragment;
 /**
  * Created by YoKeyword on 16/2/7.
  */
-public class CycleShopFragment extends BaseBackFragment {
+public class CycleFragment extends BaseBackFragment {
     private static final String ARG_NUMBER = "arg_number";
 
     private Toolbar mToolbar;
@@ -24,8 +24,8 @@ public class CycleShopFragment extends BaseBackFragment {
 
     private int mNumber;
 
-    public static CycleShopFragment newInstance(int number) {
-        CycleShopFragment fragment = new CycleShopFragment();
+    public static CycleFragment newInstance(int number) {
+        CycleFragment fragment = new CycleFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_NUMBER, number);
         fragment.setArguments(args);
@@ -55,7 +55,7 @@ public class CycleShopFragment extends BaseBackFragment {
         mBtnNext = (Button) view.findViewById(R.id.btn_next);
         mBtnNextWithFinish = (Button) view.findViewById(R.id.btn_next_with_finish);
 
-        String title = "商店:循环Fragment" + mNumber;
+        String title = "首页:循环Fragment" + mNumber;
 
         mToolbar.setTitle(title);
         initToolbarNav(mToolbar);
@@ -64,13 +64,13 @@ public class CycleShopFragment extends BaseBackFragment {
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                start(CycleShopFragment.newInstance(mNumber + 1));
+                start(CycleFragment.newInstance(mNumber + 1));
             }
         });
         mBtnNextWithFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWithPop(CycleShopFragment.newInstance(mNumber + 1));
+                startWithPop(CycleFragment.newInstance(mNumber + 1));
             }
         });
     }
