@@ -51,7 +51,6 @@ public class SupportFragment extends Fragment {
 
     private boolean mNeedHideSoft;  // 隐藏软键盘
     protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
-
     private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
 
     @Override
@@ -100,6 +99,7 @@ public class SupportFragment extends Fragment {
         mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
         mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
 
+        // 监听动画状态(for防抖动)
         mEnterAnim.setAnimationListener(new DebounceAnimListener(true));
         mPopEnterAnim.setAnimationListener(new DebounceAnimListener(false));
     }
@@ -161,13 +161,16 @@ public class SupportFragment extends Fragment {
         return mEnterAnim.getDuration();
     }
 
-
     long getExitAnimDuration() {
         return mExitAnim.getDuration();
     }
 
     long getPopEnterAnimDuration() {
         return mPopEnterAnim.getDuration();
+    }
+
+    long getPopExitAnimDuration() {
+        return mPopExitAnim.getDuration();
     }
 
 
@@ -203,7 +206,7 @@ public class SupportFragment extends Fragment {
     }
 
     /**
-     * (因为防抖动以及事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop 方法,请使用该方法把你的任务入队
+     * (因为事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop 方法,请使用该方法把你的任务入队
      *
      * @param runnable 需要执行的任务
      */

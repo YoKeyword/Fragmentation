@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentTransactionBugFixHack;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,26 +233,22 @@ public class Fragmentation {
      * @return
      */
     private boolean handleLaunchMode(Fragment to, int launchMode) {
-        Fragment fragment = mFragmentManager.findFragmentByTag(to.getClass().getName());
-
-        if (fragment != null) {
-            if (launchMode == SupportFragment.SINGLETOP) {
-                List<Fragment> fragments = mFragmentManager.getFragments();
-                int index = fragments.indexOf(fragment);
-                // 在栈顶
-                if (index == mFragmentManager.getBackStackEntryCount() - 1) {
-                    if (handleNewBundle(to, fragment)) return true;
-                }
-            } else if (launchMode == SupportFragment.SINGLETASK) {
-                popBackFix(to.getClass(), 0, mFragmentManager);
-                if (handleNewBundle(to, fragment)) return true;
+        if (launchMode == SupportFragment.SINGLETOP) {
+            List<Fragment> fragments = mFragmentManager.getFragments();
+            int index = fragments.indexOf(to);
+            // 在栈顶
+            if (index == mFragmentManager.getBackStackEntryCount() - 1) {
+                if (handleNewBundle(to)) return true;
             }
+        } else if (launchMode == SupportFragment.SINGLETASK) {
+            popToFix(to, 0, mFragmentManager);
+            if (handleNewBundle(to)) return true;
         }
         return false;
     }
 
-    private boolean handleNewBundle(Fragment to, Fragment fragment) {
-        if (fragment instanceof SupportFragment) {
+    private boolean handleNewBundle(Fragment to) {
+        if (to instanceof SupportFragment) {
             SupportFragment supportTo = (SupportFragment) to;
             Bundle newBundle = supportTo.getNewBundle();
             supportTo.onNewBundle(newBundle);
@@ -408,27 +403,27 @@ public class Fragmentation {
         }
         SupportFragment fromFragment = getTopFragment(fragmentManager);
 
-        if (targetFragment == fromFragment && afterPopTransactionRunnable != null) {
-            mHandler.post(afterPopTransactionRunnable);
-            return;
-        }
+        int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
+
         if (afterPopTransactionRunnable != null) {
+            if (targetFragment == fromFragment) {
+                mHandler.post(afterPopTransactionRunnable);
+                return;
+            }
+
             fixPopToAnim(targetFragment, fromFragment);
             fragmentManager.beginTransaction().remove(fromFragment).commit();
-        }
-
-        int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
-        popBackFix(fragmentClass, flag, fragmentManager);
-
-        if (afterPopTransactionRunnable != null) {
+            popToWithTransactionFix(fragmentClass, flag, fragmentManager);
             mHandler.post(afterPopTransactionRunnable);
+        } else {
+            popToFix(targetFragment, flag, fragmentManager);
         }
     }
 
     /**
      * 解决popTo多个fragment时动画引起的异常问题
      */
-    private void popBackFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
+    private void popToWithTransactionFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
         mActivity.preparePopMultiple();
         fragmentManager.popBackStackImmediate(fragmentClass.getName(), flag);
         mActivity.popFinish();
@@ -439,6 +434,29 @@ public class Fragmentation {
                 FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
             }
         });
+    }
+
+    /**
+     * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
+     */
+    private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
+        fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
+
+        long popAniDuration;
+
+        if (targetFragment instanceof SupportFragment) {
+            SupportFragment fragment = (SupportFragment) targetFragment;
+            popAniDuration = Math.max(fragment.getPopEnterAnimDuration(), fragment.getPopExitAnimDuration());
+        } else {
+            popAniDuration = BUFFER_TIME;
+        }
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
+            }
+        }, popAniDuration);
     }
 
     List<DebugFragmentRecord> getFragmentRecords() {
