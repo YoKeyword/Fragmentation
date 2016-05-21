@@ -399,27 +399,26 @@ public class Fragmentation {
      * @param includeSelf   是否包含该fragment
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
-        try {
-            Fragment rootFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
-            if (includeSelf) {
-                rootFragment = getPreFragment(rootFragment);
+        Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+        if (includeSelf) {
+            targetFragment = getPreFragment(targetFragment);
+            if (targetFragment == null) {
+                throw new RuntimeException("Do you want to pop all Fragments? Please call _mActivity.finish()");
             }
-            SupportFragment fromFragment = getTopFragment(fragmentManager);
-
-            if (rootFragment == fromFragment && afterPopTransactionRunnable != null) {
-                mHandler.post(afterPopTransactionRunnable);
-                return;
-            }
-
-            fixPopToAnim(rootFragment, fromFragment);
-            fragmentManager.beginTransaction().remove(fromFragment).commit();
-
-            int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
-            popBackFix(fragmentClass, flag, fragmentManager);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(mActivity, "Exception", Toast.LENGTH_SHORT).show();
         }
+        SupportFragment fromFragment = getTopFragment(fragmentManager);
+
+        if (targetFragment == fromFragment && afterPopTransactionRunnable != null) {
+            mHandler.post(afterPopTransactionRunnable);
+            return;
+        }
+        if (afterPopTransactionRunnable != null) {
+            fixPopToAnim(targetFragment, fromFragment);
+            fragmentManager.beginTransaction().remove(fromFragment).commit();
+        }
+
+        int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
+        popBackFix(fragmentClass, flag, fragmentManager);
 
         if (afterPopTransactionRunnable != null) {
             mHandler.post(afterPopTransactionRunnable);
@@ -427,10 +426,7 @@ public class Fragmentation {
     }
 
     /**
-     * 解决pop多个fragment异常问题
-     *
-     * @param fragmentClass
-     * @param flag
+     * 解决popTo多个fragment时动画引起的异常问题
      */
     private void popBackFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
         mActivity.preparePopMultiple();
