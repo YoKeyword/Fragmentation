@@ -47,7 +47,6 @@ public class DetailFragment extends BaseBackFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
-
         initView(view);
 
         return view;
@@ -58,9 +57,6 @@ public class DetailFragment extends BaseBackFragment {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        mToolbarLayout.setCollapsedTitleTextAppearance(R.style.Toolbar_TextAppearance_White);
-        mToolbarLayout.setExpandedTitleTextAppearance(R.style.Toolbar_TextAppearance_Expanded);
-        mToolbarLayout.setTitle(mTitle);
         initToolbarNav(mToolbar);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +65,24 @@ public class DetailFragment extends BaseBackFragment {
                 startForResult(ModifyDetailFragment.newInstance(mTitle), REQ_MODIFY_FRAGMENT);
             }
         });
+    }
+
+    /**
+     * 这里演示:
+     * 比较复杂的Fragment页面会在第一次start时,导致动画卡顿
+     * Fragmentation提供了onEnterAnimationEnd()方法,该方法会在 入栈动画 结束时回调
+     * 所以在onCreateView进行一些简单的View初始化(比如 toolbar设置标题,返回按钮; 显示加载数据的进度条等),
+     * 然后在onEnterAnimationEnd()方法里进行 复杂的耗时的初始化 (比如FragmentPagerAdapter的初始化 加载数据等)
+     */
+    @Override
+    protected void onEnterAnimationEnd() {
+        initLazyView();
+    }
+
+    private void initLazyView() {
+        mToolbarLayout.setCollapsedTitleTextAppearance(R.style.Toolbar_TextAppearance_White);
+        mToolbarLayout.setExpandedTitleTextAppearance(R.style.Toolbar_TextAppearance_Expanded);
+        mToolbarLayout.setTitle(mTitle);
     }
 
     @Override
