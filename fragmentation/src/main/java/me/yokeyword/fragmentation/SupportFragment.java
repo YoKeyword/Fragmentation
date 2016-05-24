@@ -41,7 +41,7 @@ public class SupportFragment extends Fragment {
     private boolean mIsRoot;
 
     private InputMethodManager mIMM;
-    private OnEnterAnimEndListener mOnAnimEndListener;
+    private OnEnterAnimEndListener mOnAnimEndListener; // fragmentation所用
 
     protected SupportActivity _mActivity;
     protected Fragmentation mFragmentation;
@@ -120,6 +120,43 @@ public class SupportFragment extends Fragment {
     }
 
     @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (_mActivity.mPopMulitpleNoAnim || mLocking) {
+            return mNoAnim;
+        }
+        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+            if (enter) {
+                if (mIsRoot) {
+                    return mNoAnim;
+                }
+                return mEnterAnim;
+            } else {
+                return mPopExitAnim;
+            }
+        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
+            if (enter) {
+                return mPopEnterAnim;
+            } else {
+                return mExitAnim;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设定当前Fragmemt动画,优先级比在SupportActivity里高
+     */
+    protected FragmentAnimator onCreateFragmentAnimation() {
+        return _mActivity.getFragmentAnimator();
+    }
+
+    /**
+     * 入栈动画 结束时,回调
+     */
+    protected void onEnterAnimationEnd() {
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
@@ -139,6 +176,11 @@ public class SupportFragment extends Fragment {
         // 防止某种情况 上一个Fragment仍可点击问题
         assert view != null;
         view.setClickable(true);
+
+        if (savedInstanceState != null) {
+            // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
+            onEnterAnimationEnd();
+        }
     }
 
     protected void initFragmentBackground(View view) {
@@ -173,37 +215,6 @@ public class SupportFragment extends Fragment {
         return mPopExitAnim.getDuration();
     }
 
-
-    /**
-     * 设定当前Fragmemt动画,优先级比在SupportActivity里高
-     */
-    protected FragmentAnimator onCreateFragmentAnimation() {
-        return _mActivity.getFragmentAnimator();
-    }
-
-    @Override
-    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (_mActivity.mPopMulitpleNoAnim || mLocking) {
-            return mNoAnim;
-        }
-        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-            if (enter) {
-                if (mIsRoot) {
-                    return mNoAnim;
-                }
-                return mEnterAnim;
-            } else {
-                return mPopExitAnim;
-            }
-        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-            if (enter) {
-                return mPopEnterAnim;
-            } else {
-                return mExitAnim;
-            }
-        }
-        return null;
-    }
 
     /**
      * (因为事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop 方法,请使用该方法把你的任务入队
@@ -474,8 +485,12 @@ public class SupportFragment extends Fragment {
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            if (isEnterAnim && mOnAnimEndListener != null) {
-                mOnAnimEndListener.onAnimationEnd();
+            if (isEnterAnim) {
+                onEnterAnimationEnd();
+
+                if (mOnAnimEndListener != null) {
+                    mOnAnimEndListener.onAnimationEnd();
+                }
             }
             _mActivity.setFragmentClickable(true);
         }
