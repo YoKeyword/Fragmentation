@@ -91,7 +91,7 @@ public class MainActivity extends SupportActivity {
 
 1、完美的防抖动解决方案：使用Activity的dispatchTouchEvent方案替换了原来的通过时间判断方案（为0.7版本，管理Fragment嵌套等复杂场景的更新作铺垫）
 
-2、提供了在第一次
+2、提供了在第一次start复杂Fragment时,导致转场动画卡顿的解决方案(用例见demo的DetailFragment)
 
 3、进行了一些方法的重构
 
