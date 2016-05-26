@@ -100,9 +100,6 @@ public class SupportFragment extends Fragment {
         mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
         mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
 
-        if (mNeedDebounce) {
-            _mActivity.setFragmentClickable(true);
-        }
         // 监听动画状态(for防抖动)
         mEnterAnim.setAnimationListener(new DebounceAnimListener());
     }
@@ -186,7 +183,10 @@ public class SupportFragment extends Fragment {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
             onEnterAnimationEnd();
             _mActivity.setFragmentClickable(true);
+        } else if (mNeedDebounce) {
+            _mActivity.setFragmentClickable(true);
         }
+
     }
 
     protected void initFragmentBackground(View view) {
