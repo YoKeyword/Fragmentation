@@ -52,6 +52,7 @@ public class SupportFragment extends Fragment {
     private boolean mNeedHideSoft;  // 隐藏软键盘
     protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
     private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
+    private boolean mNeedDebounce = false; // 用于记录是否需要直接进行防抖动处理
 
     @Override
     public void onAttach(Activity activity) {
@@ -99,13 +100,16 @@ public class SupportFragment extends Fragment {
         mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
         mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
 
+        if (mNeedDebounce) {
+            _mActivity.setFragmentClickable(true);
+        }
         // 监听动画状态(for防抖动)
-        mEnterAnim.setAnimationListener(new DebounceAnimListener(true));
-        mPopEnterAnim.setAnimationListener(new DebounceAnimListener(false));
+        mEnterAnim.setAnimationListener(new DebounceAnimListener());
     }
 
     private void handleNoAnim() {
         if (mFragmentAnimator.getEnter() == 0) {
+            mNeedDebounce = true;
             mFragmentAnimator.setEnter(R.anim.no_anim);
         }
         if (mFragmentAnimator.getExit() == 0) {
@@ -115,6 +119,7 @@ public class SupportFragment extends Fragment {
             mFragmentAnimator.setPopEnter(R.anim.no_anim);
         }
         if (mFragmentAnimator.getPopExit() == 0) {
+            // 用于解决 start新Fragment时,转场动画过程中上一个Fragment页面空白问题
             mFragmentAnimator.setPopExit(R.anim.pop_exit_no_anim);
         }
     }
@@ -180,6 +185,7 @@ public class SupportFragment extends Fragment {
         if (savedInstanceState != null) {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
             onEnterAnimationEnd();
+            _mActivity.setFragmentClickable(true);
         }
     }
 
@@ -472,11 +478,6 @@ public class SupportFragment extends Fragment {
      * 为了防抖动(点击过快)的动画监听器
      */
     private class DebounceAnimListener implements Animation.AnimationListener {
-        boolean isEnterAnim;
-
-        public DebounceAnimListener(boolean isEnterAnim) {
-            this.isEnterAnim = isEnterAnim;
-        }
 
         @Override
         public void onAnimationStart(Animation animation) {
@@ -485,14 +486,12 @@ public class SupportFragment extends Fragment {
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            if (isEnterAnim) {
-                onEnterAnimationEnd();
-
-                if (mOnAnimEndListener != null) {
-                    mOnAnimEndListener.onAnimationEnd();
-                }
-            }
+            onEnterAnimationEnd();
             _mActivity.setFragmentClickable(true);
+
+            if (mOnAnimEndListener != null) {
+                mOnAnimEndListener.onAnimationEnd();
+            }
         }
 
         @Override

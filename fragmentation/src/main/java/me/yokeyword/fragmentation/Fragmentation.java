@@ -71,6 +71,9 @@ public class Fragmentation {
 
         if (handleLaunchMode(to, launchMode)) return;
 
+        // 在SingleTask/SingleTop启动模式之后 开启防抖动
+        mActivity.setFragmentClickable(false);
+
         switch (type) {
             case TYPE_ADD:
                 start(from, to);
