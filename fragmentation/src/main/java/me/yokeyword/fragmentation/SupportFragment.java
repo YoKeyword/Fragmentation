@@ -52,7 +52,9 @@ public class SupportFragment extends Fragment {
     private boolean mNeedHideSoft;  // 隐藏软键盘
     protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
     private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
-    private boolean mNeedDebounce = false; // 用于记录是否需要直接进行防抖动处理
+
+    private DebounceAnimListener mDebounceAnimListener; // 防抖动监听动画
+    private boolean mEnterAnimFlag = false; // 用于记录无动画时 直接 解除防抖动处理
 
     @Override
     public void onAttach(Activity activity) {
@@ -101,12 +103,13 @@ public class SupportFragment extends Fragment {
         mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
 
         // 监听动画状态(for防抖动)
-        mEnterAnim.setAnimationListener(new DebounceAnimListener());
+        mDebounceAnimListener = new DebounceAnimListener();
+        mEnterAnim.setAnimationListener(mDebounceAnimListener);
     }
 
     private void handleNoAnim() {
         if (mFragmentAnimator.getEnter() == 0) {
-            mNeedDebounce = true;
+            mEnterAnimFlag = true;
             mFragmentAnimator.setEnter(R.anim.no_anim);
         }
         if (mFragmentAnimator.getExit() == 0) {
@@ -129,6 +132,7 @@ public class SupportFragment extends Fragment {
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 if (mIsRoot) {
+                    mNoAnim.setAnimationListener(mDebounceAnimListener);
                     return mNoAnim;
                 }
                 return mEnterAnim;
@@ -183,7 +187,7 @@ public class SupportFragment extends Fragment {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
             onEnterAnimationEnd();
             _mActivity.setFragmentClickable(true);
-        } else if (mNeedDebounce) {
+        } else if (mEnterAnimFlag) {
             _mActivity.setFragmentClickable(true);
         }
 
@@ -481,7 +485,6 @@ public class SupportFragment extends Fragment {
 
         @Override
         public void onAnimationStart(Animation animation) {
-            _mActivity.setFragmentClickable(false);
         }
 
         @Override
