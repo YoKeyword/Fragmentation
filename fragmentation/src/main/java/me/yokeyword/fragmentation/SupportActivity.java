@@ -129,6 +129,9 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        // 这里是防止动画过程中，按返回键取消加载Fragment
+        setFragmentClickable(true);
+
         SupportFragment topFragment = getTopFragment();
         if (topFragment != null) {
             boolean result = topFragment.onBackPressedSupport();
