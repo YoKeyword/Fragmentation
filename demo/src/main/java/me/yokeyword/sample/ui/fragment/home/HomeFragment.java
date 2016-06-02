@@ -72,7 +72,7 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimation() {
+    protected FragmentAnimator onCreateFragmentAnimator() {
         // 默认不改变
 //         return super.onCreateFragmentAnimation();
         // 在进入和离开时 设定无动画

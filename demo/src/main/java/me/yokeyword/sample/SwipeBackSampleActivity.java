@@ -19,18 +19,13 @@ public class SwipeBackSampleActivity extends SwipeBackActivity {
         setContentView(R.layout.activity_swipe_back);
 
         if (savedInstanceState == null) {
-            start(FirstSwipeBackFragment.newInstance());
+            loadRootFragment(R.id.fl_container, FirstSwipeBackFragment.newInstance());
         }
 
         getSwipeBackLayout().setEdgeOrientation(SwipeBackLayout.EDGE_ALL);
     }
 
-    @Override
-    protected int setContainerId() {
-        return R.id.fl_container;
-    }
-
-    protected FragmentAnimator onCreateFragmentAnimator() {
+    public FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultHorizontalAnimator();
     }
 }

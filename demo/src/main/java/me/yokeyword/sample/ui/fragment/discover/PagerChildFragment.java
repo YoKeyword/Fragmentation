@@ -56,11 +56,6 @@ public class PagerChildFragment extends BaseFragment {
         return view;
     }
 
-    @Override
-    protected FragmentAnimator onCreateFragmentAnimation() {
-        return new DefaultNoAnimator();
-    }
-
     private void initView(View view) {
         mRecy = (RecyclerView) view.findViewById(R.id.recy);
 

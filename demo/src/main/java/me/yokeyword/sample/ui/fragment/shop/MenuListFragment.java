@@ -59,7 +59,7 @@ public class MenuListFragment extends BaseFragment {
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimation() {
+    protected FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultNoAnimator();
     }
 
@@ -88,7 +88,8 @@ public class MenuListFragment extends BaseFragment {
             mCurrentPosition = savedInstanceState.getInt(SAVE_STATE_POSITION);
             mAdapter.setItemChecked(mCurrentPosition);
         } else {
-            showContent(0);
+            mCurrentPosition = 0;
+            mAdapter.setItemChecked(0);
         }
     }
 
@@ -103,14 +104,8 @@ public class MenuListFragment extends BaseFragment {
 
         ContentFragment fragment = ContentFragment.newInstance(mMenus.get(position));
 
-        // 同级别用 (replaceFragment)getFragmentManager 不同级别用(replaceChildFragment)getChildFragmentManager
-        // 可用下面的方法
-//        replaceBrotherFragment(R.id.fl_content_container, fragment, false);
-
-        // 或者 让父Fragment控制 ContentFragment的填充
         ((ShopFragment) getParentFragment()).showContentFragment(fragment);
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

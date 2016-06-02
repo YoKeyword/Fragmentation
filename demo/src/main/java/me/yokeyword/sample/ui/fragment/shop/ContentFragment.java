@@ -47,7 +47,7 @@ public class ContentFragment extends BaseFragment {
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimation() {
+    protected FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultNoAnimator();
     }
 

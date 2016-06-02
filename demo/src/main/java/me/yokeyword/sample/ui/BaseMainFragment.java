@@ -37,7 +37,7 @@ public class BaseMainFragment extends BaseFragment {
 
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimation() {
+    protected FragmentAnimator onCreateFragmentAnimator() {
         FragmentAnimator fragmentAnimator = _mActivity.getFragmentAnimator();
         fragmentAnimator.setEnter(0);
         fragmentAnimator.setExit(0);

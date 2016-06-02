@@ -1,6 +1,5 @@
 package me.yokeyword.sample.ui.fragment.shop;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +10,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.ui.BaseMainFragment;
 
@@ -34,19 +34,17 @@ public class ShopFragment extends BaseMainFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shop, container, false);
-        initView(view);
+        initView(view, savedInstanceState);
         return view;
     }
 
-    private void initView(View view) {
+    private void initView(View view, Bundle savedInstanceState) {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         mToolbar.setTitle("商店");
         initToolbarNav(mToolbar);
 
-        MenuListFragment listFragment = findChildFragment(MenuListFragment.class);
-
-        if (listFragment == null) {
+        if (savedInstanceState == null) {
             ArrayList<String> listMenus = new ArrayList<>();
             listMenus.add("销量排行");
             listMenus.add("当季特选");
@@ -65,8 +63,9 @@ public class ShopFragment extends BaseMainFragment {
             listMenus.add("馄饨类");
             listMenus.add("其他");
 
-            listFragment = MenuListFragment.newInstance(listMenus);
-            startChildFragment(R.id.fl_list_container, listFragment, false);
+            MenuListFragment menuListFragment = MenuListFragment.newInstance(listMenus);
+            loadRootFragment(R.id.fl_list_container, menuListFragment);
+            replaceLoadRootFragment(R.id.fl_content_container, ContentFragment.newInstance("销量排行"), false);
         }
     }
 
@@ -84,6 +83,9 @@ public class ShopFragment extends BaseMainFragment {
      * @param fragment
      */
     public void showContentFragment(ContentFragment fragment) {
-        replaceChildFragment(R.id.fl_content_container, fragment, false);
+        SupportFragment contentFragment = findChildFragment(ContentFragment.class);
+        if (contentFragment != null) {
+            contentFragment.replaceFragment(fragment, false);
+        }
     }
 }

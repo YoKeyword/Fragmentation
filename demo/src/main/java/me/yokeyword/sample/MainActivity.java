@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.ui.BaseMainFragment;
 import me.yokeyword.sample.ui.fragment.account.LoginFragment;
@@ -44,14 +43,14 @@ public class MainActivity extends SupportActivity
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            start(HomeFragment.newInstance());
+            loadRootFragment(R.id.fl_container, HomeFragment.newInstance());
         }
 
         initView();
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
+    public FragmentAnimator onCreateFragmentAnimator() {
         // 设置默认Fragment动画  默认竖向(和安卓5.0以上的动画相同)
         return super.onCreateFragmentAnimator();
         // 设置横向(和安卓4.x动画相同)
@@ -87,11 +86,6 @@ public class MainActivity extends SupportActivity
                 }, 250);
             }
         });
-    }
-
-    @Override
-    public int setContainerId() {
-        return R.id.fl_container;
     }
 
     @Override
