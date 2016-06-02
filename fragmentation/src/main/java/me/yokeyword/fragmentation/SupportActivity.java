@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
@@ -21,7 +22,7 @@ import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 /**
  * Created by YoKeyword on 16/1/22.
  */
-public abstract class SupportActivity extends AppCompatActivity {
+public class SupportActivity extends AppCompatActivity implements ISupport {
     private Fragmentation mFragmentation;
 
     private FragmentAnimator mFragmentAnimator;
@@ -71,30 +72,14 @@ public abstract class SupportActivity extends AppCompatActivity {
 
     /**
      * 内存重启后,是否让Fragmentation帮你恢复Fragment状态
-     *
-     * @return
      */
     protected boolean restoreInstanceState() {
         return true;
     }
 
-    /**
-     * 创建全局Fragment的切换动画
-     *
-     * @return
-     */
-    protected FragmentAnimator onCreateFragmentAnimator() {
-        return new DefaultVerticalAnimator();
-    }
-
-    /**
-     * Set Container's id
-     */
-    protected abstract int setContainerId();
-
     Fragmentation getFragmentation() {
         if (mFragmentation == null) {
-            mFragmentation = new Fragmentation(this, setContainerId());
+            mFragmentation = new Fragmentation(this);
         }
         return mFragmentation;
     }
@@ -109,7 +94,7 @@ public abstract class SupportActivity extends AppCompatActivity {
     /**
      * 获取设置的全局动画
      *
-     * @return
+     * @return FragmentAnimator
      */
     public FragmentAnimator getFragmentAnimator() {
         return new FragmentAnimator(
@@ -119,18 +104,41 @@ public abstract class SupportActivity extends AppCompatActivity {
     }
 
     /**
-     * 设置全局动画
-     *
-     * @param fragmentAnimator
+     * 设置全局动画, 建议使用onCreateFragmentAnimator()设置
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
     }
 
+    /**
+     * 构建Fragment转场动画
+     * <p/>
+     * 如果是在Activity内实现,则构建的是Activity内所有Fragment的转场动画,
+     * 如果是在Fragment内实现,则构建的是该Fragment的转场动画,此时优先级 > Activity的onCreateFragmentAnimator()
+     *
+     * @return FragmentAnimator对象
+     */
+    protected FragmentAnimator onCreateFragmentAnimator() {
+        return new DefaultVerticalAnimator();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            // 这里是防止动画过程中，按返回键取消加载Fragment
+            if (!mFragmentClickable) {
+                setFragmentClickable(true);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     @Override
     public void onBackPressed() {
         // 这里是防止动画过程中，按返回键取消加载Fragment
-        setFragmentClickable(true);
+        if (!mFragmentClickable) {
+            setFragmentClickable(true);
+        }
 
         SupportFragment topFragment = getTopFragment();
         if (topFragment != null) {
@@ -147,11 +155,50 @@ public abstract class SupportActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void loadRootFragment(int containerId, SupportFragment toFragment) {
+        if (getTopFragment() == null) {
+            mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
+        } else {
+            throw new RuntimeException("getTopFragment() is not null!");
+        }
+    }
+
+    @Override
+    public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
+        if (getTopFragment() == null) {
+            mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
+        } else {
+            throw new RuntimeException("getTopFragment() is not null!");
+        }
+    }
+
+    @Override
+    public void start(SupportFragment toFragment) {
+        start(toFragment, SupportFragment.STANDARD);
+    }
+
+    @Override
+    public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
+        mFragmentation.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+    }
+
+    @Override
+    public void startForResult(SupportFragment toFragment, int requestCode) {
+        mFragmentation.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_RESULT);
+    }
+
+    @Override
+    public void startWithPop(SupportFragment toFragment) {
+        mFragmentation.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
+    }
+
     /**
      * 得到位于栈顶Fragment
      *
      * @return
      */
+    @Override
     public SupportFragment getTopFragment() {
         return mFragmentation.getTopFragment(getSupportFragmentManager());
     }
@@ -161,6 +208,7 @@ public abstract class SupportActivity extends AppCompatActivity {
      *
      * @param fragmentClass
      */
+    @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
         return mFragmentation.findStackFragment(fragmentClass, getSupportFragmentManager(), false);
     }
@@ -168,6 +216,7 @@ public abstract class SupportActivity extends AppCompatActivity {
     /**
      * 出栈
      */
+    @Override
     public void pop() {
         mFragmentation.back(getSupportFragmentManager());
     }
@@ -178,6 +227,7 @@ public abstract class SupportActivity extends AppCompatActivity {
      * @param fragmentClass 目标fragment
      * @param includeSelf   是否包含该fragment
      */
+    @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf) {
         mFragmentation.popTo(fragmentClass, includeSelf, null, getSupportFragmentManager());
     }
@@ -185,24 +235,9 @@ public abstract class SupportActivity extends AppCompatActivity {
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
+    @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
-    }
-
-    public void start(SupportFragment toFragment) {
-        start(toFragment, SupportFragment.STANDARD);
-    }
-
-    public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
-        mFragmentation.dispatchStartTransaction(getTopFragment(), toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
-    }
-
-    public void startForResult(SupportFragment to, int requestCode) {
-        mFragmentation.dispatchStartTransaction(getTopFragment(), to, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD);
-    }
-
-    public void startWithPop(SupportFragment to) {
-        mFragmentation.dispatchStartTransaction(getTopFragment(), to, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
     }
 
     void preparePopMultiple() {

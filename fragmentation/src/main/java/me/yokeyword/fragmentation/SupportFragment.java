@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
@@ -22,9 +23,10 @@ import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 /**
  * Created by YoKeyword on 16/1/22.
  */
-public class SupportFragment extends Fragment {
+public class SupportFragment extends Fragment implements ISupportFragment {
     private static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
     private static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
+    static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
 
     // LaunchMode
     public static final int STANDARD = 0;
@@ -56,6 +58,8 @@ public class SupportFragment extends Fragment {
     private DebounceAnimListener mDebounceAnimListener; // 防抖动监听动画
     private boolean mEnterAnimFlag = false; // 用于记录无动画时 直接 解除防抖动处理
 
+    private int mContainerId;   // 该Fragment所处的Container的id
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -72,16 +76,22 @@ public class SupportFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (restoreInstanceState()) {
+            // 恢复 子Fragment
+            processRestoreInstanceState(savedInstanceState);
+        }
+
         Bundle bundle = getArguments();
         if (bundle != null) {
             mRequestCode = bundle.getInt(Fragmentation.ARG_REQUEST_CODE, 0);
             mResultCode = bundle.getInt(Fragmentation.ARG_RESULT_CODE, 0);
             mResultBundle = bundle.getBundle(Fragmentation.ARG_RESULT_BUNDLE);
             mIsRoot = bundle.getBoolean(Fragmentation.ARG_IS_ROOT, false);
+            mContainerId = bundle.getInt(FRAGMENTATION_ARG_CONTAINER);
         }
 
         if (savedInstanceState == null) {
-            mFragmentAnimator = onCreateFragmentAnimation();
+            mFragmentAnimator = onCreateFragmentAnimator();
             if (mFragmentAnimator == null) {
                 mFragmentAnimator = _mActivity.getFragmentAnimator();
             }
@@ -91,6 +101,37 @@ public class SupportFragment extends Fragment {
         }
 
         initAnim();
+    }
+
+    private void processRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            List<Fragment> fragments = getChildFragmentManager().getFragments();
+
+            if (fragments != null && fragments.size() > 0) {
+
+                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                for (int i = fragments.size() - 1; i >= 0; i--) {
+                    Fragment fragment = fragments.get(i);
+
+                    if (fragment instanceof SupportFragment) {
+                        SupportFragment supportFragment = (SupportFragment) fragment;
+                        if (supportFragment.isSupportHidden()) {
+                            ft.hide(supportFragment);
+                        } else {
+                            ft.show(supportFragment);
+                        }
+                    }
+                }
+                ft.commit();
+            }
+        }
+    }
+
+    /**
+     * 内存重启后,是否让Fragmentation帮你恢复子Fragment状态
+     */
+    protected boolean restoreInstanceState() {
+        return true;
     }
 
     private void initAnim() {
@@ -124,6 +165,20 @@ public class SupportFragment extends Fragment {
         }
     }
 
+    /**
+     * 返回Fragment状态 hide : show
+     */
+    boolean isSupportHidden() {
+        return mIsHidden;
+    }
+
+    /**
+     * 获取该Fragment所在的容器id
+     */
+    int getContainerId() {
+        return mContainerId;
+    }
+
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (_mActivity.mPopMulitpleNoAnim || mLocking) {
@@ -131,8 +186,8 @@ public class SupportFragment extends Fragment {
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                if (mIsRoot) {
-                    mNoAnim.setAnimationListener(mDebounceAnimListener);
+                if (mIsRoot) {  // 根Fragment设置为无入栈动画
+                    mEnterAnimFlag = true;
                     return mNoAnim;
                 }
                 return mEnterAnim;
@@ -149,28 +204,11 @@ public class SupportFragment extends Fragment {
         return null;
     }
 
-    /**
-     * 设定当前Fragmemt动画,优先级比在SupportActivity里高
-     */
-    protected FragmentAnimator onCreateFragmentAnimation() {
-        return _mActivity.getFragmentAnimator();
-    }
-
-    /**
-     * 入栈动画 结束时,回调
-     */
-    protected void onEnterAnimationEnd() {
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
-    }
-
-    boolean isSupportHidden() {
-        return mIsHidden;
     }
 
     @Override
@@ -227,6 +265,19 @@ public class SupportFragment extends Fragment {
 
 
     /**
+     * 设定当前Fragmemt动画,优先级比在SupportActivity里高
+     */
+    protected FragmentAnimator onCreateFragmentAnimator() {
+        return _mActivity.getFragmentAnimator();
+    }
+
+    /**
+     * 入栈动画 结束时,回调
+     */
+    protected void onEnterAnimationEnd() {
+    }
+
+    /**
      * (因为事务异步的原因) 如果你想在onCreateView/onActivityCreated中使用 start/pop 方法,请使用该方法把你的任务入队
      *
      * @param runnable 需要执行的任务
@@ -267,7 +318,6 @@ public class SupportFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
@@ -284,8 +334,6 @@ public class SupportFragment extends Fragment {
 
     /**
      * 按下返回键触发
-     *
-     * @return
      */
     public boolean onBackPressedSupport() {
         SupportFragment fragment = getTopChildFragment();
@@ -296,60 +344,93 @@ public class SupportFragment extends Fragment {
         return false;
     }
 
-    /**
-     * 获取栈内的framgent对象
-     *
-     * @param fragmentClass
-     */
-    public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getFragmentManager(), false);
+    @Override
+    public void loadRootFragment(int containerId, SupportFragment toFragment) {
+        if (getTopChildFragment() == null) {
+            mFragmentation.loadRootTransaction(getChildFragmentManager(), containerId, toFragment);
+        } else {
+            throw new RuntimeException("getTopChildFragment() is not null!");
+        }
+    }
+
+    @Override
+    public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
+        if (getTopChildFragment() == null) {
+            mFragmentation.replaceLoadRootTransaction(getChildFragmentManager(), containerId, toFragment, addToBack);
+        } else {
+            throw new RuntimeException("getTopChildFragment() is not null!");
+        }
+    }
+
+    @Override
+    public void start(SupportFragment toFragment) {
+        start(toFragment, STANDARD);
+    }
+
+    @Override
+    public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+    }
+
+    @Override
+    public void startForResult(SupportFragment toFragment, int requestCode) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT);
+    }
+
+    @Override
+    public void startWithPop(SupportFragment toFragment) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
+    }
+
+    @Override
+    public void replaceFragment(SupportFragment toFragment, boolean addToBack) {
+        mFragmentation.replaceTransaction(this, toFragment, addToBack);
     }
 
     /**
-     * 获取栈内的子framgent对象
-     *
-     * @param fragmentClass
+     * @return 位于栈顶的Fragment
      */
-    public <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getChildFragmentManager(), true);
-    }
-
-    /**
-     * 得到位于栈顶的Fragment
-     *
-     * @return
-     */
-    public SupportFragment getPreFragment() {
-        return mFragmentation.getPreFragment(this);
-    }
-
-    /**
-     * 得到位于栈顶的Fragment
-     *
-     * @return
-     */
+    @Override
     public SupportFragment getTopFragment() {
         return mFragmentation.getTopFragment(getFragmentManager());
     }
 
     /**
-     * 得到位于栈顶的子Fragment
-     *
-     * @return
+     * @return 位于栈顶的子Fragment
      */
+    @Override
     public SupportFragment getTopChildFragment() {
         return mFragmentation.getTopFragment(getChildFragmentManager());
     }
 
-    void popForSwipeBack() {
-        mLocking = true;
-        mFragmentation.back(getFragmentManager());
-        mLocking = false;
+    /**
+     * @return 位于当前Fragment的前一个Fragment
+     */
+    @Override
+    public SupportFragment getPreFragment() {
+        return mFragmentation.getPreFragment(this);
+    }
+
+    /**
+     * @return 栈内fragmentClass的framgent对象
+     */
+    @Override
+    public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
+        return mFragmentation.findStackFragment(fragmentClass, getFragmentManager(), false);
+    }
+
+    /**
+     * @return 栈内fragmentClass的子framgent对象
+     */
+    @Override
+    public <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass) {
+        return mFragmentation.findStackFragment(fragmentClass, getChildFragmentManager(), true);
     }
 
     /**
      * 出栈
      */
+    @Override
     public void pop() {
         mFragmentation.back(getFragmentManager());
     }
@@ -360,6 +441,7 @@ public class SupportFragment extends Fragment {
      * @param fragmentClass 目标fragment
      * @param includeSelf   是否包含该fragment
      */
+    @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf) {
         popTo(fragmentClass, includeSelf, null);
     }
@@ -367,51 +449,15 @@ public class SupportFragment extends Fragment {
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
+    @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getFragmentManager());
     }
 
-    public void start(SupportFragment toFragment) {
-        start(toFragment, STANDARD);
-    }
-
-    public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
-        mFragmentation.dispatchStartTransaction(this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
-    }
-
-    public void startForResult(SupportFragment to, int requestCode) {
-        mFragmentation.dispatchStartTransaction(this, to, requestCode, STANDARD, Fragmentation.TYPE_ADD);
-    }
-
-    public void startWithPop(SupportFragment to) {
-        mFragmentation.dispatchStartTransaction(this, to, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
-    }
-
-    public void startChildFragment(int childContainer, Fragment childFragment, boolean addToBack) {
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        ft.add(childContainer, childFragment, childFragment.getClass().getName())
-                .show(childFragment);
-        if (addToBack) {
-            ft.addToBackStack(childFragment.getClass().getName());
-        }
-        ft.commit();
-    }
-
-    /**
-     * 替换子Fragment
-     *
-     * @param childContainer
-     * @param childFragment
-     * @param addToBack
-     */
-    public void replaceChildFragment(int childContainer, Fragment childFragment, boolean addToBack) {
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        ft.replace(childContainer, childFragment, childFragment.getClass().getName())
-                .show(childFragment);
-        if (addToBack) {
-            ft.addToBackStack(childFragment.getClass().getName());
-        }
-        ft.commit();
+    void popForSwipeBack() {
+        mLocking = true;
+        mFragmentation.back(getFragmentManager());
+        mLocking = false;
     }
 
     /**
