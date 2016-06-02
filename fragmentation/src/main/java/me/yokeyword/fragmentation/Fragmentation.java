@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
+import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 
 
@@ -24,12 +24,18 @@ import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
  * Created by YoKeyword on 16/1/22.
  */
 public class Fragmentation {
-    private static final String TAG = Fragmentation.class.getSimpleName();
+    static final String TAG = Fragmentation.class.getSimpleName();
 
-    static final String ARG_REQUEST_CODE = "fragmentation_arg_request_code";
-    static final String ARG_RESULT_CODE = "fragmentation_arg_result_code";
-    static final String ARG_RESULT_BUNDLE = "fragmentation_arg_bundle";
+    //    static final String ARG_REQUEST_CODE = "fragmentation_arg_request_code";
+//    static final String ARG_RESULT_CODE = "fragmentation_arg_result_code";
+//    static final String ARG_RESULT_BUNDLE = "fragmentation_arg_bundle";
+    static final String ARG_RESULT_RECORD = "fragment_arg_result_record";
+
     static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
+    static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
+
+    static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
+    static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
 
     public static final long BUFFER_TIME = 300L;
 
@@ -69,9 +75,6 @@ public class Fragmentation {
     void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type) {
 
         if (type == TYPE_ADD_RESULT) {
-            if (requestCode == 0) {
-                Log.w(TAG, "requsetCode == 0, should be > 0");
-            }
             saveRequestCode(to, requestCode);
         }
 
@@ -91,7 +94,7 @@ public class Fragmentation {
                 break;
             case TYPE_ADD_WITH_POP:
                 if (from != null) {
-                    startWithFinish(fragmentManager, from, to);
+                    startWithPop(fragmentManager, from, to);
                 } else {
                     throw new RuntimeException("startWithPop(): getTopFragment() is null");
                 }
@@ -105,7 +108,7 @@ public class Fragmentation {
             args = new Bundle();
             to.setArguments(args);
         }
-        args.putInt(SupportFragment.FRAGMENTATION_ARG_CONTAINER, containerId);
+        args.putInt(FRAGMENTATION_ARG_CONTAINER, containerId);
     }
 
     /**
@@ -147,7 +150,7 @@ public class Fragmentation {
         FragmentTransaction ft = fragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         if (from == null) {
-            ft.add(to.getArguments().getInt(SupportFragment.FRAGMENTATION_ARG_CONTAINER), to, toName);
+            ft.add(to.getArguments().getInt(FRAGMENTATION_ARG_CONTAINER), to, toName);
 
             Bundle bundle = to.getArguments();
             bundle.putBoolean(ARG_IS_ROOT, true);
@@ -161,15 +164,14 @@ public class Fragmentation {
         ft.commit();
     }
 
-    void startWithFinish(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
+    void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
         SupportFragment preFragment = getPreFragment(from);
         if (preFragment != null) {
-            handlerFinish(preFragment, from, to);
+            hackFinishAnim(preFragment, from, to);
         }
-        passSaveResult(from, to);
 
         fragmentManager.beginTransaction().remove(from).commit();
-        fragmentManager.popBackStack();
+        handleBack(fragmentManager, true);
 
         String toName = to.getClass().getName();
         FragmentTransaction ft = fragmentManager.beginTransaction()
@@ -184,56 +186,21 @@ public class Fragmentation {
     }
 
     /**
-     * pass on Result
+     * 获得栈顶SupportFragment
      *
-     * @param from
-     * @param to
+     * @return
      */
-    private void passSaveResult(SupportFragment from, SupportFragment to) {
-        saveRequestCode(to, from.getRequestCode());
-        Bundle bundle = to.getArguments();
-        bundle.putInt(ARG_RESULT_CODE, from.getResultCode());
-        bundle.putBundle(ARG_RESULT_BUNDLE, from.getResultBundle());
-    }
+    SupportFragment getTopFragment(FragmentManager fragmentManager) {
+        List<Fragment> fragmentList = fragmentManager.getFragments();
+        if (fragmentList == null) return null;
 
-    /**
-     * fix anim
-     */
-    @Nullable
-    private void handlerFinish(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
-        View view = preFragment.getView();
-        if (view != null) {
-            // 不调用 会闪屏
-            view.setVisibility(View.VISIBLE);
-
-            ViewGroup viewGroup;
-            final View fromView = from.getView();
-
-            if (fromView != null && view instanceof ViewGroup) {
-                viewGroup = (ViewGroup) view;
-                ViewGroup container = (ViewGroup) mActivity.findViewById(from.getContainerId());
-                if (container != null) {
-                    container.removeView(fromView);
-                    if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                        fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    }
-
-                    if (viewGroup instanceof LinearLayout) {
-                        viewGroup.addView(fromView, 0);
-                    } else {
-                        viewGroup.addView(fromView);
-                    }
-
-                    final ViewGroup finalViewGroup = viewGroup;
-                    to.setEnterAnimEndListener(new OnEnterAnimEndListener() {
-                        @Override
-                        public void onAnimationEnd() {
-                            finalViewGroup.removeView(fromView);
-                        }
-                    });
-                }
+        for (int i = fragmentList.size() - 1; i >= 0; i--) {
+            Fragment fragment = fragmentList.get(i);
+            if (fragment instanceof SupportFragment) {
+                return (SupportFragment) fragment;
             }
         }
+        return null;
     }
 
     /**
@@ -270,7 +237,7 @@ public class Fragmentation {
 
             for (int i = childFragmentList.size() - 1; i >= 0; i--) {
                 Fragment childFragment = childFragmentList.get(i);
-                if (childFragment != null && childFragment.getClass().getName().equals(fragmentClass.getName())) {
+                if (childFragment instanceof SupportFragment && childFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = childFragment;
                     break;
                 }
@@ -327,55 +294,56 @@ public class Fragmentation {
             bundle = new Bundle();
             to.setArguments(bundle);
         }
-        bundle.putInt(ARG_REQUEST_CODE, requestCode);
+        FragmentResultRecord resultRecord = new FragmentResultRecord();
+        resultRecord.requestCode = requestCode;
+        bundle.putParcelable(ARG_RESULT_RECORD, resultRecord);
     }
 
     void back(FragmentManager fragmentManager) {
         int count = fragmentManager.getBackStackEntryCount();
 
         if (count > 1) {
-            handleBack(fragmentManager);
+            handleBack(fragmentManager, false);
         }
     }
 
     /**
      * handle result
      */
-    private void handleBack(final FragmentManager fragmentManager) {
+    private void handleBack(final FragmentManager fragmentManager, boolean fromStartWithPop) {
         List<Fragment> fragmentList = fragmentManager.getFragments();
-        int count = 0;
-        int requestCode = 0, resultCode = 0;
+
+        boolean flag = false;
+
+        FragmentResultRecord fragmentResultRecord = null;
         long lastAnimTime = 0;
-        Bundle data = null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
             if (fragment instanceof SupportFragment) {
                 final SupportFragment supportFragment = (SupportFragment) fragment;
-                if (count == 0) {
-                    requestCode = supportFragment.getRequestCode();
-
-                    if (requestCode == 0) break;
-
-                    resultCode = supportFragment.getResultCode();
-                    data = supportFragment.getResultBundle();
+                if (!flag) {
+                    Bundle args = supportFragment.getArguments();
+                    if (args == null || !args.containsKey(ARG_RESULT_RECORD)) break;
+                    fragmentResultRecord = args.getParcelable(ARG_RESULT_RECORD);
+                    if (fragmentResultRecord == null) break;
 
                     lastAnimTime = supportFragment.getExitAnimDuration();
-
-                    count++;
+                    flag = true;
                 } else {
-                    final int finalRequestCode = requestCode;
-                    final int finalResultCode = resultCode;
-                    final Bundle finalData = data;
-
+                    final FragmentResultRecord finalFragmentResultRecord = fragmentResultRecord;
                     long animTime = supportFragment.getPopEnterAnimDuration();
 
-                    fragmentManager.popBackStackImmediate();
+                    if (fromStartWithPop) {
+                        fragmentManager.popBackStack();
+                    } else {
+                        fragmentManager.popBackStackImmediate();
+                    }
 
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            supportFragment.onFragmentResult(finalRequestCode, finalResultCode, finalData);
+                            supportFragment.onFragmentResult(finalFragmentResultRecord.requestCode, finalFragmentResultRecord.resultCode, finalFragmentResultRecord.resultBundle);
                         }
                     }, Math.max(animTime, lastAnimTime));
                     return;
@@ -383,33 +351,58 @@ public class Fragmentation {
             }
         }
 
-        fragmentManager.popBackStackImmediate();
-    }
-
-
-    /**
-     * 获得栈顶SupportFragment
-     *
-     * @return
-     */
-    SupportFragment getTopFragment(FragmentManager fragmentManager) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
-        if (fragmentList == null) return null;
-
-        for (int i = fragmentList.size() - 1; i >= 0; i--) {
-            Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
-                return (SupportFragment) fragment;
-            }
+        if (fromStartWithPop) {
+            fragmentManager.popBackStack();
+        } else {
+            fragmentManager.popBackStackImmediate();
         }
-        return null;
     }
 
     /**
-     * fix popTo anim
+     * hack anim
      */
     @Nullable
-    private void fixPopToAnim(Fragment rootFragment, SupportFragment fromFragment) {
+    private void hackFinishAnim(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
+        View view = preFragment.getView();
+        if (view != null) {
+            // 不调用 会闪屏
+            view.setVisibility(View.VISIBLE);
+
+            ViewGroup viewGroup;
+            final View fromView = from.getView();
+
+            if (fromView != null && view instanceof ViewGroup) {
+                viewGroup = (ViewGroup) view;
+                ViewGroup container = (ViewGroup) mActivity.findViewById(from.getContainerId());
+                if (container != null) {
+                    container.removeView(fromView);
+                    if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                        fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    }
+
+                    if (viewGroup instanceof LinearLayout) {
+                        viewGroup.addView(fromView, 0);
+                    } else {
+                        viewGroup.addView(fromView);
+                    }
+
+                    final ViewGroup finalViewGroup = viewGroup;
+                    to.setEnterAnimEndListener(new OnEnterAnimEndListener() {
+                        @Override
+                        public void onAnimationEnd() {
+                            finalViewGroup.removeView(fromView);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * hack popTo anim
+     */
+    @Nullable
+    private void hacPopTokAnim(Fragment rootFragment, SupportFragment fromFragment) {
         if (rootFragment != null) {
             View view = rootFragment.getView();
             if (view != null) {
@@ -471,7 +464,7 @@ public class Fragmentation {
                 return;
             }
 
-            fixPopToAnim(targetFragment, fromFragment);
+            hacPopTokAnim(targetFragment, fromFragment);
             fragmentManager.beginTransaction().remove(fromFragment).commit();
             popToWithTransactionFix(fragmentClass, flag, fragmentManager);
             mHandler.post(afterPopTransactionRunnable);

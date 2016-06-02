@@ -8,6 +8,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,16 +19,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
+import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 
 /**
  * Created by YoKeyword on 16/1/22.
  */
 public class SupportFragment extends Fragment implements ISupportFragment {
-    private static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
-    private static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
-    static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
-
     // LaunchMode
     public static final int STANDARD = 0;
     public static final int SINGLETOP = 1;
@@ -37,8 +35,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public static final int RESULT_OK = -1;
     private static final long SHOW_SPACE = 200L;
 
-    private int mRequestCode = 0, mResultCode = RESULT_CANCELED;
-    private Bundle mResultBundle;
     private Bundle mNewBundle;
     private boolean mIsRoot;
 
@@ -83,11 +79,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mRequestCode = bundle.getInt(Fragmentation.ARG_REQUEST_CODE, 0);
-            mResultCode = bundle.getInt(Fragmentation.ARG_RESULT_CODE, 0);
-            mResultBundle = bundle.getBundle(Fragmentation.ARG_RESULT_BUNDLE);
             mIsRoot = bundle.getBoolean(Fragmentation.ARG_IS_ROOT, false);
-            mContainerId = bundle.getInt(FRAGMENTATION_ARG_CONTAINER);
+            mContainerId = bundle.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
         }
 
         if (savedInstanceState == null) {
@@ -96,8 +89,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
                 mFragmentAnimator = _mActivity.getFragmentAnimator();
             }
         } else {
-            mFragmentAnimator = savedInstanceState.getParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR);
-            mIsHidden = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
+            mFragmentAnimator = savedInstanceState.getParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR);
+            mIsHidden = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
         }
 
         initAnim();
@@ -207,8 +200,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
-        outState.putBoolean(FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
+        outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
+        outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
     }
 
     @Override
@@ -467,15 +460,16 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * @param bundle     设置Result数据
      */
     public void setFramgentResult(int resultCode, Bundle bundle) {
-        mResultCode = resultCode;
-        mResultBundle = bundle;
-
         Bundle args = getArguments();
-        if (args == null) {
-            args = new Bundle();
+        if (args == null || !args.containsKey(Fragmentation.ARG_RESULT_RECORD)) {
+            return;
         }
-        args.putInt(Fragmentation.ARG_RESULT_CODE, mResultCode);
-        args.putBundle(Fragmentation.ARG_RESULT_BUNDLE, mResultBundle);
+
+        FragmentResultRecord fragmentResultRecord = args.getParcelable(Fragmentation.ARG_RESULT_RECORD);
+        if (fragmentResultRecord != null) {
+            fragmentResultRecord.resultCode = resultCode;
+            fragmentResultRecord.resultBundle = bundle;
+        }
     }
 
     /**
@@ -486,14 +480,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * @param data        Result数据
      */
     protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {
-    }
-
-    int getRequestCode() {
-        return mRequestCode;
-    }
-
-    int getResultCode() {
-        return mResultCode;
     }
 
     /**
@@ -513,11 +499,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     Bundle getNewBundle() {
         return mNewBundle;
-    }
-
-
-    Bundle getResultBundle() {
-        return mResultBundle;
     }
 
     void setEnterAnimEndListener(OnEnterAnimEndListener onAnimEndListener) {
