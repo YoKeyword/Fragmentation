@@ -429,6 +429,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
+     * 子栈内 出栈
+     */
+    @Override
+    public void popChild() {
+        mFragmentation.back(getChildFragmentManager());
+    }
+
+    /**
      * 出栈到目标fragment
      *
      * @param fragmentClass 目标fragment
@@ -440,12 +448,29 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
+     * 子栈内
+     */
+    @Override
+    public void popToChild(Class<?> fragmentClass, boolean includeSelf) {
+        popToChild(fragmentClass, includeSelf, null);
+    }
+
+    /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
     @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getFragmentManager());
     }
+
+    /**
+     * 子栈内
+     */
+    @Override
+    public void popToChild(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
+        mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getChildFragmentManager());
+    }
+
 
     void popForSwipeBack() {
         mLocking = true;

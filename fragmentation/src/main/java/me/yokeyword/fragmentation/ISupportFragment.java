@@ -30,4 +30,26 @@ public interface ISupportFragment extends ISupport {
      * @return 目标子Fragment
      */
     <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass);
+
+    /**
+     * 子栈内 出栈
+     */
+    void popChild();
+
+    /**
+     * 子栈内 出栈到目标Fragment
+     *
+     * @param fragmentClass 目标Fragment的Class
+     * @param includeSelf   是否包含目标Fragment
+     */
+    void popToChild(Class<?> fragmentClass, boolean includeSelf);
+
+    /**
+     * 子栈内 出栈到目标Fragment,并在出栈后立即进行Fragment事务(可以防止出栈后,直接进行Fragment事务的异常)
+     *
+     * @param fragmentClass               目标Fragment的Class
+     * @param includeSelf                 是否包含目标Fragment
+     * @param afterPopTransactionRunnable 出栈后紧接着的Fragment事务
+     */
+    void popToChild(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable);
 }
