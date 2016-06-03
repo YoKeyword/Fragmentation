@@ -29,6 +29,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     boolean mPopMulitpleNoAnim = false;
 
+    // 防抖动 是否可以点击
     private boolean mFragmentClickable = true;
 
     private Handler mHandler;
@@ -140,9 +141,10 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
             setFragmentClickable(true);
         }
 
-        SupportFragment topFragment = getTopFragment();
-        if (topFragment != null) {
-            boolean result = topFragment.onBackPressedSupport();
+        // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
+        SupportFragment activeFragment = mFragmentation.getActiveFragment(getSupportFragmentManager());
+        if (activeFragment != null) {
+            boolean result = activeFragment.onBackPressedSupport();
             if (result) {
                 return;
             }
@@ -171,6 +173,20 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         } else {
             throw new RuntimeException("getTopFragment() is not null!");
         }
+    }
+
+    @Override
+    public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
+        if (getTopFragment() == null) {
+            mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
+        } else {
+            throw new RuntimeException("getTopFragment() is not null!");
+        }
+    }
+
+    @Override
+    public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
+        mFragmentation.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
     }
 
     @Override
@@ -262,6 +278,10 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     void setFragmentClickable(boolean clickable) {
         mFragmentClickable = clickable;
+    }
+
+    public void fixFragmentClickable() {
+        mFragmentClickable = true;
     }
 
     /**

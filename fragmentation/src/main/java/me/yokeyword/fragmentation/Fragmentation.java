@@ -64,6 +64,41 @@ public class Fragmentation {
     }
 
     /**
+     * replace分发load根Fragment事务
+     *
+     * @param containerId 容器id
+     * @param to          目标Fragment
+     */
+    void replaceLoadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
+        replaceTransaction(fragmentManager, containerId, to, addToBack);
+    }
+
+    /**
+     * 加载多个根Fragment
+     */
+    void loadMultipleRootTransaction(FragmentManager fragmentManager, int containerId, int showPosition, SupportFragment... tos) {
+        FragmentTransaction ft = fragmentManager.beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        for (int i = 0; i < tos.length; i++) {
+            SupportFragment to = tos[i];
+
+            bindContainerId(containerId, tos[i]);
+
+            String toName = to.getClass().getName();
+            ft.add(containerId, to, toName);
+
+            if (i != showPosition) {
+                ft.hide(to);
+            }
+
+            Bundle bundle = to.getArguments();
+            bundle.putBoolean(ARG_IS_ROOT, true);
+        }
+
+        ft.commit();
+    }
+
+    /**
      * 分发start事务
      *
      * @param from        当前Fragment
@@ -112,16 +147,6 @@ public class Fragmentation {
     }
 
     /**
-     * replace分发load根Fragment事务
-     *
-     * @param containerId 容器id
-     * @param to          目标Fragment
-     */
-    void replaceLoadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
-        replaceTransaction(fragmentManager, containerId, to, addToBack);
-    }
-
-    /**
      * replace事务, 主要用于子Fragment之间的replace
      *
      * @param from      当前Fragment
@@ -143,6 +168,19 @@ public class Fragmentation {
             ft.addToBackStack(to.getClass().getName());
         }
         ft.commit();
+    }
+
+    /**
+     * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
+     *
+     * @param showFragment 需要show的Fragment
+     * @param hideFragment 需要hide的Fragment
+     */
+    void showHideFragment(FragmentManager fragmentManager, SupportFragment showFragment, SupportFragment hideFragment) {
+        fragmentManager.beginTransaction()
+                .show(showFragment)
+                .hide(hideFragment)
+                .commit();
     }
 
     void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
@@ -249,6 +287,23 @@ public class Fragmentation {
             return null;
         }
         return (T) fragment;
+    }
+
+    /**
+     * 从栈顶开始查找,状态为show的Fragment
+     */
+    SupportFragment getActiveFragment(FragmentManager fragmentManager) {
+        List<Fragment> fragmentList = fragmentManager.getFragments();
+        for (int i = fragmentList.size() - 1; i >= 0; i--) {
+            Fragment fragment = fragmentList.get(i);
+            if (fragment instanceof SupportFragment) {
+                SupportFragment supportFragment = (SupportFragment) fragment;
+                if (!supportFragment.isHidden()) {
+                    return supportFragment;
+                }
+            }
+        }
+        return null;
     }
 
     /**

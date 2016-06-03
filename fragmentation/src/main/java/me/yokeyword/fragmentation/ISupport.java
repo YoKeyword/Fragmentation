@@ -20,6 +20,22 @@ public interface ISupport {
     void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack);
 
     /**
+     * 加载多个根Fragment
+     *
+     * @param containerId 容器id
+     * @param toFragments  目标Fragments
+     */
+    void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments);
+
+    /**
+     * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
+     *
+     * @param showFragment 需要show的Fragment
+     * @param hideFragment 需要hide的Fragment
+     */
+    void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment);
+
+    /**
      * 启动目标Fragment
      *
      * @param toFragment 目标Fragment

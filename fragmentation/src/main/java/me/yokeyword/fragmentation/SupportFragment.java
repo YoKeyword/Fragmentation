@@ -329,9 +329,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * 按下返回键触发
      */
     public boolean onBackPressedSupport() {
-        SupportFragment fragment = getTopChildFragment();
-        if (fragment != null) {
-            boolean result = fragment.onBackPressedSupport();
+        // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
+        SupportFragment activeFragment = mFragmentation.getActiveFragment(getChildFragmentManager());
+        if (activeFragment != null) {
+            boolean result = activeFragment.onBackPressedSupport();
             if (result) return true;
         }
         return false;
@@ -353,6 +354,20 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         } else {
             throw new RuntimeException("getTopChildFragment() is not null!");
         }
+    }
+
+    @Override
+    public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
+        if (getTopChildFragment() == null) {
+            mFragmentation.loadMultipleRootTransaction(getChildFragmentManager(), containerId, showPosition, toFragments);
+        } else {
+            throw new RuntimeException("getTopChildFragment() is not null!");
+        }
+    }
+
+    @Override
+    public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
+        mFragmentation.showHideFragment(getChildFragmentManager(), showFragment, hideFragment);
     }
 
     @Override
