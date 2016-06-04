@@ -134,6 +134,10 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * 注意,如果你需要复写该方法,请务必在需要finish Activity的代码处,使用super.onBackPressed()代替,以保证SupportFragment的onBackPressedSupport()方法可以正常工作
+     * 该方法默认在栈内Fragment数大于1时,按返回键使Fragment pop, 小于等于1时,finish Activity.
+     */
     @Override
     public void onBackPressed() {
         // 这里是防止动画过程中，按返回键取消加载Fragment
@@ -142,12 +146,9 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         }
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
-        SupportFragment activeFragment = mFragmentation.getActiveFragment(getSupportFragmentManager());
-        if (activeFragment != null) {
-            boolean result = activeFragment.onBackPressedSupport();
-            if (result) {
-                return;
-            }
+        SupportFragment activeFragment = mFragmentation.getActiveFragment(null, getSupportFragmentManager());
+        if (dispatchBackPressedEvent(activeFragment)) {
+            return;
         }
 
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
@@ -155,6 +156,25 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         } else {
             finish();
         }
+    }
+
+    /**
+     * 分发回退事件, 优先栈顶(有子栈则是子栈的栈顶)的Fragment
+     */
+    private boolean dispatchBackPressedEvent(SupportFragment activeFragment) {
+        if (activeFragment != null) {
+            boolean result = activeFragment.onBackPressedSupport();
+            if (result) {
+                return true;
+            }
+
+            Fragment parentFragment = activeFragment.getParentFragment();
+            if (dispatchBackPressedEvent((SupportFragment) parentFragment)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -280,7 +300,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mFragmentClickable = clickable;
     }
 
-    public void fixFragmentClickable() {
+    public void setFragmentClickable() {
         mFragmentClickable = true;
     }
 

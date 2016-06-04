@@ -326,15 +326,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 按下返回键触发
+     * 按返回键触发,前提是SupportActivity的onBackPressed()方法能被调用
+     *
+     * @return false则继续向上传递, true则消费掉该事件
      */
     public boolean onBackPressedSupport() {
-        // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
-        SupportFragment activeFragment = mFragmentation.getActiveFragment(getChildFragmentManager());
-        if (activeFragment != null) {
-            boolean result = activeFragment.onBackPressedSupport();
-            if (result) return true;
-        }
         return false;
     }
 

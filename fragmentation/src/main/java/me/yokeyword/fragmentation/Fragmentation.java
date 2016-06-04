@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -290,20 +291,24 @@ public class Fragmentation {
     }
 
     /**
-     * 从栈顶开始查找,状态为show的Fragment
+     * 从栈顶开始查找,状态为show & userVisible的Fragment
      */
-    SupportFragment getActiveFragment(FragmentManager fragmentManager) {
+    SupportFragment getActiveFragment(SupportFragment parentFragment, FragmentManager fragmentManager) {
         List<Fragment> fragmentList = fragmentManager.getFragments();
+        if (fragmentList == null) {
+            return parentFragment;
+        }
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
             if (fragment instanceof SupportFragment) {
                 SupportFragment supportFragment = (SupportFragment) fragment;
-                if (!supportFragment.isHidden()) {
-                    return supportFragment;
+                if (!supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
+                    Log.i(TAG, "ActiveFragment: " + supportFragment.getClass().getSimpleName());
+                    return getActiveFragment(supportFragment, supportFragment.getChildFragmentManager());
                 }
             }
         }
-        return null;
+        return parentFragment;
     }
 
     /**
