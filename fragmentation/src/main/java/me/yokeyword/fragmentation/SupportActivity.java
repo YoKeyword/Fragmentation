@@ -136,7 +136,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     /**
      * 注意,如果你需要复写该方法,请务必在需要finish Activity的代码处,使用super.onBackPressed()代替,以保证SupportFragment的onBackPressedSupport()方法可以正常工作
-     * 该方法默认在栈内Fragment数大于1时,按返回键使Fragment pop, 小于等于1时,finish Activity.
+     * 该方法默认在回退栈内Fragment数大于1时,按返回键使Fragment pop, 小于等于1时,finish Activity.
      */
     @Override
     public void onBackPressed() {
@@ -154,8 +154,16 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             mFragmentation.back(getSupportFragmentManager());
         } else {
-            finish();
+            onBackPressedSupport();
         }
+    }
+
+    /**
+     * 该方法回调时机为,Activity回退栈内Fragment的数量 小于等于1 时,默认finish Activity
+     * 请尽量复写该方法,避免复写onBackPress(),以保证SupportFragment内的onBackPressedSupport()回退事件正常执行
+     */
+    public void onBackPressedSupport() {
+        finish();
     }
 
     /**
