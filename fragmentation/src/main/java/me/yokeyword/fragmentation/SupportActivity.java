@@ -42,9 +42,9 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
         mFragmentAnimator = onCreateFragmentAnimator();
 
-        if (restoreInstanceState()) {
-            processRestoreInstanceState(savedInstanceState);
-        }
+//        if (restoreInstanceState()) {
+//            processRestoreInstanceState(savedInstanceState);
+//        }
     }
 
     private void processRestoreInstanceState(Bundle savedInstanceState) {

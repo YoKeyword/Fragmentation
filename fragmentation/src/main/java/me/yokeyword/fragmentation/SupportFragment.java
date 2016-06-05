@@ -72,11 +72,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (restoreInstanceState()) {
-            // 恢复 子Fragment
-            processRestoreInstanceState(savedInstanceState);
-        }
-
         Bundle bundle = getArguments();
         if (bundle != null) {
             mIsRoot = bundle.getBoolean(Fragmentation.ARG_IS_ROOT, false);
@@ -93,30 +88,24 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mIsHidden = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
         }
 
+        if (restoreInstanceState()) {
+            // 恢复 Fragment
+            processRestoreInstanceState(savedInstanceState);
+        }
+
+
         initAnim();
     }
 
     private void processRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            List<Fragment> fragments = getChildFragmentManager().getFragments();
-
-            if (fragments != null && fragments.size() > 0) {
-
-                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                for (int i = fragments.size() - 1; i >= 0; i--) {
-                    Fragment fragment = fragments.get(i);
-
-                    if (fragment instanceof SupportFragment) {
-                        SupportFragment supportFragment = (SupportFragment) fragment;
-                        if (supportFragment.isSupportHidden()) {
-                            ft.hide(supportFragment);
-                        } else {
-                            ft.show(supportFragment);
-                        }
-                    }
-                }
-                ft.commit();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            if (isSupportHidden()) {
+                ft.hide(this);
+            } else {
+                ft.show(this);
             }
+            ft.commit();
         }
     }
 
@@ -203,6 +192,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
+
+        System.out.println(this.getClass().getSimpleName() + "-----save---->" + isHidden());
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
     }
 
@@ -211,7 +202,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         super.onActivityCreated(savedInstanceState);
 
         View view = getView();
-        initFragmentBackground(view);
+//        initFragmentBackground(view);
         // 防止某种情况 上一个Fragment仍可点击问题
         if (view != null) {
             view.setClickable(true);
