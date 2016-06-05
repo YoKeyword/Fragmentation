@@ -108,6 +108,10 @@ public class Fragmentation {
      * @param type        类型
      */
     void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String name) {
+        // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
+        if (sharedElement != null) {
+            FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
+        }
 
         if (type == TYPE_ADD_RESULT) {
             saveRequestCode(to, requestCode);
