@@ -184,6 +184,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             } else {
                 return mExitAnim;
             }
+        } else {
+            if (enter) {    // 此处在设置SharedElement时,回调  transit=0, enter=true, nextAnim=0
+                mEnterAnimFlag = true;
+            }
         }
         return null;
     }
@@ -192,8 +196,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
-
-        System.out.println(this.getClass().getSimpleName() + "-----save---->" + isHidden());
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
     }
 
@@ -367,17 +369,27 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD, null, null);
     }
 
     @Override
     public void startForResult(SupportFragment toFragment, int requestCode) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT);
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, null, null);
     }
 
     @Override
     public void startWithPop(SupportFragment toFragment) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP, null, null);
+    }
+
+    @Override
+    public void startWithSharedElement(SupportFragment toFragment, View sharedElement, String name) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD, sharedElement, name);
+    }
+
+    @Override
+    public void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String name) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, sharedElement, name);
     }
 
     @Override

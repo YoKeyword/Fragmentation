@@ -60,7 +60,7 @@ public class Fragmentation {
      */
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to) {
         bindContainerId(containerId, to);
-        dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_ADD);
+        dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_ADD, null, null);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Fragmentation {
      * @param launchMode  启动模式
      * @param type        类型
      */
-    void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type) {
+    void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String name) {
 
         if (type == TYPE_ADD_RESULT) {
             saveRequestCode(to, requestCode);
@@ -125,7 +125,7 @@ public class Fragmentation {
         switch (type) {
             case TYPE_ADD:
             case TYPE_ADD_RESULT:
-                start(fragmentManager, from, to);
+                start(fragmentManager, from, to, sharedElement, name);
                 break;
             case TYPE_ADD_WITH_POP:
                 if (from != null) {
@@ -183,10 +183,15 @@ public class Fragmentation {
                 .commit();
     }
 
-    void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
+    void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, View sharedElement, String name) {
         String toName = to.getClass().getName();
-        FragmentTransaction ft = fragmentManager.beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        if (sharedElement == null) {
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        } else {
+            ft.addSharedElement(sharedElement, name);
+        }
         if (from == null) {
             ft.add(to.getArguments().getInt(FRAGMENTATION_ARG_CONTAINER), to, toName);
 
