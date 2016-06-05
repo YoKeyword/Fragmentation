@@ -159,9 +159,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 返回Fragment状态 hide : show
+     * 仅在内存重启后有意义(saveInstanceState!=null时)
+     *
+     * @return Fragment状态 hide : show
      */
-    boolean isSupportHidden() {
+    public boolean isSupportHidden() {
         return mIsHidden;
     }
 
@@ -211,8 +213,9 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         View view = getView();
         initFragmentBackground(view);
         // 防止某种情况 上一个Fragment仍可点击问题
-        assert view != null;
-        view.setClickable(true);
+        if (view != null) {
+            view.setClickable(true);
+        }
 
         if (savedInstanceState != null) {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下

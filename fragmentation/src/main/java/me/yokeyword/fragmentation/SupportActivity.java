@@ -348,31 +348,38 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
                     sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n\n");
                 }
             } else if (i == 0) {
-                sb.append("\t栈底\t\t\t" + fragmentRecord.fragmentName + "\n");
+                sb.append("\t栈底\t\t\t" + fragmentRecord.fragmentName + "\n\n");
+                processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
                 sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+                Log.i(TAG, sb.toString());
+                return;
             } else {
                 sb.append("\t↓\t\t\t" + fragmentRecord.fragmentName + "\n\n");
             }
 
-            processChildLog(fragmentRecord.childFragmentRecord, sb);
+            processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
         }
-
-        Log.i(TAG, sb.toString());
     }
 
-    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb) {
+    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
         if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
 
         for (int j = 0; j < fragmentRecordList.size(); j++) {
             DebugFragmentRecord childFragmentRecord = fragmentRecordList.get(j);
-            if (j == 0) {
-                sb.append("\t \t\t\t\t子栈顶\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
-            } else if (j == fragmentRecordList.size() - 1) {
-                sb.append("\t \t\t\t\t子栈底\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
-            } else {
-                sb.append("\t \t\t\t\t↓\t\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
+            for (int k = 0; k < childHierarchy; k++) {
+                sb.append("\t\t\t");
             }
-            processChildLog(childFragmentRecord.childFragmentRecord, sb);
+            if (j == 0) {
+                sb.append("\t子栈顶\t\t" + childFragmentRecord.fragmentName + "\n\n");
+            } else if (j == fragmentRecordList.size() - 1) {
+                sb.append("\t子栈底\t\t" + childFragmentRecord.fragmentName + "\n\n");
+                processChildLog(childFragmentRecord.childFragmentRecord, sb, ++childHierarchy);
+                return;
+            } else {
+                sb.append("\t↓\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
+            }
+
+            processChildLog(childFragmentRecord.childFragmentRecord, sb, childHierarchy);
         }
     }
 }

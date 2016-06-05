@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -303,7 +302,6 @@ public class Fragmentation {
             if (fragment instanceof SupportFragment) {
                 SupportFragment supportFragment = (SupportFragment) fragment;
                 if (!supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
-                    Log.i(TAG, "ActiveFragment: " + supportFragment.getClass().getSimpleName());
                     return getActiveFragment(supportFragment, supportFragment.getChildFragmentManager());
                 }
             }
