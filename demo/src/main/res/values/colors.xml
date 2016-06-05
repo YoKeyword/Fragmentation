@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#D32F2F</color>
     <color name="colorAccent">#536DFE</color>
     <color name="bg_app">#F1F1F1</color>
+
+    <color name="tab_unselect">#c9c9c9</color>
 </resources>

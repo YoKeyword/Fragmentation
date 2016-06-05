@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
+
+    <include layout="@layout/toolbar"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="64dp"
+            android:src="@drawable/ic_launcher"/>
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/btn_flow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="24dp"
+        android:theme="@style/AppButtonStyle"
+        android:layout_marginRight="24dp"
+        android:text="进入流式Demo (简单Fragment嵌套)"/>
+
+    <Button
+        android:id="@+id/btn_multiple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="24dp"
+        android:theme="@style/AppButtonStyle"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="24dp"
+        android:text="进入仿知乎Demo (复杂Fragment嵌套)"/>
+</LinearLayout>

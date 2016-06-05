@@ -5,20 +5,13 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:fitsSystemWindows="true"
-             tools:context=".ui.fragment.home.HomeFragment">
+             tools:context=".flow.ui.fragment.home.HomeFragment">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
-            <include layout="@layout/toolbar"/>
-
-        </android.support.design.widget.AppBarLayout>
+        <include layout="@layout/toolbar"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recy"

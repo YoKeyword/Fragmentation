@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="修改详情页标题"/>
+        android:text="确定修改详情页的标题"/>
 
     <Button
         android:id="@+id/btn_next"

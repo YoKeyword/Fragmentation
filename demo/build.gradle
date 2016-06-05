@@ -26,6 +26,7 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'com.android.support:cardview-v7:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
     compile project(':fragmentation_swipeback')
     compile project(':fragmentation')
 }
