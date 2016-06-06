@@ -560,6 +560,8 @@ public class Fragmentation {
      * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
      */
     private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
+        if (fragmentManager.getFragments() == null) return;
+
         fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
 
         long popAniDuration;

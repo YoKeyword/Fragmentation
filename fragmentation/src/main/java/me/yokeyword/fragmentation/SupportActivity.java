@@ -41,34 +41,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mFragmentation = getFragmentation();
 
         mFragmentAnimator = onCreateFragmentAnimator();
-
-//        if (restoreInstanceState()) {
-//            processRestoreInstanceState(savedInstanceState);
-//        }
-    }
-
-    private void processRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-
-            if (fragments != null && fragments.size() > 0) {
-
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                for (int i = fragments.size() - 1; i >= 0; i--) {
-                    Fragment fragment = fragments.get(i);
-
-                    if (fragment instanceof SupportFragment) {
-                        SupportFragment supportFragment = (SupportFragment) fragment;
-                        if (supportFragment.isSupportHidden()) {
-                            ft.hide(supportFragment);
-                        } else {
-                            ft.show(supportFragment);
-                        }
-                    }
-                }
-                ft.commit();
-            }
-        }
     }
 
     /**
