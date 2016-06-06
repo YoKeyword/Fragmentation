@@ -204,7 +204,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         super.onActivityCreated(savedInstanceState);
 
         View view = getView();
-//        initFragmentBackground(view);
+        initFragmentBackground(view);
         // 防止某种情况 上一个Fragment仍可点击问题
         if (view != null) {
             view.setClickable(true);

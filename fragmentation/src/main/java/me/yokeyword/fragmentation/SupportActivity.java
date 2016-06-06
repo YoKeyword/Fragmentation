@@ -43,13 +43,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mFragmentAnimator = onCreateFragmentAnimator();
     }
 
-    /**
-     * 内存重启后,是否让Fragmentation帮你恢复Fragment状态
-     */
-    protected boolean restoreInstanceState() {
-        return true;
-    }
-
     Fragmentation getFragmentation() {
         if (mFragmentation == null) {
             mFragmentation = new Fragmentation(this);
