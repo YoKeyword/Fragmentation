@@ -17,7 +17,7 @@
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:layout_marginBottom="64dp"
-            android:src="@drawable/ic_launcher"/>
+            android:src="@drawable/logo"/>
     </FrameLayout>
 
     <Button

@@ -67,10 +67,4 @@ public class FirstDetailFragment extends BaseBackFragment {
             }
         });
     }
-
-    @Override
-    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        System.out.println("transit = [" + transit + "], enter = [" + enter + "], nextAnim = [" + nextAnim + "]");
-        return super.onCreateAnimation(transit, enter, nextAnim);
-    }
 }
