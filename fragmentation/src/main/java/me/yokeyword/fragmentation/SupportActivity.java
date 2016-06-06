@@ -116,11 +116,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
             return;
         }
 
-        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            mFragmentation.back(getSupportFragmentManager());
-        } else {
-            onBackPressedSupport();
-        }
+        onBackPressedSupport();
     }
 
     /**
@@ -128,7 +124,11 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      * 请尽量复写该方法,避免复写onBackPress(),以保证SupportFragment内的onBackPressedSupport()回退事件正常执行
      */
     public void onBackPressedSupport() {
-        finish();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            mFragmentation.back(getSupportFragmentManager());
+        } else {
+            finish();
+        }
     }
 
     /**

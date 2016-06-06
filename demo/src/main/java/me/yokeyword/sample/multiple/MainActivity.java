@@ -104,7 +104,7 @@ public class MainActivity extends SupportActivity implements BaseLazyMainFragmen
                 }
 
 
-                // 这里在实际项目中,推荐使用EventBus来实现 -> 接耦
+                // 这里推荐使用EventBus来实现 -> 解耦
                 if (count == 1) {
                     EventBus.getDefault().post(new TabSelectedEvent(position));
                 }
