@@ -42,4 +42,11 @@ public class MeFragment extends BaseFragment {
             }
         });
     }
+
+    @Override
+    public boolean onBackPressedSupport() {
+        // 这里实际项目中推荐使用 EventBus接耦
+        ((MultiFourthFragment)getParentFragment()).onBackToFirstFragment();
+        return true;
+    }
 }

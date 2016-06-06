@@ -52,4 +52,8 @@ public class MultiFourthFragment extends BaseLazyMainFragment {
         loadRootFragment(R.id.fl_fourth_container_upper, AvatarFragment.newInstance());
         loadRootFragment(R.id.fl_fourth_container_lower, MeFragment.newInstance());
     }
+
+    public void onBackToFirstFragment() {
+        _mBackToFirstListener.onBackToFirstFragment();
+    }
 }
