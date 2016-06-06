@@ -36,7 +36,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private static final long SHOW_SPACE = 200L;
 
     private Bundle mNewBundle;
-    private boolean mIsRoot;
+    private boolean mIsRoot, mIsSharedElement;
 
     private InputMethodManager mIMM;
     private OnEnterAnimEndListener mOnAnimEndListener; // fragmentation所用
@@ -75,6 +75,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             mIsRoot = bundle.getBoolean(Fragmentation.ARG_IS_ROOT, false);
+            mIsSharedElement = bundle.getBoolean(Fragmentation.ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
         }
 
@@ -184,12 +185,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             } else {
                 return mExitAnim;
             }
-        } else {
+        } else if (mIsSharedElement) {
             if (enter) {    // 此处在设置SharedElement时,回调  transit=0, enter=true, nextAnim=0
                 mEnterAnimFlag = true;
+            } else if (getEnterTransition() == null) {
+                return mExitAnim;
             }
         }
-        return null;
+        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
     @Override

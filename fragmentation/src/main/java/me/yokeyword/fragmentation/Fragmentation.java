@@ -32,6 +32,7 @@ public class Fragmentation {
     static final String ARG_RESULT_RECORD = "fragment_arg_result_record";
 
     static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
+    static final String ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
 
     static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
@@ -194,6 +195,8 @@ public class Fragmentation {
         if (sharedElement == null) {
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         } else {
+            Bundle bundle = to.getArguments();
+            bundle.putBoolean(ARG_IS_SHARED_ELEMENT, true);
             ft.addSharedElement(sharedElement, name);
         }
         if (from == null) {
@@ -203,7 +206,6 @@ public class Fragmentation {
             bundle.putBoolean(ARG_IS_ROOT, true);
         } else {
             ft.add(from.getContainerId(), to, toName);
-
             ft.hide(from);
         }
 
