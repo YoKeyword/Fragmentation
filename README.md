@@ -43,15 +43,17 @@ A powerful library that manage Fragment for Android!
 # 重大更新日志
 ### 0.7.X 来了！！
 
-1、全新的Fragment恢复机制
+1、仿知乎的新Demo，展示复杂嵌套Fragment的交互场景
 
-2、更容易编写各种嵌套Fragment的代码
+2、全新的Fragment恢复机制
 
-3、支持同级Fragment的处理
+3、更容易编写各种嵌套Fragment的代码
 
-4、实验性支持SharedElement－Material过渡动画
+4、支持同级Fragment的处理
 
-5、全新的类似Android事件分发机制的onBackPressedSupport()
+5、实验性支持SharedElement－Material过渡动画
+
+6、全新的类似Android事件分发机制的onBackPressedSupport()
 
 # 如何使用
 **1. 项目下app的build.gradle中依赖：**
