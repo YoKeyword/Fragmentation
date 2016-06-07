@@ -9,10 +9,12 @@ import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
+import me.yokeyword.sample.flow.ui.fragment.shop.ShopFragment;
 import me.yokeyword.sample.multiple.event.TabSelectedEvent;
 import me.yokeyword.sample.multiple.ui.fragment.BaseLazyMainFragment;
 import me.yokeyword.sample.multiple.ui.fragment.first.FirstHomeFragment;
 import me.yokeyword.sample.multiple.ui.fragment.first.MultiFirstFragment;
+import me.yokeyword.sample.multiple.ui.fragment.fourth.MeFragment;
 import me.yokeyword.sample.multiple.ui.fragment.fourth.MultiFourthFragment;
 import me.yokeyword.sample.multiple.ui.fragment.second.MultiSecondFragment;
 import me.yokeyword.sample.multiple.ui.fragment.second.ViewPagerFragment;
@@ -99,6 +101,10 @@ public class MainActivity extends SupportActivity implements BaseLazyMainFragmen
                         currentFragment.popToChild(FirstHomeFragment.class, false);
                     } else if (currentFragment instanceof MultiSecondFragment) {
                         currentFragment.popToChild(ViewPagerFragment.class, false);
+                    } else if (currentFragment instanceof MultiThirdFragment) {
+                        currentFragment.popToChild(ShopFragment.class, false);
+                    } else if (currentFragment instanceof MultiFourthFragment) {
+                        currentFragment.popToChild(MeFragment.class, false);
                     }
                     return;
                 }
@@ -134,8 +140,6 @@ public class MainActivity extends SupportActivity implements BaseLazyMainFragmen
 //            mBottomBar.show();
 //        }
 //    }
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
