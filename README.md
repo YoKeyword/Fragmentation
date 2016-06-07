@@ -86,4 +86,4 @@ public class HomeFragment extends SupportFragment {
 ### [进一步使用，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
 
 # 最后
-有任何问题欢迎提issue或发邮件一起探讨，欢迎Start，Fork，PR！
+有任何问题欢迎提issue或发邮件一起探讨，欢迎Star，Fork，PR！
