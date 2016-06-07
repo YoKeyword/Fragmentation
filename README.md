@@ -12,9 +12,10 @@ A powerful library that manage Fragment for Android!
 [Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
 
 # Demo演示：
-单Activity + 多Fragment
+单Activity + 多Fragment，第一个为简单场景demo，第二个为仿知乎的复杂嵌套demo
 
-<img src="/gif/demo.gif"/>
+<img src="/gif/demo.gif" width="320px"/>
+<img src="/gif/nested.gif" width="320px"/>
 
 # 特性
 1、**有效解决各种复杂嵌套、同级等Fragment重叠问题**
@@ -35,8 +36,8 @@ A powerful library that manage Fragment for Android!
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
-重大更新日志
-0.7.X:
+# 重大更新日志
+### 0.7.X 来了！！
 
 1、全新的Fragment恢复机制
 
