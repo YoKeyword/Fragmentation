@@ -3,19 +3,23 @@ A powerful library that manage Fragment for Android!
 
 为"单Activity ＋ 多Fragment的架构","多模块Activity + 多Fragment的架构"而生，帮你简化使用过程，轻松解决各种复杂嵌套等问题，修复了官方Fragment库存在的一些BUG。
 
-（新：Fragmentation-SwipeBack库，支持类似IOS的滑动边缘返回功能，[实现分析](http://www.jianshu.com/p/626229ca4dc2)）
+![](/gif/logo.png)
 
-为了更好的使用和了解该库,推荐你阅读下面2篇文章:
 
-相关阅读：
-[Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)    ， 
+为了更好的使用和了解该库，推荐阅读下面的文章:
+
+[Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)
+
 [Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
+
+[Fragmentation-SwipeBack库，滑动边缘返回实现分析](http://www.jianshu.com/p/626229ca4dc2)
+
 
 # Demo演示：
 单Activity + 多Fragment，第一个为简单场景demo，第二个为仿知乎的复杂嵌套demo
 
 <img src="/gif/demo.gif" width="320px"/>
-<img src="/gif/nested.gif" width="320px"/>
+&emsp;&emsp;&emsp;&emsp;<img src="/gif/nested.gif" width="320px"/>
 
 # 特性
 1、**有效解决各种复杂嵌套、同级等Fragment重叠问题**
