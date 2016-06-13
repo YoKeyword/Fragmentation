@@ -182,6 +182,9 @@ public class Fragmentation {
      * @param hideFragment 需要hide的Fragment
      */
     void showHideFragment(FragmentManager fragmentManager, SupportFragment showFragment, SupportFragment hideFragment) {
+        if (showFragment == hideFragment) return;
+
+        // 如果show和hide的Fragment不是同一个
         fragmentManager.beginTransaction()
                 .show(showFragment)
                 .hide(hideFragment)
