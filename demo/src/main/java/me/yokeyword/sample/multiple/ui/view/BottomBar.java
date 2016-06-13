@@ -2,7 +2,6 @@ package me.yokeyword.sample.multiple.ui.view;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
@@ -12,10 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import me.yokeyword.sample.R;
 
 
 /**
@@ -43,15 +39,15 @@ public class BottomBar extends LinearLayout {
 
     public BottomBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init(context, attrs);
     }
 
-    private void init(Context context) {
+    private void init(Context context, AttributeSet attrs) {
         setOrientation(VERTICAL);
 
-        ImageView shadowView = new ImageView(context);
-        shadowView.setBackgroundResource(R.drawable.actionbar_shadow_up);
-        addView(shadowView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//        ImageView shadowView = new ImageView(context);
+//        shadowView.setBackgroundResource(R.drawable.actionbar_shadow_up);
+//        addView(shadowView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mTabLayout = new LinearLayout(context);
         mTabLayout.setBackgroundColor(Color.WHITE);
