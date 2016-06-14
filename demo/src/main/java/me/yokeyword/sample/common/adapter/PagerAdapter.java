@@ -30,6 +30,7 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.MyViewHolder
     public void setDatas(List<String> items) {
         mItems.clear();
         mItems.addAll(items);
+        notifyDataSetChanged();
     }
 
     @Override

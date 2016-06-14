@@ -1,6 +1,7 @@
 package me.yokeyword.sample.flow.ui.fragment.discover;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -71,19 +72,24 @@ public class PagerChildFragment extends BaseFragment {
             }
         });
 
-        // Init Datas
-        List<String> items = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            String item;
-            if (mFrom == 0) {
-                item = "推荐 " + i;
-            } else if (mFrom == 1) {
-                item = "热门 " + i;
-            } else {
-                item = "收藏 " + i;
+        mRecy.post(new Runnable() {
+            @Override
+            public void run() {
+                // Init Datas
+                List<String> items = new ArrayList<>();
+                for (int i = 0; i < 20; i++) {
+                    String item;
+                    if (mFrom == 0) {
+                        item = "推荐 " + i;
+                    } else if (mFrom == 1) {
+                        item = "热门 " + i;
+                    } else {
+                        item = "收藏 " + i;
+                    }
+                    items.add(item);
+                }
+                mAdapter.setDatas(items);
             }
-            items.add(item);
-        }
-        mAdapter.setDatas(items);
+        });
     }
 }
