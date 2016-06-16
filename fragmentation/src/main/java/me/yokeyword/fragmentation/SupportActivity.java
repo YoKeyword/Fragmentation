@@ -78,7 +78,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     /**
      * 构建Fragment转场动画
-     * <p/>
+     * <p>
      * 如果是在Activity内实现,则构建的是Activity内所有Fragment的转场动画,
      * 如果是在Fragment内实现,则构建的是该Fragment的转场动画,此时优先级 > Activity的onCreateFragmentAnimator()
      *
@@ -152,29 +152,17 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        if (getTopFragment() == null) {
-            mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
-        } else {
-            throw new RuntimeException("getTopFragment() is not null!");
-        }
+        mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
     }
 
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
-        if (getTopFragment() == null) {
-            mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
-        } else {
-            throw new RuntimeException("getTopFragment() is not null!");
-        }
+        mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
     }
 
     @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
-        if (getTopFragment() == null) {
-            mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
-        } else {
-            throw new RuntimeException("getTopFragment() is not null!");
-        }
+        mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
     }
 
     @Override

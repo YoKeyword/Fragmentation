@@ -207,7 +207,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         super.onActivityCreated(savedInstanceState);
 
         View view = getView();
-        initFragmentBackground(view);
+//        initFragmentBackground(view);
         // 防止某种情况 上一个Fragment仍可点击问题
         if (view != null) {
             view.setClickable(true);
@@ -335,29 +335,17 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        if (getTopChildFragment() == null) {
-            mFragmentation.loadRootTransaction(getChildFragmentManager(), containerId, toFragment);
-        } else {
-            throw new RuntimeException("getTopChildFragment() is not null!");
-        }
+        mFragmentation.loadRootTransaction(getChildFragmentManager(), containerId, toFragment);
     }
 
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
-        if (getTopChildFragment() == null) {
-            mFragmentation.replaceLoadRootTransaction(getChildFragmentManager(), containerId, toFragment, addToBack);
-        } else {
-            throw new RuntimeException("getTopChildFragment() is not null!");
-        }
+        mFragmentation.replaceLoadRootTransaction(getChildFragmentManager(), containerId, toFragment, addToBack);
     }
 
     @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
-        if (getTopChildFragment() == null) {
-            mFragmentation.loadMultipleRootTransaction(getChildFragmentManager(), containerId, showPosition, toFragments);
-        } else {
-            throw new RuntimeException("getTopChildFragment() is not null!");
-        }
+        mFragmentation.loadMultipleRootTransaction(getChildFragmentManager(), containerId, showPosition, toFragments);
     }
 
     @Override
