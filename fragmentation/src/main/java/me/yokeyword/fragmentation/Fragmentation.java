@@ -26,9 +26,6 @@ import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 public class Fragmentation {
     static final String TAG = Fragmentation.class.getSimpleName();
 
-    //    static final String ARG_REQUEST_CODE = "fragmentation_arg_request_code";
-//    static final String ARG_RESULT_CODE = "fragmentation_arg_result_code";
-//    static final String ARG_RESULT_BUNDLE = "fragmentation_arg_bundle";
     static final String ARG_RESULT_RECORD = "fragment_arg_result_record";
 
     static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
