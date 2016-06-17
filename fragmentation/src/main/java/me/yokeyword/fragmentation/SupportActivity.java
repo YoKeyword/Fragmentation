@@ -157,7 +157,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
-        mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
+        mFragmentation.replaceLoadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBack);
     }
 
     @Override
