@@ -50,15 +50,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return mFragmentation;
     }
 
-    /**
-     * (因为事务异步的原因) 如果你想在onCreate()中使用start/pop等 Fragment事务方法, 请使用该方法把你的任务入队
-     *
-     * @param runnable 需要执行的任务
-     */
-    protected void enqueueAction(Runnable runnable) {
-        getHandler().post(runnable);
-    }
-
     Handler getHandler() {
         if (mHandler == null) {
             mHandler = new Handler();
@@ -67,7 +58,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * 获取设置的全局动画
+     * 获取设置的全局动画, copy
      *
      * @return FragmentAnimator
      */
@@ -97,15 +88,13 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return new DefaultVerticalAnimator();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            // 这里是防止动画过程中，按返回键取消加载Fragment
-            if (!mFragmentClickable) {
-                setFragmentClickable(true);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
+    /**
+     * (因为事务异步的原因) 如果你想在onCreate()中使用start/pop等 Fragment事务方法, 请使用该方法把你的任务入队
+     *
+     * @param runnable 需要执行的任务
+     */
+    protected void enqueueAction(Runnable runnable) {
+        getHandler().post(runnable);
     }
 
     /**
@@ -254,6 +243,16 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mPopMulitpleNoAnim = false;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            // 这里是防止动画过程中，按返回键取消加载Fragment
+            if (!mFragmentClickable) {
+                setFragmentClickable(true);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {

@@ -8,7 +8,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -16,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
@@ -31,30 +29,32 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public static final int SINGLETOP = 1;
     public static final int SINGLETASK = 2;
 
+    // ResultCode
     public static final int RESULT_CANCELED = 0;
     public static final int RESULT_OK = -1;
+
     private static final long SHOW_SPACE = 200L;
+    private static final long DEFAULT_ANIM_DURATION = 300L;
 
     private Bundle mNewBundle;
+
     private boolean mIsRoot, mIsSharedElement;
+    private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
 
     private InputMethodManager mIMM;
-    private OnEnterAnimEndListener mOnAnimEndListener; // fragmentation所用
+    private boolean mNeedHideSoft;  // 隐藏软键盘
+
+    private OnEnterAnimEndListener mOnAnimEndListener; // fragmentation中需要
 
     protected SupportActivity _mActivity;
     protected Fragmentation mFragmentation;
+    private int mContainerId;   // 该Fragment所处的Container的id
 
     private FragmentAnimator mFragmentAnimator;
     private Animation mNoAnim, mEnterAnim, mExitAnim, mPopEnterAnim, mPopExitAnim;
+    private boolean mEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
 
-    private boolean mNeedHideSoft;  // 隐藏软键盘
-    protected boolean mLocking; // 是否加锁 用于SwipeBackLayout
-    private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
-
-    private DebounceAnimListener mDebounceAnimListener; // 防抖动监听动画
-    private boolean mEnterAnimFlag = false; // 用于记录无动画时 直接 解除防抖动处理
-
-    private int mContainerId;   // 该Fragment所处的Container的id
+    protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
 
     @Override
     public void onAttach(Activity activity) {
@@ -94,7 +94,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             processRestoreInstanceState(savedInstanceState);
         }
 
-
         initAnim();
     }
 
@@ -118,50 +117,30 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     private void initAnim() {
-        handleNoAnim();
+        mFragmentAnimator.processNoAnim();
 
         mNoAnim = AnimationUtils.loadAnimation(_mActivity, R.anim.no_anim);
-        mEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getEnter());
-        mExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getExit());
-        mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
+
+        if (mFragmentAnimator.getEnter() == R.anim.no_anim) {
+            mEnterAnimFlag = true;
+            mEnterAnim = mNoAnim;
+        } else {
+            mEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getEnter());
+        }
+        if (mFragmentAnimator.getExit() == R.anim.no_anim) {
+            mExitAnim = mNoAnim;
+        } else {
+            mExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getExit());
+        }
+        if (mFragmentAnimator.getPopEnter() == R.anim.no_anim) {
+            mPopEnterAnim = mNoAnim;
+        } else {
+            mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
+        }
         mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
 
-        // 监听动画状态(for防抖动)
-        mDebounceAnimListener = new DebounceAnimListener();
-        mEnterAnim.setAnimationListener(mDebounceAnimListener);
-    }
-
-    private void handleNoAnim() {
-        if (mFragmentAnimator.getEnter() == 0) {
-            mEnterAnimFlag = true;
-            mFragmentAnimator.setEnter(R.anim.no_anim);
-        }
-        if (mFragmentAnimator.getExit() == 0) {
-            mFragmentAnimator.setExit(R.anim.no_anim);
-        }
-        if (mFragmentAnimator.getPopEnter() == 0) {
-            mFragmentAnimator.setPopEnter(R.anim.no_anim);
-        }
-        if (mFragmentAnimator.getPopExit() == 0) {
-            // 用于解决 start新Fragment时,转场动画过程中上一个Fragment页面空白问题
-            mFragmentAnimator.setPopExit(R.anim.pop_exit_no_anim);
-        }
-    }
-
-    /**
-     * 仅在内存重启后有意义(saveInstanceState!=null时)
-     *
-     * @return Fragment状态 hide : show
-     */
-    public boolean isSupportHidden() {
-        return mIsHidden;
-    }
-
-    /**
-     * 获取该Fragment所在的容器id
-     */
-    int getContainerId() {
-        return mContainerId;
+        // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
+        mEnterAnim.setAnimationListener(new DebounceAnimListener(this));
     }
 
     @Override
@@ -239,22 +218,52 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         return background;
     }
 
+    /**
+     * 仅在内存重启后有意义(saveInstanceState!=null时)
+     *
+     * @return Fragment状态 hide : show
+     */
+    public boolean isSupportHidden() {
+        return mIsHidden;
+    }
+
+    /**
+     * 获取该Fragment所在的容器id
+     */
+    int getContainerId() {
+        return mContainerId;
+    }
+
     long getEnterAnimDuration() {
+        if (mIsRoot) {
+            return 0;
+        }
+        if (mEnterAnim == null) {
+            return DEFAULT_ANIM_DURATION;
+        }
         return mEnterAnim.getDuration();
     }
 
     long getExitAnimDuration() {
+        if (mEnterAnim == null) {
+            return DEFAULT_ANIM_DURATION;
+        }
         return mExitAnim.getDuration();
     }
 
     long getPopEnterAnimDuration() {
+        if (mEnterAnim == null) {
+            return DEFAULT_ANIM_DURATION;
+        }
         return mPopEnterAnim.getDuration();
     }
 
     long getPopExitAnimDuration() {
+        if (mEnterAnim == null) {
+            return DEFAULT_ANIM_DURATION;
+        }
         return mPopExitAnim.getDuration();
     }
-
 
     /**
      * 设定当前Fragmemt动画,优先级比在SupportActivity里高
@@ -317,7 +326,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             hideSoftInput();
         }
     }
-
 
     @IntDef({STANDARD, SINGLETOP, SINGLETASK})
     @Retention(RetentionPolicy.SOURCE)
@@ -479,7 +487,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getChildFragmentManager());
     }
 
-
     void popForSwipeBack() {
         mLocking = true;
         mFragmentation.back(getFragmentManager());
@@ -539,27 +546,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 为了防抖动(点击过快)的动画监听器
+     * 入场动画结束时,回调
      */
-    private class DebounceAnimListener implements Animation.AnimationListener {
+    void notifyEnterAnimEnd() {
+        onEnterAnimationEnd();
+        _mActivity.setFragmentClickable(true);
 
-        @Override
-        public void onAnimationStart(Animation animation) {
-        }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            onEnterAnimationEnd();
-            _mActivity.setFragmentClickable(true);
-
-            if (mOnAnimEndListener != null) {
-                mOnAnimEndListener.onAnimationEnd();
-            }
-        }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-
+        if (mOnAnimEndListener != null) {
+            mOnAnimEndListener.onAnimationEnd();
         }
     }
 }

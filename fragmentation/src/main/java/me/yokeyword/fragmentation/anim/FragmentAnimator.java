@@ -4,11 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.AnimRes;
 
+import me.yokeyword.fragmentation.R;
+
 /**
  * Fragment动画实体类
  * Created by YoKeyword on 16/2/4.
  */
-public class FragmentAnimator implements Parcelable{
+public class FragmentAnimator implements Parcelable {
     @AnimRes
     protected int enter;
     @AnimRes
@@ -95,5 +97,21 @@ public class FragmentAnimator implements Parcelable{
         dest.writeInt(exit);
         dest.writeInt(popEnter);
         dest.writeInt(popExit);
+    }
+
+    public void processNoAnim() {
+        if (enter == 0) {
+            enter = R.anim.no_anim;
+        }
+        if (exit == 0) {
+            exit = R.anim.no_anim;
+        }
+        if (popEnter == 0) {
+            popEnter = R.anim.no_anim;
+        }
+        if (popExit == 0) {
+            // 用于解决 start新Fragment时,转场动画过程中上一个Fragment页面空白问题
+            popExit = R.anim.pop_exit_no_anim;
+        }
     }
 }
