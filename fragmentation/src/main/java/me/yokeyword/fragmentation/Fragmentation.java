@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -517,6 +518,12 @@ public class Fragmentation {
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
         Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+
+        if (targetFragment == null) {
+            Log.e(TAG, "Pop failure! Can't find " + fragmentClass.getSimpleName() + " in the FragmentManager's Stack.");
+            return;
+        }
+
         if (includeSelf) {
             targetFragment = getPreFragment(targetFragment);
             if (targetFragment == null) {
