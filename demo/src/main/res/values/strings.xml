@@ -119,4 +119,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="image_transition">image_transition</string>
+    <string name="press_again_exit">再按一次退出</string>
 </resources>
