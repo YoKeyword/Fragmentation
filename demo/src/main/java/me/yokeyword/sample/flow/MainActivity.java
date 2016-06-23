@@ -33,6 +33,10 @@ public class MainActivity extends SupportActivity
         , LoginFragment.OnLoginSuccessListener, SwipeBackSampleFragment.OnLockDrawLayoutListener {
     public static final String TAG = MainActivity.class.getSimpleName();
 
+    // 再点一次退出程序时间设置
+    private static final long WAIT_TIME = 2000L;
+    private long TOUCH_TIME = 0;
+
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
     private TextView mTvName;   // NavigationView上的名字
@@ -90,18 +94,27 @@ public class MainActivity extends SupportActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressedSupport() {
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-
             Fragment topFragment = getTopFragment();
 
             // 主页的Fragment
-            if (topFragment instanceof DiscoverFragment || topFragment instanceof ShopFragment) {
+            if (topFragment instanceof BaseMainFragment) {
                 mNavigationView.setCheckedItem(R.id.nav_home);
             }
-            super.onBackPressed();
+
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                pop();
+            } else {
+                if (System.currentTimeMillis() - TOUCH_TIME < WAIT_TIME) {
+                    finish();
+                } else {
+                    TOUCH_TIME = System.currentTimeMillis();
+                    Toast.makeText(this, R.string.press_again_exit,Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
