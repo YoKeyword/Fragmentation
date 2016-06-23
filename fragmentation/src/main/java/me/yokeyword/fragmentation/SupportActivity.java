@@ -50,6 +50,15 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return mFragmentation;
     }
 
+    /**
+     * (因为事务异步的原因) 如果你想在onCreate()中使用start/pop等 Fragment事务方法, 请使用该方法把你的任务入队
+     *
+     * @param runnable 需要执行的任务
+     */
+    protected void enqueueAction(Runnable runnable) {
+        getHandler().post(runnable);
+    }
+
     Handler getHandler() {
         if (mHandler == null) {
             mHandler = new Handler();
@@ -100,8 +109,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * 注意,如果你需要复写该方法,请务必在需要finish Activity的代码处,使用super.onBackPressed()代替,以保证SupportFragment的onBackPressedSupport()方法可以正常工作
-     * 该方法默认在回退栈内Fragment数大于1时,按返回键使Fragment pop, 小于等于1时,finish Activity.
+     * 不建议复写该方法,请使用 {@link #onBackPressedSupport} 代替
      */
     @Deprecated
     @Override
