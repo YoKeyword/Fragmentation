@@ -28,37 +28,45 @@ The first demo shows the basic use case of this library, the second demo shows h
 
 # 特性
 # FEATURES
+
 1、**有效解决各种复杂嵌套、同级等Fragment重叠问题**
 
 1、**Solved nested or "same-level" Fragments overlapping issue**
+
 
 2、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
 
 2、**Use the Fragment stack view dialog and logs to easily debug**
 
+
 3、**增加启动模式、startForResult等类似Activity方法**
 
 3、**add launch mode， startForResult and others that mimicking methods in Activity class**
+
 
 4、**类似Android事件分发机制的Fragment回退方法：onBackPressedSupport()，轻松为每个Fragment实现Back按键事件**
 
 4、**Add onBackPressedSupport() method to handle back button press in Fragment**
 
+
 5、**完美的防抖动解决方案(防止用户点击速度过快,导致启动多个Fragment)**
 
 5、**Perfect settlement for click debouncing(Avoid creating multiple Fragments when user clicks rapidly)**
 
+
 6、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
 
-6、**Fixed bugs in Fragment class when poping multiple Fragments from back stack **
+6、**Fixed bugs in Fragment class when poping multiple Fragments from back stack**
+
 
 7、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
 
 7、**Fixed bugs in Fragment transition aniamtion. Now you'll be able to easily manage your Fragment transition animations**
 
+
 8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
-**Support SwipeBack to exist(need support of Fragmentation_SwipeBack library. For more, please click here.(https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md) )**
+8、**Support SwipeBack to exist(need support of Fragmentation_SwipeBack library. For more, please click here.(https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md) )**
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
@@ -72,21 +80,26 @@ The first demo shows the basic use case of this library, the second demo shows h
 
 1、Added a ZhiHu mockup demo. It demonstrates the scenario of dealing with complicated nested Fragments.
 
+
 2、全新的Fragment恢复机制
 
 2、New mechanism of Fragment restoration
+
 
 3、更容易编写各种嵌套Fragment的代码
 
 3、Easier to code for nested Fragments
 
+
 4、支持同级Fragment的处理
 
 4、Support dealing with "same-level" Fragments
 
+
 5、实验性支持SharedElement－Material过渡动画
 
 5、Support SharedElementTransition
+
 
 6、全新的类似Android事件分发机制的onBackPressedSupport()
 
