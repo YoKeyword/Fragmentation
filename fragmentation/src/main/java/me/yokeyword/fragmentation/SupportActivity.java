@@ -78,7 +78,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     /**
      * 构建Fragment转场动画
-     * <p>
+     * <p/>
      * 如果是在Activity内实现,则构建的是Activity内所有Fragment的转场动画,
      * 如果是在Fragment内实现,则构建的是该Fragment的转场动画,此时优先级 > Activity的onCreateFragmentAnimator()
      *
@@ -103,6 +103,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      * 注意,如果你需要复写该方法,请务必在需要finish Activity的代码处,使用super.onBackPressed()代替,以保证SupportFragment的onBackPressedSupport()方法可以正常工作
      * 该方法默认在回退栈内Fragment数大于1时,按返回键使Fragment pop, 小于等于1时,finish Activity.
      */
+    @Deprecated
     @Override
     public void onBackPressed() {
         // 这里是防止动画过程中，按返回键取消加载Fragment
@@ -125,7 +126,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     public void onBackPressedSupport() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            mFragmentation.back(getSupportFragmentManager());
+            pop();
         } else {
             finish();
         }
