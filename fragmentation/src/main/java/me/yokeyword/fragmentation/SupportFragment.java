@@ -90,7 +90,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         }
 
         if (restoreInstanceState()) {
-            // 恢复 Fragment
+            // 解决重叠问题
             processRestoreInstanceState(savedInstanceState);
         }
 
@@ -196,7 +196,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
             onEnterAnimationEnd();
             _mActivity.setFragmentClickable(true);
-        } else if (mEnterAnimFlag) {
+        } else if (mEnterAnimFlag) { // 无动画
+            onEnterAnimationEnd();
             _mActivity.setFragmentClickable(true);
         }
 
