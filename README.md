@@ -1,7 +1,7 @@
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
-为"单Activity ＋ 多Fragment的架构","多模块Activity + 多Fragment的架构"而生，帮你简化使用过程，轻松解决各种复杂嵌套等问题，修复了官方Fragment库存在的一些BUG。
+为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，帮你大大简化使用过程，轻松解决各种复杂嵌套等问题，修复了官方Fragment库中存在的一些BUG。
 
 ![](/gif/logo.png)
 
@@ -24,15 +24,15 @@ A powerful library that manage Fragment for Android!
 
 2、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
 
-3、**增加启动模式、startForResult等类似Activity方法**
+3、**增加启动模式、startForResult等类似Activity的方法**
 
 4、**类似Android事件分发机制的Fragment回退方法：onBackPressedSupport()，轻松为每个Fragment实现Back按键事件**
 
 5、**完美的防抖动解决方案(防止用户点击速度过快,导致启动多个Fragment)**
 
-6、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
+6、**提供可轻松设定Fragment转场动画的解决方案**
 
-7、**完美解决进出栈动画的一些BUG，更自由的管理Fragment的动画**
+7、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
 
 8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
@@ -57,7 +57,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.7.4'
+compile 'me.yokeyword:fragmentation:0.7.5'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.0'
 ````
@@ -83,7 +83,7 @@ public class HomeFragment extends SupportFragment {
     private void xxx() {
         // 启动新的Fragment, 同时还有start(fragment,SINGTASK)、startForResult、startWithPop等启动方法
         start(DetailFragment.newInstance(HomeBean));
-        // ... 其他方法请自行查看 API
+        // ... 其他pop, find, 设置动画等等API, 请自行查看WIKI
     }
 ````
 
