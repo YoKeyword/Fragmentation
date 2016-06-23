@@ -3,7 +3,7 @@ A powerful library that manage Fragment for Android!
 
 为"单Activity ＋ 多Fragment的架构","多模块Activity + 多Fragment的架构"而生，帮你简化使用过程，轻松解决各种复杂嵌套等问题，修复了官方Fragment库存在的一些BUG。
 
-Fragmentation is specificly written for Android to easily implement "Single Activity + Mutilple Fragments" or "Multiple FragmentActivities + Multiple Fragments" architecture. It helps you dealing with problems that come with complicated nested Fragments. Also, it fixed a lot of bugs in Fragment class.
+Fragmentation is specificly written for Android to easily implement "Single Activity + Mutilple Fragments" or "Multiple FragmentActivities + Multiple Fragments" architecture. It helps you to deal with problems that come with complicated nested Fragments. Also, it fixed a lot of bugs in Fragment class.
 
 ![](/gif/logo.png)
 
