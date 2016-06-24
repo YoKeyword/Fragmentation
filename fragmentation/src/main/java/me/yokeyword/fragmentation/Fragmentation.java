@@ -170,6 +170,8 @@ public class Fragmentation {
         if (addToBack) {
             ft.addToBackStack(to.getClass().getName());
         }
+        Bundle bundle = to.getArguments();
+        bundle.putBoolean(ARG_IS_ROOT, true);
         ft.commit();
     }
 
