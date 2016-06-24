@@ -1,7 +1,7 @@
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
-[#### 中文版点我](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
+### [中文版点我](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
 
 Fragmentation is specificly written for Android to easily implement "Single Activity + Mutilple Fragments" or "Multiple FragmentActivities + Multiple Fragments" architecture. It helps you to deal with problems that come with complicated nested Fragments. Also, it fixed a lot of bugs in Fragment class.
 
@@ -31,7 +31,7 @@ The first demo shows the basic use case of this library, the second demo shows h
 
 7、**Fixed bugs in Fragment class when poping multiple Fragments from back stack**
 
-8、**Support SwipeBack to exist(need support of Fragmentation_SwipeBack library. For more, please click here.(https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md) )**
+8、**Support SwipeBack to exist(need support of Fragmentation_SwipeBack library. For more, please [click here](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md).**
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
