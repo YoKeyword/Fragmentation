@@ -79,7 +79,7 @@ public class MainActivity extends SupportActivity {
 public class HomeFragment extends SupportFragment {
 
     private void xxx() {
-        // 启动新的Fragment, 同时还有start(fragment,SINGTASK)、startForResult、startWithPop等启动方法
+        // Launcher a Fragment, otherwise there are start(fragment,SINGTASK)、startForResult()、startWithPop() etc.
         start(DetailFragment.newInstance(HomeBean));
         // ... 其他pop, find, 设置动画等等API, 请自行查看WIKI
     }
