@@ -81,7 +81,7 @@ public class HomeFragment extends SupportFragment {
     private void xxx() {
         // Launcher a Fragment, otherwise there are start(fragment,SINGTASK)、startForResult()、startWithPop() etc.
         start(DetailFragment.newInstance(HomeBean));
-        // ... 其他pop, find, 设置动画等等API, 请自行查看WIKI
+        // ... Other API of pop,find,anim setting etc,please check out wiki
     }
 }
 ````
