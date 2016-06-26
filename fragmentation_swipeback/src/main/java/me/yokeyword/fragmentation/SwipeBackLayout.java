@@ -3,7 +3,6 @@ package me.yokeyword.fragmentation;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
@@ -22,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
 
 /**
@@ -401,12 +401,13 @@ public class SwipeBackLayout extends FrameLayout {
 
         @Override
         public int getViewHorizontalDragRange(View child) {
+            // SwipeBackFragment
             if (mFragment != null) {
                 return 1;
-            } else {
-                if (mActivity != null && mActivity.getSupportFragmentManager().getBackStackEntryCount() == 1) {
-                    return 1;
-                }
+            }
+            // SwipeBackActivity
+            if (mActivity != null && ((SwipeBackActivity)mActivity).swipeBackPriority()) {
+                return 1;
             }
             return 0;
         }

@@ -15,7 +15,7 @@ import me.yokeyword.fragmentation.SwipeBackLayout;
  * SwipeBackActivity
  * Created by YoKeyword on 16/4/19.
  */
-public abstract class SwipeBackActivity extends SupportActivity {
+public class SwipeBackActivity extends SupportActivity {
     private SwipeBackLayout mSwipeBackLayout;
 
     @Override
@@ -50,5 +50,14 @@ public abstract class SwipeBackActivity extends SupportActivity {
 
     public SwipeBackLayout getSwipeBackLayout() {
         return mSwipeBackLayout;
+    }
+
+    /**
+     * 限制SwipeBack的条件,默认栈内Fragment数 <= 1时 , 优先滑动退出Activity , 而不是Fragment
+     *
+     * @return true: Activity可以滑动退出, 并且总是优先;  false: Activity不允许滑动退出
+     */
+    public boolean swipeBackPriority() {
+        return getSupportFragmentManager().getBackStackEntryCount() <= 1;
     }
 }
