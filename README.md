@@ -58,7 +58,7 @@ The first demo shows the basic use case of this library, the second demo shows h
 // appcompat v7 library is needed
 compile 'me.yokeyword:fragmentation:0.7.5'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
-// compile 'me.yokeyword:fragmentation-swipeback:0.3.0'
+// compile 'me.yokeyword:fragmentation-swipeback:0.3.1'
 ````
 **2. Your Activity should extend SupportActivity：**
 ````java
