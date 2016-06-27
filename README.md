@@ -1,66 +1,73 @@
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
-### [中文版点我](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
+### [English README](https://github.com/YoKeyword/Fragmentation/blob/master/README_EN.md)
 
-Fragmentation is specificly written for Android to easily implement "Single Activity + Mutilple Fragments" or "Multiple FragmentActivities + Multiple Fragments" architecture. It helps you to deal with problems that come with complicated nested Fragments. Also, it fixed a lot of bugs in Fragment class.
+为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，帮你大大简化使用过程，轻松解决各种复杂嵌套等问题，修复了官方Fragment库中存在的一些BUG。
 
 ![](/gif/logo.png)
 
 
-# Demo：
-"Single Activity + Mutilple Fragments"
-The first demo shows the basic use case of this library, the second demo shows how to implement complicated nested fragments.
+为了更好的使用和了解该库，推荐阅读下面的文章:
+
+[Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)
+
+[Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
+
+
+# Demo演示：
+单Activity + 多Fragment，第一个为简单场景demo，第二个为仿知乎的复杂嵌套demo
 
 <img src="/gif/demo.gif" width="320px"/>
 &emsp;&emsp;&emsp;&emsp;<img src="/gif/nested.gif" width="320px"/>
 
+# 特性
 # FEATURES
 
-1、**Solved nested or "same-level" Fragments overlapping issue**
+1、**有效解决各种复杂嵌套、同级等Fragment重叠问题**
 
-2、**Use the Fragment stack view dialog and logs to easily debug**
+2、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
 
-3、**add launch mode， startForResult and others that mimicking methods in Activity class**
+3、**增加启动模式、startForResult等类似Activity方法**
 
-4、**Add onBackPressedSupport() method to handle back button press in Fragment**
+4、**类似Android事件分发机制的Fragment回退方法：onBackPressedSupport()，轻松为每个Fragment实现Back按键事件**
 
-5、**Perfect settlement for click debouncing(Avoid creating multiple Fragments when user clicks rapidly)**
+5、**完美的防抖动解决方案(防止用户点击速度过快,导致启动多个Fragment)**
 
-6、**Now you'll be able to easily manage your Fragment transition animations**
+6、**提供可轻松 设定Fragment转场动画 的解决方案**
 
-7、**Fixed bugs in Fragment class when poping multiple Fragments from back stack**
+7、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
 
-8、**Support SwipeBack to exist(need support of Fragmentation_SwipeBack library. For more, please [click here](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md).**
+8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
-# ChangeLog
-### V 0.7.X is available！！
+# 重大更新日志
+### 0.7.X 来了！！
 
-1、Added a ZhiHu mockup demo. It demonstrates the scenario of dealing with complicated nested Fragments.
+1、仿知乎的新Demo，展示复杂嵌套Fragment的交互场景
 
-2、New mechanism of Fragment restoration
+2、全新的Fragment恢复机制
 
-3、Easier to code for nested Fragments
+3、更容易编写各种嵌套Fragment的代码
 
-4、Support dealing with "same-level" Fragments
+4、支持同级Fragment的处理
 
-5、Support SharedElementTransition
+5、实验性支持SharedElement－Material过渡动画
 
-6、Added onBackPressedSupport() method
+6、全新的类似Android事件分发机制的onBackPressedSupport()
 
 # 如何使用
-# How to use this llibrary
 
-**1. Add dependency in build.gradle file of your app module：**
+**1. 项目下app的build.gradle中依赖：**
 ````gradle
-// appcompat v7 library is needed
+// appcompat v7包是必须的
 compile 'me.yokeyword:fragmentation:0.7.5'
-//If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
+// 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.1'
 ````
-**2. Your Activity should extend SupportActivity：**
+
+**2. Activity继承SupportActivity：**
 ````java
 public class MainActivity extends SupportActivity {
 
@@ -74,19 +81,19 @@ public class MainActivity extends SupportActivity {
     }
 ````
 
-**3. Your Fragment should extend SupportFragment：**
+**3. Fragment继承SupportFragment：**
 ````java
 public class HomeFragment extends SupportFragment {
 
     private void xxx() {
-        // Launcher a Fragment, otherwise there are start(fragment,SINGTASK)、startForResult()、startWithPop() etc.
+        // 启动新的Fragment, 另外还有start(fragment,SINGTASK)、startForResult、startWithPop等启动方法
         start(DetailFragment.newInstance(HomeBean));
-        // ... Other API of pop,find,anim setting etc,please check out wiki
+        // ... 其他pop, find, 设置动画等等API, 请自行查看WIKI
     }
 }
 ````
 
-### [For more, please check out the wiki](https://github.com/YoKeyword/Fragmentation/wiki)
+### [进一步使用，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
 
-# Last but important
-If you got any problems, feel free to make an issue or send me emails. PLEASE Star, Fork, PR this project!!!
+# 最后
+有任何问题欢迎提issue或发邮件一起探讨，欢迎Star，Fork，PR！
