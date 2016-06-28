@@ -325,24 +325,22 @@ public class Fragmentation {
 
     /**
      * handle LaunchMode
-     *
-     * @param fragmentManager
-     * @param to
-     * @param launchMode
-     * @return
      */
-    private boolean handleLaunchMode(FragmentManager fragmentManager, Fragment to, int launchMode) {
+    private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment to, int launchMode) {
+        SupportFragment topFragment = getTopFragment(fragmentManager);
 
-        if (launchMode == SupportFragment.SINGLETOP) {
-            List<Fragment> fragments = fragmentManager.getFragments();
-            int index = fragments.indexOf(to);
-            // 在栈顶
-            if (index == fragmentManager.getBackStackEntryCount() - 1) {
-                if (handleNewBundle(to)) return true;
+        if (topFragment != null) {
+            if (launchMode == SupportFragment.SINGLETOP) {
+                // 在栈顶
+                if (to == topFragment || to.getClass().getName().equals(topFragment.getClass().getName())) {
+                    if (handleNewBundle(to)) return true;
+                }
+            } else if (launchMode == SupportFragment.SINGLETASK) {
+                if (findStackFragment(to.getClass(), fragmentManager, false) != null) {
+                    popToWithTransactionFix(to.getClass(), 0, fragmentManager);
+                    if (handleNewBundle(to)) return true;
+                }
             }
-        } else if (launchMode == SupportFragment.SINGLETASK) {
-            popToFix(to, 0, fragmentManager);
-            if (handleNewBundle(to)) return true;
         }
         return false;
     }
@@ -526,12 +524,6 @@ public class Fragmentation {
             return;
         }
 
-        if (includeSelf) {
-            targetFragment = getPreFragment(targetFragment);
-            if (targetFragment == null) {
-                throw new RuntimeException("Do you want to pop all Fragments? Please call _mActivity.finish()");
-            }
-        }
         SupportFragment fromFragment = getTopFragment(fragmentManager);
 
         int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
@@ -544,10 +536,11 @@ public class Fragmentation {
 
             hacPopTokAnim(targetFragment, fromFragment);
             fragmentManager.beginTransaction().remove(fromFragment).commit();
+
             popToWithTransactionFix(fragmentClass, flag, fragmentManager);
             mHandler.post(afterPopTransactionRunnable);
         } else {
-            popToFix(targetFragment, flag, fragmentManager);
+            popToWithTransactionFix(fragmentClass, flag, fragmentManager);
         }
     }
 
@@ -555,6 +548,8 @@ public class Fragmentation {
      * 解决popTo多个fragment时动画引起的异常问题
      */
     private void popToWithTransactionFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
+        if (fragmentManager.getFragments() == null) return;
+
         mActivity.preparePopMultiple();
         fragmentManager.popBackStackImmediate(fragmentClass.getName(), flag);
         mActivity.popFinish();
@@ -567,30 +562,31 @@ public class Fragmentation {
         });
     }
 
-    /**
-     * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
-     */
-    private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
-        if (fragmentManager.getFragments() == null) return;
-
-        fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
-
-        long popAniDuration;
-
-        if (targetFragment instanceof SupportFragment) {
-            SupportFragment fragment = (SupportFragment) targetFragment;
-            popAniDuration = Math.max(fragment.getPopEnterAnimDuration(), fragment.getPopExitAnimDuration());
-        } else {
-            popAniDuration = BUFFER_TIME;
-        }
-
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
-            }
-        }, popAniDuration);
-    }
+//    /**
+//     * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
+//     */
+//    @Deprecated   // 为了优化响应速度,废弃该方法
+//    private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
+//        if (fragmentManager.getFragments() == null) return;
+//
+//        fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
+//
+//        long popAniDuration;
+//
+//        if (targetFragment instanceof SupportFragment) {
+//            SupportFragment fragment = (SupportFragment) targetFragment;
+//            popAniDuration = Math.max(fragment.getPopEnterAnimDuration(), fragment.getPopExitAnimDuration());
+//        } else {
+//            popAniDuration = BUFFER_TIME;
+//        }
+//
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
+//            }
+//        }, popAniDuration);
+//    }
 
     List<DebugFragmentRecord> getFragmentRecords() {
         List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
