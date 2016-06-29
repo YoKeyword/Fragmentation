@@ -145,7 +145,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (_mActivity.mPopMulitpleNoAnim || mLocking) {
+        if (_mActivity.mPopMultipleNoAnim || mLocking) {
             return mNoAnim;
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
@@ -422,7 +422,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * @return 栈内fragmentClass的framgent对象
+     * @return 栈内fragmentClass的fragment对象
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
@@ -430,7 +430,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * @return 栈内fragmentClass的子framgent对象
+     * @return 栈内fragmentClass的子fragment对象
      */
     @Override
     public <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass) {

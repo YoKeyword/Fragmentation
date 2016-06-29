@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
+import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 
@@ -239,8 +241,6 @@ public class Fragmentation {
 
     /**
      * 获得栈顶SupportFragment
-     *
-     * @return
      */
     SupportFragment getTopFragment(FragmentManager fragmentManager) {
         List<Fragment> fragmentList = fragmentManager.getFragments();
@@ -259,7 +259,6 @@ public class Fragmentation {
      * 获取目标Fragment的前一个Fragment
      *
      * @param fragment 目标Fragment
-     * @return
      */
     SupportFragment getPreFragment(Fragment fragment) {
         List<Fragment> fragmentList = fragment.getFragmentManager().getFragments();
@@ -588,18 +587,89 @@ public class Fragmentation {
 //        }, popAniDuration);
 //    }
 
-    List<DebugFragmentRecord> getFragmentRecords() {
-        List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
+    /**
+     * 调试相关:以dialog形式 显示 栈视图
+     */
+    void showFragmentStackHierarchyView() {
+        DebugHierarchyViewContainer container = new DebugHierarchyViewContainer(mActivity);
+        container.bindFragmentRecords(getFragmentRecords());
+        container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        new AlertDialog.Builder(mActivity)
+                .setTitle("栈视图")
+                .setView(container)
+                .setPositiveButton("关闭", null)
+                .setCancelable(true)
+                .show();
+    }
+
+    /**
+     * 调试相关:以log形式 打印 栈视图
+     */
+    void logFragmentRecords(String tag) {
+        List<DebugFragmentRecord> fragmentRecordList = getFragmentRecords();
+        if (fragmentRecordList == null) return;
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
+            DebugFragmentRecord fragmentRecord = fragmentRecordList.get(i);
+
+            if (i == fragmentRecordList.size() - 1) {
+                sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
+                if (i == 0) {
+                    sb.append("\t栈顶\t\t\t").append(fragmentRecord.fragmentName).append("\n");
+                    sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+                } else {
+                    sb.append("\t栈顶\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
+                }
+            } else if (i == 0) {
+                sb.append("\t栈底\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
+                processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
+                sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+                Log.i(tag, sb.toString());
+                return;
+            } else {
+                sb.append("\t↓\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
+            }
+
+            processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
+        }
+    }
+
+    private List<DebugFragmentRecord> getFragmentRecords() {
+        List<DebugFragmentRecord> fragmentRecordList = new ArrayList<>();
 
         List<Fragment> fragmentList = mActivity.getSupportFragmentManager().getFragments();
+
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
         for (Fragment fragment : fragmentList) {
             if (fragment == null) continue;
-            fragmentRecords.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+            fragmentRecordList.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
         }
+        return fragmentRecordList;
+    }
 
-        return fragmentRecords;
+    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
+        if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
+
+        for (int j = 0; j < fragmentRecordList.size(); j++) {
+            DebugFragmentRecord childFragmentRecord = fragmentRecordList.get(j);
+            for (int k = 0; k < childHierarchy; k++) {
+                sb.append("\t\t\t");
+            }
+            if (j == 0) {
+                sb.append("\t子栈顶\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
+            } else if (j == fragmentRecordList.size() - 1) {
+                sb.append("\t子栈底\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
+                processChildLog(childFragmentRecord.childFragmentRecord, sb, ++childHierarchy);
+                return;
+            } else {
+                sb.append("\t↓\t\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
+            }
+
+            processChildLog(childFragmentRecord.childFragmentRecord, sb, childHierarchy);
+        }
     }
 
     private List<DebugFragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
