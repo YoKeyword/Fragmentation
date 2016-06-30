@@ -8,7 +8,7 @@ Fragmentation is specificly written for Android to easily implement "Single Acti
 
 # Demo：
 "Single Activity + Mutilple Fragments"
-The first demo shows the basic use case of this library, the second demo shows how to implement a similar to Wechat App,the third demo shows how to implement complicated nested fragments.
+The first demo shows the basic use case of this library, the second demo shows the way to implement an app which is similar with WeChat,the third demo shows the way to implement complicated nested fragments.
 
 <img src="/gif/demo.gif" width="280px"/>&emsp;<img src="/gif/wechat.gif" width="280px"/>
 &emsp;<img src="/gif/nested.gif" width="280px"/>
