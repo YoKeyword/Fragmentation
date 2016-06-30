@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import me.yokeyword.sample.flow.MainActivity;
+import me.yokeyword.sample.demo_flow.MainActivity;
 
 /**
  * Created by YoKeyword on 16/6/5.
@@ -42,7 +42,7 @@ public class EnterActivity extends AppCompatActivity {
         mBtnMultiple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EnterActivity.this, me.yokeyword.sample.multiple.MainActivity.class));
+                startActivity(new Intent(EnterActivity.this, me.yokeyword.sample.demo_zhihu.MainActivity.class));
             }
         });
     }
