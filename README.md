@@ -16,10 +16,10 @@ A powerful library that manage Fragment for Android!
 
 
 # Demo演示：
-单Activity + 多Fragment，第一个为简单场景demo，第二个为仿知乎的复杂嵌套demo
+均为单Activity + 多Fragment，第一个为简单流式demo，第二个为仿微信交互的demo(全页面支持滑动退出)，第三个为仿知乎交互的复杂嵌套demo
 
-<img src="/gif/demo.gif" width="320px"/>
-&emsp;&emsp;&emsp;&emsp;<img src="/gif/nested.gif" width="320px"/>
+<img src="/gif/demo.gif" width="280px"/>&emsp;<img src="/gif/wechat.gif" width="280px"/>
+&emsp;<img src="/gif/nested.gif" width="280px"/>
 
 # 特性
 # FEATURES
@@ -45,7 +45,7 @@ A powerful library that manage Fragment for Android!
 # 重大更新日志
 ### 0.7.X 来了！！
 
-1、仿知乎的新Demo，展示复杂嵌套Fragment的交互场景
+1、2个新demo: 仿知乎交互 ＋ 仿微信交互的新Demo，展示复杂嵌套Fragment的交互场景
 
 2、全新的Fragment恢复机制
 
