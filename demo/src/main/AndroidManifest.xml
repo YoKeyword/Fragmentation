@@ -22,6 +22,8 @@
             android:name=".demo_flow.MainActivity"
             android:launchMode="singleTask"/>
 
+        <activity android:name=".demo_wechat.MainActivity"/>
+
         <activity
             android:name=".demo_zhihu.MainActivity"
             android:launchMode="singleTask"/>

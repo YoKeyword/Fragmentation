@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/tab_unselect"/>
+        </shape>
+    </item>
+
+    <item>
+        <shape>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/bg_btn"/>
+        </shape>
+    </item>
+</selector>
