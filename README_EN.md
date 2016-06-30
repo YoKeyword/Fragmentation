@@ -8,10 +8,10 @@ Fragmentation is specificly written for Android to easily implement "Single Acti
 
 # Demo：
 "Single Activity + Mutilple Fragments"
-The first demo shows the basic use case of this library, the second demo shows how to implement complicated nested fragments.
+The first demo shows the basic use case of this library, the second demo shows how to implement a similar to Wechat App,the third demo shows how to implement complicated nested fragments.
 
-<img src="/gif/demo.gif" width="320px"/>
-&emsp;&emsp;&emsp;&emsp;<img src="/gif/nested.gif" width="320px"/>
+<img src="/gif/demo.gif" width="280px"/>&emsp;<img src="/gif/wechat.gif" width="280px"/>
+&emsp;<img src="/gif/nested.gif" width="280px"/>
 
 # FEATURES
 
@@ -36,7 +36,7 @@ The first demo shows the basic use case of this library, the second demo shows h
 # ChangeLog
 ### V 0.7.X is available！！
 
-1、Added a ZhiHu mockup demo. It demonstrates the scenario of dealing with complicated nested Fragments.
+1、Added a ZhiHu mockup demo and a Wechat mockup demo. It demonstrates the scenario of dealing with complicated nested Fragments.
 
 2、New mechanism of Fragment restoration
 
