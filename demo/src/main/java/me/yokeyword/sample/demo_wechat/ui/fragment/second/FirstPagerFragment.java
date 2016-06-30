@@ -53,6 +53,8 @@ public class FirstPagerFragment extends BaseFragment implements SwipeRefreshLayo
     }
 
     private void initView(View view) {
+        EventBus.getDefault().register(this);
+
         mRecy = (RecyclerView) view.findViewById(R.id.recy);
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
 
@@ -121,5 +123,11 @@ public class FirstPagerFragment extends BaseFragment implements SwipeRefreshLayo
 
     private void scrollToTop() {
         mRecy.smoothScrollToPosition(0);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
 }
