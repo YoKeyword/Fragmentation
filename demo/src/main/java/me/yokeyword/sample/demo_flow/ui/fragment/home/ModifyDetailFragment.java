@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseBackFragment;
+import me.yokeyword.sample.demo_flow.base.BaseBackFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.CycleFragment;
 
 /**
@@ -70,7 +70,7 @@ public class ModifyDetailFragment extends BaseBackFragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString("title", mEtModiyTitle.getText().toString());
+                bundle.putString(DetailFragment.KEY_RESULT_TITLE, mEtModiyTitle.getText().toString());
                 setFramgentResult(RESULT_OK, bundle);
 
                 Toast.makeText(_mActivity, "修改成功!", Toast.LENGTH_SHORT).show();

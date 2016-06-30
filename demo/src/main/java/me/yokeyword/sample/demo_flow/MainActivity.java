@@ -18,7 +18,7 @@ import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseMainFragment;
+import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.account.LoginFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.discover.DiscoverFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.home.HomeFragment;
@@ -26,6 +26,7 @@ import me.yokeyword.sample.demo_flow.ui.fragment.shop.ShopFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment_swipe_back.SwipeBackSampleFragment;
 
 /**
+ * 流程式demo  tip: 多使用右上角的"查看栈视图"
  * Created by YoKeyword on 16/1/29.
  */
 public class MainActivity extends SupportActivity

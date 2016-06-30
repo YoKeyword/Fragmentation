@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.child.ContentFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.child.MenuListFragment;
 

@@ -25,7 +25,7 @@ import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.adapter.HomeAdapter;
 import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
 import me.yokeyword.sample.demo_flow.entity.Article;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseMainFragment;
+import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
 
 
 public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItemClickListener {

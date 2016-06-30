@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseBackFragment;
+import me.yokeyword.sample.demo_flow.base.BaseBackFragment;
 
 /**
  * Created by YoKeyword on 16/2/3.
@@ -19,7 +19,9 @@ import me.yokeyword.sample.demo_flow.ui.fragment.BaseBackFragment;
 public class DetailFragment extends BaseBackFragment {
     public static final String TAG = DetailFragment.class.getSimpleName();
     private static final int REQ_MODIFY_FRAGMENT = 100;
+
     private static final String ARG_TITLE = "arg_title";
+    static final String KEY_RESULT_TITLE = "title";
 
     private Toolbar mToolbar;
     private TextView mTvContent;
@@ -90,8 +92,10 @@ public class DetailFragment extends BaseBackFragment {
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
         if (requestCode == REQ_MODIFY_FRAGMENT && resultCode == RESULT_OK && data != null) {
-            mTitle = data.getString("title");
+            mTitle = data.getString(KEY_RESULT_TITLE);
             mToolbar.setTitle(mTitle);
+            // 保存被改变的 title
+            getArguments().putString(ARG_TITLE, mTitle);
             Toast.makeText(_mActivity, "修改标题成功!", Toast.LENGTH_SHORT).show();
         }
     }

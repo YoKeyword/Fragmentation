@@ -12,7 +12,7 @@ import android.widget.TextView;
 import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_flow.base.BaseFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.CycleFragment;
 
 /**

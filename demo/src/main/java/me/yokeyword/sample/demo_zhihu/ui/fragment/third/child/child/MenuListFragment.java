@@ -15,7 +15,7 @@ import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.adapter.MenuAdapter;
 import me.yokeyword.sample.demo_zhihu.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.ShopFragment;
 
 /**

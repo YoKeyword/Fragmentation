@@ -1,10 +1,10 @@
-package me.yokeyword.sample.demo_zhihu.ui.fragment;
+package me.yokeyword.sample.demo_zhihu.base;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_flow.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.first.ZhihuFirstFragment;
 
 /**

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.entity.Article;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseBackFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseBackFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.CycleFragment;
 
 /**

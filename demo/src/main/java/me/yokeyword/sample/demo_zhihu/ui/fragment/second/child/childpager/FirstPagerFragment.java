@@ -22,7 +22,7 @@ import me.yokeyword.sample.demo_zhihu.adapter.HomeAdapter;
 import me.yokeyword.sample.demo_zhihu.entity.Article;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_zhihu.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.second.child.DetailFragment;
 
 /**

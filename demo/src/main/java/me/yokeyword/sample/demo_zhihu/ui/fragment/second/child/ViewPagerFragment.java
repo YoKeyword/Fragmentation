@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.adapter.ZhihuPagerFragmentAdapter;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/5.

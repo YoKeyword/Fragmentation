@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_flow.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/5.

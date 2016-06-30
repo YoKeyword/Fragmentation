@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseBackFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseBackFragment;
 
 /**
  * Created by YoKeyword on 16/2/7.
@@ -55,7 +55,7 @@ public class CycleFragment extends BaseBackFragment {
         mBtnNext = (Button) view.findViewById(R.id.btn_next);
         mBtnNextWithFinish = (Button) view.findViewById(R.id.btn_next_with_finish);
 
-        String title = "首页:循环Fragment" + mNumber;
+        String title = "循环Fragment" + mNumber;
 
         mToolbar.setTitle(title);
         initToolbarNav(mToolbar);

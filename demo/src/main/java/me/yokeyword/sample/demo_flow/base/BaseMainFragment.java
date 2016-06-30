@@ -1,4 +1,4 @@
-package me.yokeyword.sample.demo_zhihu.ui.fragment;
+package me.yokeyword.sample.demo_flow.base;
 
 import android.content.Context;
 import android.support.v7.widget.Toolbar;
@@ -6,7 +6,6 @@ import android.view.View;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseFragment;
 
 
 /**

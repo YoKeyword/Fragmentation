@@ -1,4 +1,4 @@
-package me.yokeyword.sample.demo_zhihu.ui.fragment;
+package me.yokeyword.sample.demo_flow.base;
 
 import android.support.v7.widget.Toolbar;
 import android.view.View;

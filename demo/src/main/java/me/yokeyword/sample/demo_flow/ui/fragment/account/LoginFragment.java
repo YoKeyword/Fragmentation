@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseBackFragment;
+import me.yokeyword.sample.demo_flow.base.BaseBackFragment;
 
 /**
  * Created by YoKeyword on 16/2/14.

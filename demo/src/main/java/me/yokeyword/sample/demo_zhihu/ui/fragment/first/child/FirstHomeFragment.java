@@ -27,7 +27,7 @@ import me.yokeyword.sample.demo_zhihu.entity.Article;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_zhihu.helper.DetailTransition;
 import me.yokeyword.sample.demo_zhihu.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/5.

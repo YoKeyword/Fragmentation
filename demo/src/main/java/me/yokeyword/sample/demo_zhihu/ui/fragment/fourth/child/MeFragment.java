@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.ZhihuFourthFragment;
 
 /**

@@ -10,7 +10,7 @@ import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
-import me.yokeyword.sample.demo_zhihu.ui.fragment.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseLazyMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.first.child.FirstHomeFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.first.ZhihuFirstFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.child.MeFragment;
@@ -23,7 +23,7 @@ import me.yokeyword.sample.demo_zhihu.ui.view.BottomBar;
 import me.yokeyword.sample.demo_zhihu.ui.view.BottomBarTab;
 
 /**
- * 类知乎 复杂嵌套Demo
+ * 类知乎 复杂嵌套Demo tip: 多使用右上角的"查看栈视图"
  * Created by YoKeyword on 16/6/2.
  */
 public class MainActivity extends SupportActivity implements BaseLazyMainFragment.OnBackToFirstListener {
@@ -113,6 +113,7 @@ public class MainActivity extends SupportActivity implements BaseLazyMainFragmen
                 // 这里推荐使用EventBus来实现 -> 解耦
                 if (count == 1) {
                     // 在FirstPagerFragment中接收, 因为是嵌套的孙子Fragment 所以用EventBus比较方便
+                    // 主要为了交互: 重选tab 如果列表不在顶部则移动到顶部,如果已经在顶部,则刷新
                     EventBus.getDefault().post(new TabSelectedEvent(position));
                 }
             }

@@ -15,7 +15,7 @@ import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.adapter.MenuAdapter;
 import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseFragment;
+import me.yokeyword.sample.demo_flow.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/2/9.

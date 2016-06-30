@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.ui.fragment.BaseMainFragment;
+import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
 
 /**
  * Created by YoKeyword on 16/2/4.
