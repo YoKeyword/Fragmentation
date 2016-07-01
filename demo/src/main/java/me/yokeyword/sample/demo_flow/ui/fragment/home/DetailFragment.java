@@ -73,7 +73,7 @@ public class DetailFragment extends BaseBackFragment {
      * 然后在onEnterAnimationEnd()方法里进行 复杂的耗时的初始化 (比如FragmentPagerAdapter的初始化 加载数据等)
      */
     @Override
-    protected void onEnterAnimationEnd() {
+    protected void onEnterAnimationEnd(Bundle savedInstanceState) {
         initDelayView();
     }
 
