@@ -163,6 +163,7 @@ public class WechatFirstTabFragment extends BaseLazyMainFragment implements Swip
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mRecy.setAdapter(null);
         EventBus.getDefault().unregister(this);
     }
 }

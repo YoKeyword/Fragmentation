@@ -128,6 +128,7 @@ public class FirstPagerFragment extends BaseFragment implements SwipeRefreshLayo
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mRecy.setAdapter(null);
         EventBus.getDefault().unregister(this);
     }
 }

@@ -169,4 +169,10 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
         }
         return true;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRecy.setAdapter(null);
+    }
 }

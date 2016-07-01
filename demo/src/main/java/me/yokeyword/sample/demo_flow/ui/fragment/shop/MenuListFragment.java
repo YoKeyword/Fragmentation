@@ -112,4 +112,10 @@ public class MenuListFragment extends BaseFragment {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_STATE_POSITION, mCurrentPosition);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRecy.setAdapter(null);
+    }
 }
