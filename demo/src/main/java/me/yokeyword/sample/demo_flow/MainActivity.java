@@ -14,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
+
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
@@ -171,7 +174,7 @@ public class MainActivity extends SupportActivity
                             }
                         });
                     } else {
-                        // 如果已经在栈内,则以SingleTask模式start
+                        // 如果已经在栈内,则以SingleTask模式start,也可以用popTo
 //                        start(fragment, SupportFragment.SINGLETASK);
                         popTo(ShopFragment.class, false);
                     }
