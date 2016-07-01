@@ -19,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
+import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
 
 /**
  * Created by YoKeyword on 16/1/22.
@@ -55,6 +56,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
 
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
+
+    private OnFragmentDestoryViewListener mFragmentDestoryViewListener;
 
     @Override
     public void onAttach(Activity activity) {
@@ -556,5 +559,27 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (mOnAnimEndListener != null) {
             mOnAnimEndListener.onAnimationEnd();
         }
+    }
+
+    /**
+     * @see OnFragmentDestoryViewListener
+     */
+    void setOnFragmentDestoryViewListener(OnFragmentDestoryViewListener listener) {
+        this.mFragmentDestoryViewListener = listener;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mFragmentDestoryViewListener != null) {
+            mFragmentDestoryViewListener.onDestoryView();
+        }
+        super.onDestroyView();
+        mFragmentDestoryViewListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mOnAnimEndListener = null;
     }
 }

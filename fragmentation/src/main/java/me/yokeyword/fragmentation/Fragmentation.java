@@ -1,5 +1,6 @@
 package me.yokeyword.fragmentation;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
 import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
+import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
 
 
 /**
@@ -220,9 +222,7 @@ public class Fragmentation {
 
     void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
         SupportFragment preFragment = getPreFragment(from);
-        if (preFragment != null) {
-            hackFinishAnim(preFragment, from, to);
-        }
+        handlePopAnim(preFragment, from, to);
 
         fragmentManager.beginTransaction().remove(from).commit();
         handleBack(fragmentManager, true);
@@ -336,7 +336,7 @@ public class Fragmentation {
                 }
             } else if (launchMode == SupportFragment.SINGLETASK) {
                 if (findStackFragment(to.getClass(), fragmentManager, false) != null) {
-                    popToWithTransactionFix(to.getClass(), 0, fragmentManager);
+                    popToFix(to.getClass(), 0, fragmentManager);
                     if (handleNewBundle(to)) return true;
                 }
             }
@@ -428,88 +428,6 @@ public class Fragmentation {
     }
 
     /**
-     * hack anim
-     */
-    @Nullable
-    private void hackFinishAnim(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
-        View view = preFragment.getView();
-        if (view != null) {
-            // 不调用 会闪屏
-            view.setVisibility(View.VISIBLE);
-
-            ViewGroup viewGroup;
-            final View fromView = from.getView();
-
-            if (fromView != null && view instanceof ViewGroup) {
-                viewGroup = (ViewGroup) view;
-                ViewGroup container = (ViewGroup) mActivity.findViewById(from.getContainerId());
-                if (container != null) {
-                    container.removeView(fromView);
-                    if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                        fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    }
-
-                    if (viewGroup instanceof LinearLayout) {
-                        viewGroup.addView(fromView, 0);
-                    } else {
-                        viewGroup.addView(fromView);
-                    }
-
-                    final ViewGroup finalViewGroup = viewGroup;
-                    to.setEnterAnimEndListener(new OnEnterAnimEndListener() {
-                        @Override
-                        public void onAnimationEnd() {
-                            finalViewGroup.removeView(fromView);
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    /**
-     * hack popTo anim
-     */
-    @Nullable
-    private void hacPopTokAnim(Fragment rootFragment, SupportFragment fromFragment) {
-        if (rootFragment != null) {
-            View view = rootFragment.getView();
-            if (view != null) {
-                // 不调用 会闪屏
-                view.setVisibility(View.VISIBLE);
-
-                ViewGroup viewGroup;
-                final View fromView = fromFragment.getView();
-
-                if (fromView != null && view instanceof ViewGroup) {
-                    viewGroup = (ViewGroup) view;
-                    ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
-                    if (container != null) {
-                        container.removeView(fromView);
-                        if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                            fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                        }
-
-                        if (viewGroup instanceof LinearLayout) {
-                            viewGroup.addView(fromView, 0);
-                        } else {
-                            viewGroup.addView(fromView);
-                        }
-
-                        final ViewGroup finalViewGroup = viewGroup;
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                finalViewGroup.removeView(fromView);
-                            }
-                        }, Math.max(fromFragment.getExitAnimDuration(), BUFFER_TIME));
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * 出栈到目标fragment
      *
      * @param fragmentClass 目标fragment
@@ -523,9 +441,15 @@ public class Fragmentation {
             return;
         }
 
-        SupportFragment fromFragment = getTopFragment(fragmentManager);
+        int flag;
+        if (includeSelf) {
+            flag = FragmentManager.POP_BACK_STACK_INCLUSIVE;
+            targetFragment = getPreFragment(targetFragment);
+        } else {
+            flag = 0;
+        }
 
-        int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
+        SupportFragment fromFragment = getTopFragment(fragmentManager);
 
         if (afterPopTransactionRunnable != null) {
             if (targetFragment == fromFragment) {
@@ -533,20 +457,19 @@ public class Fragmentation {
                 return;
             }
 
-            hacPopTokAnim(targetFragment, fromFragment);
-            fragmentManager.beginTransaction().remove(fromFragment).commit();
+            hackPopToAnim(targetFragment, fromFragment);
 
-            popToWithTransactionFix(fragmentClass, flag, fragmentManager);
+            popToFix(fragmentClass, flag, fragmentManager);
             mHandler.post(afterPopTransactionRunnable);
         } else {
-            popToWithTransactionFix(fragmentClass, flag, fragmentManager);
+            popToFix(fragmentClass, flag, fragmentManager);
         }
     }
 
     /**
      * 解决popTo多个fragment时动画引起的异常问题
      */
-    private void popToWithTransactionFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
+    private void popToFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
         if (fragmentManager.getFragments() == null) return;
 
         mActivity.preparePopMultiple();
@@ -586,6 +509,114 @@ public class Fragmentation {
 //            }
 //        }, popAniDuration);
 //    }
+
+    /**
+     * hack anim
+     */
+    @Nullable
+    private void handlePopAnim(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
+        if (preFragment != null) {
+            View view = preFragment.getView();
+            handlePopAnim(from, view, to);
+        }
+    }
+
+    /**
+     * hack popTo anim
+     */
+    @Nullable
+    private void hackPopToAnim(Fragment targetFragment, SupportFragment fromFragment) {
+        if (targetFragment != null) {
+            View view = targetFragment.getView();
+            handlePopAnim(fromFragment, view, null);
+        }
+    }
+
+    private void handlePopAnim(SupportFragment fromFragment, View view, SupportFragment toFragment) {
+        try {
+            if (view != null) {
+                ViewGroup preViewGroup = null;
+                SupportFragment preFragment = null;
+
+                // 在5.0之前的设备,在5.0之前的设备, popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable)
+                // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为何解决该问题
+                if (toFragment == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    preFragment = getPreFragment(fromFragment);
+                    if (preFragment != null) {
+                        View preView = preFragment.getView();
+                        if (preView != null && preView instanceof ViewGroup) {
+                            preViewGroup = (ViewGroup) preView;
+                        }
+                    }
+                }
+
+                // 不调用 会闪屏
+                view.setVisibility(View.VISIBLE);
+
+                final ViewGroup viewGroup;
+                final View fromView = fromFragment.getView();
+
+                if (fromView != null && view instanceof ViewGroup) {
+                    viewGroup = (ViewGroup) view;
+                    ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
+                    if (container != null) {
+                        container.removeView(fromView);
+                        if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                            fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+                        }
+
+                        if (preViewGroup != null) {
+                            final ViewGroup finalPreViewGroup = preViewGroup;
+                            preFragment.setOnFragmentDestoryViewListener(new OnFragmentDestoryViewListener() {
+                                @Override
+                                public void onDestoryView() {
+                                    finalPreViewGroup.removeView(fromView);
+
+                                    if (viewGroup instanceof LinearLayout) {
+                                        viewGroup.addView(fromView, 0);
+                                    } else {
+                                        viewGroup.addView(fromView);
+                                    }
+                                }
+                            });
+                        }
+
+                        if (viewGroup instanceof LinearLayout) {
+                            if (preViewGroup != null) {
+                                preViewGroup.addView(fromView, 0);
+                            } else {
+                                viewGroup.addView(fromView, 0);
+                            }
+                        } else {
+                            if (preViewGroup != null) {
+                                preViewGroup.addView(fromView);
+                            } else {
+                                viewGroup.addView(fromView);
+                            }
+                        }
+
+                        if (toFragment == null) { // pop multiple fragment
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    viewGroup.removeView(fromView);
+                                }
+                            }, Math.max(fromFragment.getExitAnimDuration(), BUFFER_TIME));
+                        } else { // pop single fragment
+                            toFragment.setEnterAnimEndListener(new OnEnterAnimEndListener() {
+                                @Override
+                                public void onAnimationEnd() {
+                                    viewGroup.removeView(fromView);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // ignore: for security
+        }
+    }
 
     /**
      * 调试相关:以dialog形式 显示 栈视图
