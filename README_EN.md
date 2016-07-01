@@ -36,6 +36,8 @@ The first demo shows the basic use case of this library, the second demo shows t
 # ChangeLog
 ### V 0.7.X is available！！
 
+NEW: 0.7.7 : onEnterAnimtionEnd() -> onEnterAnimtionEnd(Bundle savedInstanceState)
+
 1、Added a ZhiHu mockup demo and a Wechat mockup demo. It demonstrates the scenario of dealing with complicated nested Fragments.
 
 2、New mechanism of Fragment restoration
@@ -54,7 +56,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 **1. Add dependency in build.gradle file of your app module：**
 ````gradle
 // appcompat v7 library is needed
-compile 'me.yokeyword:fragmentation:0.7.6'
+compile 'me.yokeyword:fragmentation:0.7.7'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.1'
 ````

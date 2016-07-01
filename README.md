@@ -45,6 +45,8 @@ A powerful library that manage Fragment for Android!
 # 重大更新日志
 ### 0.7.X 来了！！
 
+新: 0.7.7 : 更改方法,添加参数 onEnterAnimtionEnd() -> onEnterAnimtionEnd(Bundle savedInstanceState)
+
 1、2个新demo: 仿知乎交互 ＋ 仿微信交互的新Demo，展示复杂嵌套Fragment的交互场景
 
 2、全新的Fragment恢复机制
@@ -62,7 +64,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.7.6'
+compile 'me.yokeyword:fragmentation:0.7.7'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.3.1'
 ````
