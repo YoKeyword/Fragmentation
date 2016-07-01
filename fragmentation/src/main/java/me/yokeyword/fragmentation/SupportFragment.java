@@ -197,10 +197,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         if (savedInstanceState != null) {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
-            onEnterAnimationEnd();
+            notifyEnterAnimationEnd(savedInstanceState);
             _mActivity.setFragmentClickable(true);
         } else if (mEnterAnimFlag) { // 无动画
-            onEnterAnimationEnd();
+            notifyEnterAnimationEnd(null);
             _mActivity.setFragmentClickable(true);
         }
 
@@ -279,7 +279,16 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     /**
      * 入栈动画 结束时,回调
      */
-    protected void onEnterAnimationEnd() {
+    protected void onEnterAnimationEnd(Bundle savedInstanceState) {
+    }
+
+    private void notifyEnterAnimationEnd(final Bundle savedInstanceState) {
+        _mActivity.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                onEnterAnimationEnd(savedInstanceState);
+            }
+        });
     }
 
     /**
@@ -553,7 +562,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * 入场动画结束时,回调
      */
     void notifyEnterAnimEnd() {
-        onEnterAnimationEnd();
+        notifyEnterAnimationEnd(null);
         _mActivity.setFragmentClickable(true);
 
         if (mOnAnimEndListener != null) {
