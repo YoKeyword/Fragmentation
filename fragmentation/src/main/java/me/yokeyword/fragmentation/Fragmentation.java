@@ -323,6 +323,25 @@ public class Fragmentation {
     }
 
     /**
+     * 分发回退事件, 优先栈顶(有子栈则是子栈的栈顶)的Fragment
+     */
+    boolean dispatchBackPressedEvent(SupportFragment activeFragment) {
+        if (activeFragment != null) {
+            boolean result = activeFragment.onBackPressedSupport();
+            if (result) {
+                return true;
+            }
+
+            Fragment parentFragment = activeFragment.getParentFragment();
+            if (dispatchBackPressedEvent((SupportFragment) parentFragment)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * handle LaunchMode
      */
     private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment to, int launchMode) {
@@ -369,8 +388,9 @@ public class Fragmentation {
     }
 
     void back(FragmentManager fragmentManager) {
-        int count = fragmentManager.getBackStackEntryCount();
+        if (fragmentManager == null) return;
 
+        int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
             handleBack(fragmentManager, false);
         }

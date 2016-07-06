@@ -102,9 +102,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
         SupportFragment activeFragment = mFragmentation.getActiveFragment(null, getSupportFragmentManager());
-        if (dispatchBackPressedEvent(activeFragment)) {
-            return;
-        }
+        if (mFragmentation.dispatchBackPressedEvent(activeFragment)) return;
 
         onBackPressedSupport();
     }
@@ -119,25 +117,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         } else {
             finish();
         }
-    }
-
-    /**
-     * 分发回退事件, 优先栈顶(有子栈则是子栈的栈顶)的Fragment
-     */
-    private boolean dispatchBackPressedEvent(SupportFragment activeFragment) {
-        if (activeFragment != null) {
-            boolean result = activeFragment.onBackPressedSupport();
-            if (result) {
-                return true;
-            }
-
-            Fragment parentFragment = activeFragment.getParentFragment();
-            if (dispatchBackPressedEvent((SupportFragment) parentFragment)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
