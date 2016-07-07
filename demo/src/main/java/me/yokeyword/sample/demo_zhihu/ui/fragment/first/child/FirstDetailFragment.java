@@ -3,6 +3,7 @@ package me.yokeyword.sample.demo_zhihu.ui.fragment.first.child;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,10 @@ public class FirstDetailFragment extends BaseBackFragment {
         mImgDetail = (ImageView) view.findViewById(R.id.img_detail);
         mTvTitle = (TextView) view.findViewById(R.id.tv_title);
 
-        mToolbar.setTitle("");
+        mToolbar.setTitle(mArticle.getTitle());
         initToolbarNav(mToolbar);
         mImgDetail.setImageResource(mArticle.getImgRes());
-        mTvTitle.setText(mArticle.getTitle());
+        mTvTitle.setText(R.string.large_text);
 
         mImgDetail.setOnClickListener(new View.OnClickListener() {
             @Override
