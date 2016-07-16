@@ -83,9 +83,9 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * 当Fragment的根布局没有设定background时,
+     * 当Fragment根布局 没有 设定background属性时,
      * Fragmentation默认使用Theme的android:windowbackground作为Fragment的背景,
-     * 改变Fragment背景 (给根布局设定background优先级最高)
+     * 可以通过该方法改变Fragment背景。
      */
     protected void setDefaultFragmentBackground(@DrawableRes int backgroundRes) {
         mDefaultFragmentBackground = backgroundRes;
