@@ -204,13 +204,21 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             notifyEnterAnimationEnd(null);
             _mActivity.setFragmentClickable(true);
         }
-
     }
 
     protected void initFragmentBackground(View view) {
+        setBackground(view);
+    }
+
+    protected void setBackground(View view) {
         if (view != null && view.getBackground() == null) {
-            int background = getWindowBackground();
-            view.setBackgroundResource(background);
+            int defaultBg = _mActivity.getDefaultFragmentBackground();
+            if (defaultBg == 0) {
+                int background = getWindowBackground();
+                view.setBackgroundResource(background);
+            } else {
+                view.setBackgroundResource(defaultBg);
+            }
         }
     }
 

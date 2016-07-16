@@ -2,8 +2,8 @@ package me.yokeyword.fragmentation;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -18,6 +18,8 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     private Fragmentation mFragmentation;
 
     private FragmentAnimator mFragmentAnimator;
+
+    private int mDefaultFragmentBackground = 0;
 
     boolean mPopMultipleNoAnim = false;
 
@@ -70,7 +72,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     /**
      * 构建Fragment转场动画
-     * <p>
+     * <p/>
      * 如果是在Activity内实现,则构建的是Activity内所有Fragment的转场动画,
      * 如果是在Fragment内实现,则构建的是该Fragment的转场动画,此时优先级 > Activity的onCreateFragmentAnimator()
      *
@@ -78,6 +80,15 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     protected FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultVerticalAnimator();
+    }
+
+    /**
+     * 当Fragment的根布局没有设定background时,
+     * Fragmentation默认使用Theme的android:windowbackground作为Fragment的背景,
+     * 改变Fragment背景 (给根布局设定background优先级最高)
+     */
+    protected void setDefaultFragmentBackground(@DrawableRes int backgroundRes) {
+        mDefaultFragmentBackground = backgroundRes;
     }
 
     /**
@@ -234,6 +245,10 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     void setFragmentClickable(boolean clickable) {
         mFragmentClickable = clickable;
+    }
+
+    public int getDefaultFragmentBackground() {
+        return mDefaultFragmentBackground;
     }
 
     public void setFragmentClickable() {
