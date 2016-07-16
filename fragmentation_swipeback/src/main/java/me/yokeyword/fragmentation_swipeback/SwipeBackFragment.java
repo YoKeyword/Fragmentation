@@ -31,7 +31,7 @@ public class SwipeBackFragment extends SupportFragment {
     }
 
     protected View attachToSwipeBack(View view) {
-        mSwipeBackLayout.attachToFragment(this,view);
+        mSwipeBackLayout.attachToFragment(this, view);
         return mSwipeBackLayout;
     }
 
@@ -45,17 +45,11 @@ public class SwipeBackFragment extends SupportFragment {
 
     @Override
     protected void initFragmentBackground(View view) {
-        if (!(view instanceof SwipeBackLayout) && view != null && view.getBackground() == null) {
-            int background = getWindowBackground();
-            view.setBackgroundResource(background);
+        if (view instanceof SwipeBackLayout) {
+            View childView = ((SwipeBackLayout) view).getChildAt(0);
+            setBackground(childView);
         } else {
-            if (view instanceof SwipeBackLayout) {
-                View childView = ((SwipeBackLayout) view).getChildAt(0);
-                if (childView != null && childView.getBackground() == null) {
-                    int background = getWindowBackground();
-                    childView.setBackgroundResource(background);
-                }
-            }
+            setBackground(view);
         }
     }
 
