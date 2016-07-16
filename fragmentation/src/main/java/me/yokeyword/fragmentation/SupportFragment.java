@@ -17,6 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
+import me.yokeyword.fragmentation.helper.DebounceAnimListener;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
@@ -561,7 +562,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     /**
      * 入场动画结束时,回调
      */
-    void notifyEnterAnimEnd() {
+    public final void notifyEnterAnimEnd() {
         notifyEnterAnimationEnd(null);
         _mActivity.setFragmentClickable(true);
 
