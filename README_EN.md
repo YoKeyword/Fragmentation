@@ -57,7 +57,7 @@ NEW: 0.7.7 : onEnterAnimtionEnd() -> onEnterAnimtionEnd(Bundle savedInstanceStat
 // appcompat v7 library is needed
 compile 'me.yokeyword:fragmentation:0.7.9'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
-// compile 'me.yokeyword:fragmentation-swipeback:0.3.2'
+// compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
 **2. Your Activity should extend SupportActivity：**
 ````java

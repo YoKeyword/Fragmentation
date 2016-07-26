@@ -65,7 +65,7 @@ A powerful library that manage Fragment for Android!
 // appcompat v7包是必须的
 compile 'me.yokeyword:fragmentation:0.7.9'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
-// compile 'me.yokeyword:fragmentation-swipeback:0.3.2'
+// compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
 
 **2. Activity继承SupportActivity：**
