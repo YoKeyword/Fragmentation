@@ -95,6 +95,10 @@ public class BottomBar extends LinearLayout {
         });
     }
 
+    public int getCurrentItemPosition() {
+        return mCurrentPosition;
+    }
+
     public interface OnTabSelectedListener {
         void onTabSelected(int position, int prePosition);
 
