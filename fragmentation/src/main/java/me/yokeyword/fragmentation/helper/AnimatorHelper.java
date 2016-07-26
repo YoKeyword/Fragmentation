@@ -11,7 +11,7 @@ import me.yokeyword.fragmentation.anim.FragmentAnimator;
  * Created by YoKeyword on 16/7/26.
  */
 public final class AnimatorHelper {
-    private Animation noAnim;
+    private Animation noAnim, fixNoAnim;
     public Animation enterAnim, exitAnim, popEnterAnim, popExitAnim;
 
     private Context context;
@@ -31,6 +31,14 @@ public final class AnimatorHelper {
             noAnim = AnimationUtils.loadAnimation(context, R.anim.no_anim);
         }
         return noAnim;
+    }
+
+    public Animation getFixNoAnim() {
+        if (fixNoAnim == null) {
+            fixNoAnim = new Animation() {
+            };
+        }
+        return fixNoAnim;
     }
 
     private Animation initEnterAnim() {

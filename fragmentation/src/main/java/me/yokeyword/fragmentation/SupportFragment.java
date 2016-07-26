@@ -133,6 +133,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (_mActivity.mPopMultipleNoAnim || mLocking) {
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
+                // fix popTo(在设置为库中横向动画时),引起的一个闪烁问题
+                return mAnimHelper.getFixNoAnim();
+            }
             return mAnimHelper.getNoAnim();
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
