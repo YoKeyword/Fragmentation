@@ -121,6 +121,10 @@ public class BottomBar extends LinearLayout {
         mCurrentPosition = ss.position;
     }
 
+    public int getCurrentItemPosition() {
+        return mCurrentPosition;
+    }
+
     static class SavedState extends BaseSavedState {
         private int position;
 

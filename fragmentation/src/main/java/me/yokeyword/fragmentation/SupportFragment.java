@@ -10,13 +10,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
+import me.yokeyword.fragmentation.helper.AnimatorHelper;
+import me.yokeyword.fragmentation.helper.DebounceAnimListener;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
@@ -52,7 +53,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private int mContainerId;   // 该Fragment所处的Container的id
 
     private FragmentAnimator mFragmentAnimator;
-    private Animation mNoAnim, mEnterAnim, mExitAnim, mPopEnterAnim, mPopExitAnim;
+    private AnimatorHelper mAnimHelper;
     private boolean mEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
 
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
@@ -120,58 +121,45 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     private void initAnim() {
-        mFragmentAnimator.processNoAnim();
-
-        mNoAnim = AnimationUtils.loadAnimation(_mActivity, R.anim.no_anim);
-
-        if (mFragmentAnimator.getEnter() == R.anim.no_anim) {
+        mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
+        if (mAnimHelper.enterAnim == mAnimHelper.getNoAnim()) {
             mEnterAnimFlag = true;
-            mEnterAnim = mNoAnim;
-        } else {
-            mEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getEnter());
         }
-        if (mFragmentAnimator.getExit() == R.anim.no_anim) {
-            mExitAnim = mNoAnim;
-        } else {
-            mExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getExit());
-        }
-        if (mFragmentAnimator.getPopEnter() == R.anim.no_anim) {
-            mPopEnterAnim = mNoAnim;
-        } else {
-            mPopEnterAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopEnter());
-        }
-        mPopExitAnim = AnimationUtils.loadAnimation(_mActivity, mFragmentAnimator.getPopExit());
 
         // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
-        mEnterAnim.setAnimationListener(new DebounceAnimListener(this));
+        mAnimHelper.enterAnim.setAnimationListener(new DebounceAnimListener(this));
     }
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (_mActivity.mPopMultipleNoAnim || mLocking) {
-            return mNoAnim;
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
+                // fix popTo(在设置为库中横向动画时),引起的一个闪烁问题
+                return mAnimHelper.getFixNoAnim();
+            }
+            return mAnimHelper.getNoAnim();
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 if (mIsRoot) {  // 根Fragment设置为无入栈动画
                     mEnterAnimFlag = true;
-                    return mNoAnim;
+                    return mAnimHelper.getNoAnim();
                 }
-                return mEnterAnim;
+                return mAnimHelper.enterAnim;
             } else {
-                return mPopExitAnim;
+                return mAnimHelper.popExitAnim;
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                return mPopEnterAnim;
+                return mAnimHelper.popEnterAnim;
             } else {
-                return mExitAnim;
+                return mAnimHelper.exitAnim;
             }
         } else if (mIsSharedElement) {
             if (enter) {    // 此处在设置SharedElement时,回调  transit=0, enter=true, nextAnim=0
                 mEnterAnimFlag = true;
             } else if (getEnterTransition() == null) {
-                return mExitAnim;
+                return mAnimHelper.exitAnim;
             }
         }
         return super.onCreateAnimation(transit, enter, nextAnim);
@@ -203,13 +191,21 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             notifyEnterAnimationEnd(null);
             _mActivity.setFragmentClickable(true);
         }
-
     }
 
     protected void initFragmentBackground(View view) {
+        setBackground(view);
+    }
+
+    protected void setBackground(View view) {
         if (view != null && view.getBackground() == null) {
-            int background = getWindowBackground();
-            view.setBackgroundResource(background);
+            int defaultBg = _mActivity.getDefaultFragmentBackground();
+            if (defaultBg == 0) {
+                int background = getWindowBackground();
+                view.setBackgroundResource(background);
+            } else {
+                view.setBackgroundResource(defaultBg);
+            }
         }
     }
 
@@ -242,31 +238,31 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (mIsRoot) {
             return 0;
         }
-        if (mEnterAnim == null) {
+        if (mAnimHelper == null) {
             return DEFAULT_ANIM_DURATION;
         }
-        return mEnterAnim.getDuration();
+        return mAnimHelper.enterAnim.getDuration();
     }
 
     long getExitAnimDuration() {
-        if (mEnterAnim == null) {
+        if (mAnimHelper == null) {
             return DEFAULT_ANIM_DURATION;
         }
-        return mExitAnim.getDuration();
+        return mAnimHelper.exitAnim.getDuration();
     }
 
     long getPopEnterAnimDuration() {
-        if (mEnterAnim == null) {
+        if (mAnimHelper == null) {
             return DEFAULT_ANIM_DURATION;
         }
-        return mPopEnterAnim.getDuration();
+        return mAnimHelper.popEnterAnim.getDuration();
     }
 
     long getPopExitAnimDuration() {
-        if (mEnterAnim == null) {
+        if (mAnimHelper == null) {
             return DEFAULT_ANIM_DURATION;
         }
-        return mPopExitAnim.getDuration();
+        return mAnimHelper.popExitAnim.getDuration();
     }
 
     /**
@@ -561,7 +557,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     /**
      * 入场动画结束时,回调
      */
-    void notifyEnterAnimEnd() {
+    public final void notifyEnterAnimEnd() {
         notifyEnterAnimationEnd(null);
         _mActivity.setFragmentClickable(true);
 

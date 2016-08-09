@@ -22,7 +22,6 @@ A powerful library that manage Fragment for Android!
 &emsp;<img src="/gif/nested.gif" width="280px"/>
 
 # 特性
-# FEATURES
 
 1、**有效解决各种复杂嵌套、同级等Fragment重叠问题**
 
@@ -64,9 +63,9 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.7.7'
+compile 'me.yokeyword:fragmentation:0.7.9'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
-// compile 'me.yokeyword:fragmentation-swipeback:0.3.1'
+// compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
 
 **2. Activity继承SupportActivity：**

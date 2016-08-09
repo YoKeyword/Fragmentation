@@ -1,6 +1,8 @@
-package me.yokeyword.fragmentation;
+package me.yokeyword.fragmentation.helper;
 
 import android.view.animation.Animation;
+
+import me.yokeyword.fragmentation.SupportFragment;
 
 /**
  * 转场动画监听器: 主要是为了监听入场动画

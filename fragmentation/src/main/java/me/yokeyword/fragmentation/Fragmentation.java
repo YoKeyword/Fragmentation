@@ -454,6 +454,7 @@ public class Fragmentation {
      * @param includeSelf   是否包含该fragment
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
+        if (fragmentManager == null) return;
         Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
 
         if (targetFragment == null) {
@@ -634,7 +635,7 @@ public class Fragmentation {
                 }
             }
         } catch (Exception e) {
-            // ignore: for security
+            // ignore
         }
     }
 
