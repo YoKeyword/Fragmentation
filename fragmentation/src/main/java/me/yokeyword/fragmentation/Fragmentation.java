@@ -32,7 +32,6 @@ public class Fragmentation {
     static final String TAG = Fragmentation.class.getSimpleName();
 
     static final String ARG_RESULT_RECORD = "fragment_arg_result_record";
-
     static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
     static final String ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
@@ -41,6 +40,7 @@ public class Fragmentation {
     static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
 
     public static final long BUFFER_TIME = 300L;
+    public static final long BUFFER_TIME_FOR_RESULT = 50L;
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_ADD_WITH_POP = 1;
@@ -434,7 +434,7 @@ public class Fragmentation {
                         public void run() {
                             supportFragment.onFragmentResult(finalFragmentResultRecord.requestCode, finalFragmentResultRecord.resultCode, finalFragmentResultRecord.resultBundle);
                         }
-                    }, Math.max(animTime, lastAnimTime));
+                    }, Math.max(animTime, lastAnimTime) + BUFFER_TIME_FOR_RESULT);
                     return;
                 }
             }
