@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/bottombar_height"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recy"
+            android:layout_width="match_parent"
+            android:background="@android:color/white"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:paddingLeft="16dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:paddingRight="16dp"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_send"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/bottombar_height"
+            android:singleLine="true"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:text="@string/send"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/bottombar_height"
+        android:background="@drawable/actionbar_shadow_up"/>
+
+</FrameLayout>

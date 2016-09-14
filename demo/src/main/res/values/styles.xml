@@ -40,8 +40,4 @@
     <style name="tab_appearance">
         <item name="android:textSize">16sp</item>
     </style>
-
-    <style name="AppButtonStyle" parent="Widget.AppCompat.Button">
-        <item name="colorButtonNormal">@color/colorPrimary</item>
-    </style>
 </resources>

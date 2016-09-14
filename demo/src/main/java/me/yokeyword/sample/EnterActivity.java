@@ -6,16 +6,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 
-import me.yokeyword.sample.flow.MainActivity;
+import me.yokeyword.sample.demo_flow.MainActivity;
 
 /**
  * Created by YoKeyword on 16/6/5.
  */
 public class EnterActivity extends AppCompatActivity {
     private Toolbar mToolBar;
-    private Button mBtnFlow, mBtnMultiple;
+    private TextView mTvBtnFlow, mTvBtnWechat, mTvBtnZhihu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,22 +27,30 @@ public class EnterActivity extends AppCompatActivity {
 
     private void initView() {
         mToolBar = (Toolbar) findViewById(R.id.toolbar);
-        mBtnFlow = (Button) findViewById(R.id.btn_flow);
-        mBtnMultiple = (Button) findViewById(R.id.btn_multiple);
+        mTvBtnFlow = (TextView) findViewById(R.id.tv_btn_flow);
+        mTvBtnWechat = (TextView) findViewById(R.id.tv_btn_wechat);
+        mTvBtnZhihu = (TextView) findViewById(R.id.tv_btn_zhihu);
 
         setSupportActionBar(mToolBar);
 
-        mBtnFlow.setOnClickListener(new View.OnClickListener() {
+        mTvBtnFlow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(EnterActivity.this, MainActivity.class));
             }
         });
 
-        mBtnMultiple.setOnClickListener(new View.OnClickListener() {
+        mTvBtnWechat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EnterActivity.this, me.yokeyword.sample.multiple.MainActivity.class));
+                startActivity(new Intent(EnterActivity.this, me.yokeyword.sample.demo_wechat.MainActivity.class));
+            }
+        });
+
+        mTvBtnZhihu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(EnterActivity.this, me.yokeyword.sample.demo_zhihu.MainActivity.class));
             }
         });
     }

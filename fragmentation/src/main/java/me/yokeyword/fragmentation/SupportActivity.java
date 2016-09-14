@@ -2,22 +2,14 @@ package me.yokeyword.fragmentation;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
-
-import java.util.List;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
-import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
-import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 
 /**
  * Created by YoKeyword on 16/1/22.
@@ -27,7 +19,9 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     private FragmentAnimator mFragmentAnimator;
 
-    boolean mPopMulitpleNoAnim = false;
+    private int mDefaultFragmentBackground = 0;
+
+    boolean mPopMultipleNoAnim = false;
 
     // 防抖动 是否可以点击
     private boolean mFragmentClickable = true;
@@ -58,7 +52,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * 获取设置的全局动画
+     * 获取设置的全局动画, copy
      *
      * @return FragmentAnimator
      */
@@ -88,21 +82,28 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return new DefaultVerticalAnimator();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            // 这里是防止动画过程中，按返回键取消加载Fragment
-            if (!mFragmentClickable) {
-                setFragmentClickable(true);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
+    /**
+     * 当Fragment根布局 没有 设定background属性时,
+     * Fragmentation默认使用Theme的android:windowbackground作为Fragment的背景,
+     * 可以通过该方法改变Fragment背景。
+     */
+    protected void setDefaultFragmentBackground(@DrawableRes int backgroundRes) {
+        mDefaultFragmentBackground = backgroundRes;
     }
 
     /**
-     * 注意,如果你需要复写该方法,请务必在需要finish Activity的代码处,使用super.onBackPressed()代替,以保证SupportFragment的onBackPressedSupport()方法可以正常工作
-     * 该方法默认在回退栈内Fragment数大于1时,按返回键使Fragment pop, 小于等于1时,finish Activity.
+     * (因为事务异步的原因) 如果你想在onCreate()中使用start/pop等 Fragment事务方法, 请使用该方法把你的任务入队
+     *
+     * @param runnable 需要执行的任务
      */
+    protected void enqueueAction(Runnable runnable) {
+        getHandler().post(runnable);
+    }
+
+    /**
+     * 不建议复写该方法,请使用 {@link #onBackPressedSupport} 代替
+     */
+    @Deprecated
     @Override
     public void onBackPressed() {
         // 这里是防止动画过程中，按返回键取消加载Fragment
@@ -112,15 +113,9 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
         SupportFragment activeFragment = mFragmentation.getActiveFragment(null, getSupportFragmentManager());
-        if (dispatchBackPressedEvent(activeFragment)) {
-            return;
-        }
+        if (mFragmentation.dispatchBackPressedEvent(activeFragment)) return;
 
-        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            mFragmentation.back(getSupportFragmentManager());
-        } else {
-            onBackPressedSupport();
-        }
+        onBackPressedSupport();
     }
 
     /**
@@ -128,53 +123,26 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      * 请尽量复写该方法,避免复写onBackPress(),以保证SupportFragment内的onBackPressedSupport()回退事件正常执行
      */
     public void onBackPressedSupport() {
-        finish();
-    }
-
-    /**
-     * 分发回退事件, 优先栈顶(有子栈则是子栈的栈顶)的Fragment
-     */
-    private boolean dispatchBackPressedEvent(SupportFragment activeFragment) {
-        if (activeFragment != null) {
-            boolean result = activeFragment.onBackPressedSupport();
-            if (result) {
-                return true;
-            }
-
-            Fragment parentFragment = activeFragment.getParentFragment();
-            if (dispatchBackPressedEvent((SupportFragment) parentFragment)) {
-                return true;
-            }
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            pop();
+        } else {
+            finish();
         }
-
-        return false;
     }
 
     @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        if (getTopFragment() == null) {
-            mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
-        } else {
-            throw new RuntimeException("getTopFragment() is not null!");
-        }
+        mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
     }
 
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
-        if (getTopFragment() == null) {
-            mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
-        } else {
-            throw new RuntimeException("getTopFragment() is not null!");
-        }
+        mFragmentation.replaceLoadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBack);
     }
 
     @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
-        if (getTopFragment() == null) {
-            mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
-        } else {
-            throw new RuntimeException("getTopFragment() is not null!");
-        }
+        mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
     }
 
     @Override
@@ -204,8 +172,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     /**
      * 得到位于栈顶Fragment
-     *
-     * @return
      */
     @Override
     public SupportFragment getTopFragment() {
@@ -213,9 +179,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * 获取栈内的framgent对象
-     *
-     * @param fragmentClass
+     * 获取栈内的fragment对象
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
@@ -250,13 +214,23 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     void preparePopMultiple() {
-        mPopMulitpleNoAnim = true;
+        mPopMultipleNoAnim = true;
     }
 
     void popFinish() {
-        mPopMulitpleNoAnim = false;
+        mPopMultipleNoAnim = false;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            // 这里是防止动画过程中，按返回键取消加载Fragment
+            if (!mFragmentClickable) {
+                setFragmentClickable(true);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -273,78 +247,25 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mFragmentClickable = clickable;
     }
 
+    public int getDefaultFragmentBackground() {
+        return mDefaultFragmentBackground;
+    }
+
     public void setFragmentClickable() {
         mFragmentClickable = true;
     }
 
     /**
-     * 显示栈视图,调试时使用
+     * 显示栈视图dialog,调试时使用
      */
     public void showFragmentStackHierarchyView() {
-        DebugHierarchyViewContainer container = new DebugHierarchyViewContainer(this);
-        container.bindFragmentRecords(mFragmentation.getFragmentRecords());
-        container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        new AlertDialog.Builder(this)
-                .setTitle("栈视图")
-                .setView(container)
-                .setPositiveButton("关闭", null)
-                .setCancelable(true)
-                .show();
+        mFragmentation.showFragmentStackHierarchyView();
     }
 
     /**
-     * 显示栈视图 日志 ,调试时使用
+     * 显示栈视图日志,调试时使用
      */
     public void logFragmentStackHierarchy(String TAG) {
-        List<DebugFragmentRecord> fragmentRecordList = mFragmentation.getFragmentRecords();
-        if (fragmentRecordList == null) return;
-
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
-            DebugFragmentRecord fragmentRecord = fragmentRecordList.get(i);
-
-            if (i == fragmentRecordList.size() - 1) {
-                sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
-                if (i == 0) {
-                    sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n");
-                    sb.append("═══════════════════════════════════════════════════════════════════════════════════");
-                } else {
-                    sb.append("\t栈顶\t\t\t" + fragmentRecord.fragmentName + "\n\n");
-                }
-            } else if (i == 0) {
-                sb.append("\t栈底\t\t\t" + fragmentRecord.fragmentName + "\n\n");
-                processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
-                sb.append("═══════════════════════════════════════════════════════════════════════════════════");
-                Log.i(TAG, sb.toString());
-                return;
-            } else {
-                sb.append("\t↓\t\t\t" + fragmentRecord.fragmentName + "\n\n");
-            }
-
-            processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
-        }
-    }
-
-    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
-        if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
-
-        for (int j = 0; j < fragmentRecordList.size(); j++) {
-            DebugFragmentRecord childFragmentRecord = fragmentRecordList.get(j);
-            for (int k = 0; k < childHierarchy; k++) {
-                sb.append("\t\t\t");
-            }
-            if (j == 0) {
-                sb.append("\t子栈顶\t\t" + childFragmentRecord.fragmentName + "\n\n");
-            } else if (j == fragmentRecordList.size() - 1) {
-                sb.append("\t子栈底\t\t" + childFragmentRecord.fragmentName + "\n\n");
-                processChildLog(childFragmentRecord.childFragmentRecord, sb, ++childHierarchy);
-                return;
-            } else {
-                sb.append("\t↓\t\t\t" + childFragmentRecord.fragmentName + "\n\n");
-            }
-
-            processChildLog(childFragmentRecord.childFragmentRecord, sb, childHierarchy);
-        }
+        mFragmentation.logFragmentRecords(TAG);
     }
 }

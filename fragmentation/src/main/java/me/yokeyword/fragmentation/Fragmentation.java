@@ -1,5 +1,6 @@
 package me.yokeyword.fragmentation;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -7,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -15,8 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
+import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 import me.yokeyword.fragmentation.helper.FragmentResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
+import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
 
 
 /**
@@ -26,11 +31,7 @@ import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 public class Fragmentation {
     static final String TAG = Fragmentation.class.getSimpleName();
 
-    //    static final String ARG_REQUEST_CODE = "fragmentation_arg_request_code";
-//    static final String ARG_RESULT_CODE = "fragmentation_arg_result_code";
-//    static final String ARG_RESULT_BUNDLE = "fragmentation_arg_bundle";
     static final String ARG_RESULT_RECORD = "fragment_arg_result_record";
-
     static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
     static final String ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
@@ -39,6 +40,7 @@ public class Fragmentation {
     static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
 
     public static final long BUFFER_TIME = 300L;
+    public static final long BUFFER_TIME_FOR_RESULT = 50L;
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_ADD_WITH_POP = 1;
@@ -172,6 +174,8 @@ public class Fragmentation {
         if (addToBack) {
             ft.addToBackStack(to.getClass().getName());
         }
+        Bundle bundle = to.getArguments();
+        bundle.putBoolean(ARG_IS_ROOT, true);
         ft.commit();
     }
 
@@ -182,6 +186,9 @@ public class Fragmentation {
      * @param hideFragment 需要hide的Fragment
      */
     void showHideFragment(FragmentManager fragmentManager, SupportFragment showFragment, SupportFragment hideFragment) {
+        if (showFragment == hideFragment) return;
+
+        // 如果show和hide的Fragment不是同一个
         fragmentManager.beginTransaction()
                 .show(showFragment)
                 .hide(hideFragment)
@@ -215,9 +222,7 @@ public class Fragmentation {
 
     void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
         SupportFragment preFragment = getPreFragment(from);
-        if (preFragment != null) {
-            hackFinishAnim(preFragment, from, to);
-        }
+        handlePopAnim(preFragment, from, to);
 
         fragmentManager.beginTransaction().remove(from).commit();
         handleBack(fragmentManager, true);
@@ -236,8 +241,6 @@ public class Fragmentation {
 
     /**
      * 获得栈顶SupportFragment
-     *
-     * @return
      */
     SupportFragment getTopFragment(FragmentManager fragmentManager) {
         List<Fragment> fragmentList = fragmentManager.getFragments();
@@ -256,7 +259,6 @@ public class Fragmentation {
      * 获取目标Fragment的前一个Fragment
      *
      * @param fragment 目标Fragment
-     * @return
      */
     SupportFragment getPreFragment(Fragment fragment) {
         List<Fragment> fragmentList = fragment.getFragmentManager().getFragments();
@@ -321,25 +323,42 @@ public class Fragmentation {
     }
 
     /**
-     * handle LaunchMode
-     *
-     * @param fragmentManager
-     * @param to
-     * @param launchMode
-     * @return
+     * 分发回退事件, 优先栈顶(有子栈则是子栈的栈顶)的Fragment
      */
-    private boolean handleLaunchMode(FragmentManager fragmentManager, Fragment to, int launchMode) {
-
-        if (launchMode == SupportFragment.SINGLETOP) {
-            List<Fragment> fragments = fragmentManager.getFragments();
-            int index = fragments.indexOf(to);
-            // 在栈顶
-            if (index == fragmentManager.getBackStackEntryCount() - 1) {
-                if (handleNewBundle(to)) return true;
+    boolean dispatchBackPressedEvent(SupportFragment activeFragment) {
+        if (activeFragment != null) {
+            boolean result = activeFragment.onBackPressedSupport();
+            if (result) {
+                return true;
             }
-        } else if (launchMode == SupportFragment.SINGLETASK) {
-            popToFix(to, 0, fragmentManager);
-            if (handleNewBundle(to)) return true;
+
+            Fragment parentFragment = activeFragment.getParentFragment();
+            if (dispatchBackPressedEvent((SupportFragment) parentFragment)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * handle LaunchMode
+     */
+    private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment to, int launchMode) {
+        SupportFragment topFragment = getTopFragment(fragmentManager);
+
+        if (topFragment != null) {
+            if (launchMode == SupportFragment.SINGLETOP) {
+                // 在栈顶
+                if (to == topFragment || to.getClass().getName().equals(topFragment.getClass().getName())) {
+                    if (handleNewBundle(to)) return true;
+                }
+            } else if (launchMode == SupportFragment.SINGLETASK) {
+                if (findStackFragment(to.getClass(), fragmentManager, false) != null) {
+                    popToFix(to.getClass(), 0, fragmentManager);
+                    if (handleNewBundle(to)) return true;
+                }
+            }
         }
         return false;
     }
@@ -369,8 +388,9 @@ public class Fragmentation {
     }
 
     void back(FragmentManager fragmentManager) {
-        int count = fragmentManager.getBackStackEntryCount();
+        if (fragmentManager == null) return;
 
+        int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
             handleBack(fragmentManager, false);
         }
@@ -414,7 +434,7 @@ public class Fragmentation {
                         public void run() {
                             supportFragment.onFragmentResult(finalFragmentResultRecord.requestCode, finalFragmentResultRecord.resultCode, finalFragmentResultRecord.resultBundle);
                         }
-                    }, Math.max(animTime, lastAnimTime));
+                    }, Math.max(animTime, lastAnimTime) + BUFFER_TIME_FOR_RESULT);
                     return;
                 }
             }
@@ -428,104 +448,29 @@ public class Fragmentation {
     }
 
     /**
-     * hack anim
-     */
-    @Nullable
-    private void hackFinishAnim(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
-        View view = preFragment.getView();
-        if (view != null) {
-            // 不调用 会闪屏
-            view.setVisibility(View.VISIBLE);
-
-            ViewGroup viewGroup;
-            final View fromView = from.getView();
-
-            if (fromView != null && view instanceof ViewGroup) {
-                viewGroup = (ViewGroup) view;
-                ViewGroup container = (ViewGroup) mActivity.findViewById(from.getContainerId());
-                if (container != null) {
-                    container.removeView(fromView);
-                    if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                        fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    }
-
-                    if (viewGroup instanceof LinearLayout) {
-                        viewGroup.addView(fromView, 0);
-                    } else {
-                        viewGroup.addView(fromView);
-                    }
-
-                    final ViewGroup finalViewGroup = viewGroup;
-                    to.setEnterAnimEndListener(new OnEnterAnimEndListener() {
-                        @Override
-                        public void onAnimationEnd() {
-                            finalViewGroup.removeView(fromView);
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    /**
-     * hack popTo anim
-     */
-    @Nullable
-    private void hacPopTokAnim(Fragment rootFragment, SupportFragment fromFragment) {
-        if (rootFragment != null) {
-            View view = rootFragment.getView();
-            if (view != null) {
-                // 不调用 会闪屏
-                view.setVisibility(View.VISIBLE);
-
-                ViewGroup viewGroup;
-                final View fromView = fromFragment.getView();
-
-                if (fromView != null && view instanceof ViewGroup) {
-                    viewGroup = (ViewGroup) view;
-                    ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
-                    if (container != null) {
-                        container.removeView(fromView);
-                        if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                            fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                        }
-
-                        if (viewGroup instanceof LinearLayout) {
-                            viewGroup.addView(fromView, 0);
-                        } else {
-                            viewGroup.addView(fromView);
-                        }
-
-                        final ViewGroup finalViewGroup = viewGroup;
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                finalViewGroup.removeView(fromView);
-                            }
-                        }, Math.max(fromFragment.getExitAnimDuration(), BUFFER_TIME));
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * 出栈到目标fragment
      *
      * @param fragmentClass 目标fragment
      * @param includeSelf   是否包含该fragment
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
+        if (fragmentManager == null) return;
         Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
-        if (includeSelf) {
-            targetFragment = getPreFragment(targetFragment);
-            if (targetFragment == null) {
-                throw new RuntimeException("Do you want to pop all Fragments? Please call _mActivity.finish()");
-            }
-        }
-        SupportFragment fromFragment = getTopFragment(fragmentManager);
 
-        int flag = includeSelf ? FragmentManager.POP_BACK_STACK_INCLUSIVE : 0;
+        if (targetFragment == null) {
+            Log.e(TAG, "Pop failure! Can't find " + fragmentClass.getSimpleName() + " in the FragmentManager's Stack.");
+            return;
+        }
+
+        int flag;
+        if (includeSelf) {
+            flag = FragmentManager.POP_BACK_STACK_INCLUSIVE;
+            targetFragment = getPreFragment(targetFragment);
+        } else {
+            flag = 0;
+        }
+
+        SupportFragment fromFragment = getTopFragment(fragmentManager);
 
         if (afterPopTransactionRunnable != null) {
             if (targetFragment == fromFragment) {
@@ -533,19 +478,21 @@ public class Fragmentation {
                 return;
             }
 
-            hacPopTokAnim(targetFragment, fromFragment);
-            fragmentManager.beginTransaction().remove(fromFragment).commit();
-            popToWithTransactionFix(fragmentClass, flag, fragmentManager);
+            hackPopToAnim(targetFragment, fromFragment);
+
+            popToFix(fragmentClass, flag, fragmentManager);
             mHandler.post(afterPopTransactionRunnable);
         } else {
-            popToFix(targetFragment, flag, fragmentManager);
+            popToFix(fragmentClass, flag, fragmentManager);
         }
     }
 
     /**
      * 解决popTo多个fragment时动画引起的异常问题
      */
-    private void popToWithTransactionFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
+    private void popToFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
+        if (fragmentManager.getFragments() == null) return;
+
         mActivity.preparePopMultiple();
         fragmentManager.popBackStackImmediate(fragmentClass.getName(), flag);
         mActivity.popFinish();
@@ -558,43 +505,223 @@ public class Fragmentation {
         });
     }
 
+//    /**
+//     * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
+//     */
+//    @Deprecated   // 为了优化响应速度,废弃该方法
+//    private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
+//        if (fragmentManager.getFragments() == null) return;
+//
+//        fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
+//
+//        long popAniDuration;
+//
+//        if (targetFragment instanceof SupportFragment) {
+//            SupportFragment fragment = (SupportFragment) targetFragment;
+//            popAniDuration = Math.max(fragment.getPopEnterAnimDuration(), fragment.getPopExitAnimDuration());
+//        } else {
+//            popAniDuration = BUFFER_TIME;
+//        }
+//
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
+//            }
+//        }, popAniDuration);
+//    }
+
     /**
-     * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
+     * hack anim
      */
-    private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
-        if (fragmentManager.getFragments() == null) return;
-
-        fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
-
-        long popAniDuration;
-
-        if (targetFragment instanceof SupportFragment) {
-            SupportFragment fragment = (SupportFragment) targetFragment;
-            popAniDuration = Math.max(fragment.getPopEnterAnimDuration(), fragment.getPopExitAnimDuration());
-        } else {
-            popAniDuration = BUFFER_TIME;
+    @Nullable
+    private void handlePopAnim(SupportFragment preFragment, SupportFragment from, SupportFragment to) {
+        if (preFragment != null) {
+            View view = preFragment.getView();
+            handlePopAnim(from, view, to);
         }
-
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
-            }
-        }, popAniDuration);
     }
 
-    List<DebugFragmentRecord> getFragmentRecords() {
-        List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
+    /**
+     * hack popTo anim
+     */
+    @Nullable
+    private void hackPopToAnim(Fragment targetFragment, SupportFragment fromFragment) {
+        if (targetFragment != null) {
+            View view = targetFragment.getView();
+            handlePopAnim(fromFragment, view, null);
+        }
+    }
+
+    private void handlePopAnim(SupportFragment fromFragment, View view, SupportFragment toFragment) {
+        try {
+            if (view != null) {
+                ViewGroup preViewGroup = null;
+                SupportFragment preFragment = null;
+
+                // 在5.0之前的设备,在5.0之前的设备, popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable)
+                // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为何解决该问题
+                if (toFragment == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    preFragment = getPreFragment(fromFragment);
+                    if (preFragment != null) {
+                        View preView = preFragment.getView();
+                        if (preView != null && preView instanceof ViewGroup) {
+                            preViewGroup = (ViewGroup) preView;
+                        }
+                    }
+                }
+
+                // 不调用 会闪屏
+                view.setVisibility(View.VISIBLE);
+
+                final ViewGroup viewGroup;
+                final View fromView = fromFragment.getView();
+
+                if (fromView != null && view instanceof ViewGroup) {
+                    viewGroup = (ViewGroup) view;
+                    ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
+                    if (container != null) {
+                        container.removeView(fromView);
+                        if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                            fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+                        }
+
+                        if (preViewGroup != null) {
+                            final ViewGroup finalPreViewGroup = preViewGroup;
+                            preFragment.setOnFragmentDestoryViewListener(new OnFragmentDestoryViewListener() {
+                                @Override
+                                public void onDestoryView() {
+                                    finalPreViewGroup.removeView(fromView);
+
+                                    if (viewGroup instanceof LinearLayout) {
+                                        viewGroup.addView(fromView, 0);
+                                    } else {
+                                        viewGroup.addView(fromView);
+                                    }
+                                }
+                            });
+                        }
+
+                        if (viewGroup instanceof LinearLayout) {
+                            if (preViewGroup != null) {
+                                preViewGroup.addView(fromView, 0);
+                            } else {
+                                viewGroup.addView(fromView, 0);
+                            }
+                        } else {
+                            if (preViewGroup != null) {
+                                preViewGroup.addView(fromView);
+                            } else {
+                                viewGroup.addView(fromView);
+                            }
+                        }
+
+                        if (toFragment == null) { // pop multiple fragment
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    viewGroup.removeView(fromView);
+                                }
+                            }, Math.max(fromFragment.getExitAnimDuration(), BUFFER_TIME));
+                        } else { // pop single fragment
+                            toFragment.setEnterAnimEndListener(new OnEnterAnimEndListener() {
+                                @Override
+                                public void onAnimationEnd() {
+                                    viewGroup.removeView(fromView);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
+    /**
+     * 调试相关:以dialog形式 显示 栈视图
+     */
+    void showFragmentStackHierarchyView() {
+        DebugHierarchyViewContainer container = new DebugHierarchyViewContainer(mActivity);
+        container.bindFragmentRecords(getFragmentRecords());
+        container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        new AlertDialog.Builder(mActivity)
+                .setTitle("栈视图")
+                .setView(container)
+                .setPositiveButton("关闭", null)
+                .setCancelable(true)
+                .show();
+    }
+
+    /**
+     * 调试相关:以log形式 打印 栈视图
+     */
+    void logFragmentRecords(String tag) {
+        List<DebugFragmentRecord> fragmentRecordList = getFragmentRecords();
+        if (fragmentRecordList == null) return;
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
+            DebugFragmentRecord fragmentRecord = fragmentRecordList.get(i);
+
+            if (i == fragmentRecordList.size() - 1) {
+                sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
+                if (i == 0) {
+                    sb.append("\t栈顶\t\t\t").append(fragmentRecord.fragmentName).append("\n");
+                    sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+                } else {
+                    sb.append("\t栈顶\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
+                }
+            } else if (i == 0) {
+                sb.append("\t栈底\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
+                processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
+                sb.append("═══════════════════════════════════════════════════════════════════════════════════");
+                Log.i(tag, sb.toString());
+                return;
+            } else {
+                sb.append("\t↓\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
+            }
+
+            processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
+        }
+    }
+
+    private List<DebugFragmentRecord> getFragmentRecords() {
+        List<DebugFragmentRecord> fragmentRecordList = new ArrayList<>();
 
         List<Fragment> fragmentList = mActivity.getSupportFragmentManager().getFragments();
+
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
         for (Fragment fragment : fragmentList) {
             if (fragment == null) continue;
-            fragmentRecords.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+            fragmentRecordList.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
         }
+        return fragmentRecordList;
+    }
 
-        return fragmentRecords;
+    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
+        if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
+
+        for (int j = 0; j < fragmentRecordList.size(); j++) {
+            DebugFragmentRecord childFragmentRecord = fragmentRecordList.get(j);
+            for (int k = 0; k < childHierarchy; k++) {
+                sb.append("\t\t\t");
+            }
+            if (j == 0) {
+                sb.append("\t子栈顶\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
+            } else if (j == fragmentRecordList.size() - 1) {
+                sb.append("\t子栈底\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
+                processChildLog(childFragmentRecord.childFragmentRecord, sb, ++childHierarchy);
+                return;
+            } else {
+                sb.append("\t↓\t\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
+            }
+
+            processChildLog(childFragmentRecord.childFragmentRecord, sb, childHierarchy);
+        }
     }
 
     private List<DebugFragmentRecord> getChildFragmentRecords(Fragment parentFragment) {

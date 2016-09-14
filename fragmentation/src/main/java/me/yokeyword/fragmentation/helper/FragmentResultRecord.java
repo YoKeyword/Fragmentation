@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * 记录
+ * Result 记录
  * Created by YoKeyword on 16/6/2.
  */
 public class FragmentResultRecord implements Parcelable {

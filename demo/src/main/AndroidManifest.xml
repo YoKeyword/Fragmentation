@@ -19,15 +19,17 @@
         </activity>
 
         <activity
-            android:name=".flow.MainActivity"
+            android:name=".demo_flow.MainActivity"
+            android:launchMode="singleTask"/>
+
+        <activity android:name=".demo_wechat.MainActivity"/>
+
+        <activity
+            android:name=".demo_zhihu.MainActivity"
             android:launchMode="singleTask"/>
 
         <activity
-            android:name=".multiple.MainActivity"
-            android:launchMode="singleTask"/>
-
-        <activity
-            android:name=".flow.SwipeBackSampleActivity"
+            android:name=".demo_flow.SwipeBackSampleActivity"
             android:theme="@style/AppTheme.NoActionBar.SwipeBack"/>
     </application>
 
