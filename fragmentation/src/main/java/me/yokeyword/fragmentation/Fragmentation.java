@@ -285,8 +285,10 @@ public class Fragmentation {
             // 它们的Tag是以android:switcher开头,所以这里我们使用下面的方式
             List<Fragment> childFragmentList = fragmentManager.getFragments();
             if (childFragmentList == null) return null;
+            
+            int sizeChildFrgList = childFragmentList.size();
 
-            for (int i = childFragmentList.size() - 1; i >= 0; i--) {
+            for (int i = sizeChildFrgList - 1; i >= 0; i--) {
                 Fragment childFragment = childFragmentList.get(i);
                 if (childFragment instanceof SupportFragment && childFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = childFragment;
