@@ -6,7 +6,7 @@ import android.view.View;
 /**
  * Created by YoKeyword on 16/6/2.
  */
-public interface ISupportFragment extends ISupport {
+interface ISupportFragment extends ISupport {
 
     /**
      * add目标Fragment, 以addSharedElement方式
