@@ -27,9 +27,7 @@ public final class AnimatorHelper {
     }
 
     public Animation getNoAnim() {
-        if (noAnim == null) {
-            noAnim = AnimationUtils.loadAnimation(context, R.anim.no_anim);
-        }
+        noAnim = AnimationUtils.loadAnimation(context, R.anim.no_anim);
         return noAnim;
     }
 

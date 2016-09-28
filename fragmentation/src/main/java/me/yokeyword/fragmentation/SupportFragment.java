@@ -122,9 +122,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     private void initAnim() {
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
-        if (mAnimHelper.enterAnim == mAnimHelper.getNoAnim()) {
-            mEnterAnimFlag = true;
-        }
 
         // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
         mAnimHelper.enterAnim.setAnimationListener(new DebounceAnimListener(this));
