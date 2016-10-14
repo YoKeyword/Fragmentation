@@ -353,12 +353,15 @@ public class Fragmentation {
             if (launchMode == SupportFragment.SINGLETOP) {
                 // 在栈顶
                 if (to == topFragment || to.getClass().getName().equals(topFragment.getClass().getName())) {
-                    if (handleNewBundle(to)) return true;
+                    topFragment.putNewBundle(to.getArguments());
+                    if (handleNewBundle(topFragment)) return true;
                 }
             } else if (launchMode == SupportFragment.SINGLETASK) {
-                if (findStackFragment(to.getClass(), fragmentManager, false) != null) {
+                SupportFragment stackFragment = findStackFragment(to.getClass(), fragmentManager, false);
+                if (stackFragment != null) {
+                    stackFragment.putNewBundle(to.getArguments());
                     popToFix(to.getClass(), 0, fragmentManager);
-                    if (handleNewBundle(to)) return true;
+                    if (handleNewBundle(stackFragment)) return true;
                 }
             }
         }
