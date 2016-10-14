@@ -78,8 +78,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mIsRoot = bundle.getBoolean(Fragmentation.ARG_IS_ROOT, false);
-            mIsSharedElement = bundle.getBoolean(Fragmentation.ARG_IS_SHARED_ELEMENT, false);
+            mIsRoot = bundle.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
+            mIsSharedElement = bundle.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
         }
 
@@ -504,11 +504,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     public void setFramgentResult(int resultCode, Bundle bundle) {
         Bundle args = getArguments();
-        if (args == null || !args.containsKey(Fragmentation.ARG_RESULT_RECORD)) {
+        if (args == null || !args.containsKey(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD)) {
             return;
         }
 
-        FragmentResultRecord fragmentResultRecord = args.getParcelable(Fragmentation.ARG_RESULT_RECORD);
+        FragmentResultRecord fragmentResultRecord = args.getParcelable(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD);
         if (fragmentResultRecord != null) {
             fragmentResultRecord.resultCode = resultCode;
             fragmentResultRecord.resultBundle = bundle;
@@ -526,7 +526,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, TargetFragment回调该方法
+     * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, 回调TargetFragment的该方法
      *
      * @param args 通过上个Fragment的putNewBundle(Bundle newBundle)时传递的数据
      */
@@ -535,7 +535,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 添加NewBundle,用于启动模式为SingleTask/SingleTop时
+     *
+     * <p>Deprecated. See {@link #setArguments(Bundle)}.
      */
+    @Deprecated
     public void putNewBundle(Bundle newBundle) {
         this.mNewBundle = newBundle;
     }
