@@ -146,9 +146,7 @@ public class MainActivity extends SupportActivity
                     HomeFragment fragment = findFragment(HomeFragment.class);
                     Bundle newBundle = new Bundle();
                     newBundle.putString("from", "主页-->来自:" + topFragment.getClass().getSimpleName());
-                    fragment.setArguments(newBundle);
-                    // 也可以通过putNewBundle()设置数据
-//                    fragment.putNewBundle(newBundle);
+                    fragment.putNewBundle(newBundle);
 
                     start(fragment, SupportFragment.SINGLETASK);
                 } else if (id == R.id.nav_discover) {
