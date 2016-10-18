@@ -535,10 +535,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 添加NewBundle,用于启动模式为SingleTask/SingleTop时
-     *
-     * <p>Deprecated. See {@link #setArguments(Bundle)}.
      */
-    @Deprecated
     public void putNewBundle(Bundle newBundle) {
         this.mNewBundle = newBundle;
     }
