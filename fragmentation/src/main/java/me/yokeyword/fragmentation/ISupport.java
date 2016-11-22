@@ -4,7 +4,7 @@ package me.yokeyword.fragmentation;
 /**
  * Created by YoKeyword on 16/6/1.
  */
-public interface ISupport {
+interface ISupport {
 
     /**
      * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
@@ -23,7 +23,7 @@ public interface ISupport {
      * 加载多个根Fragment
      *
      * @param containerId 容器id
-     * @param toFragments  目标Fragments
+     * @param toFragments 目标Fragments
      */
     void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments);
 

@@ -54,7 +54,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     private FragmentAnimator mFragmentAnimator;
     private AnimatorHelper mAnimHelper;
-    private boolean mEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
+    private boolean mNoneEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
 
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
 
@@ -78,8 +78,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mIsRoot = bundle.getBoolean(Fragmentation.ARG_IS_ROOT, false);
-            mIsSharedElement = bundle.getBoolean(Fragmentation.ARG_IS_SHARED_ELEMENT, false);
+            mIsRoot = bundle.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
+            mIsSharedElement = bundle.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
         }
 
@@ -122,12 +122,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     private void initAnim() {
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
-        if (mAnimHelper.enterAnim == mAnimHelper.getNoAnim()) {
-            mEnterAnimFlag = true;
-        }
 
         // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
-        mAnimHelper.enterAnim.setAnimationListener(new DebounceAnimListener(this));
+        if (!mNoneEnterAnimFlag) {
+            mAnimHelper.enterAnim.setAnimationListener(new DebounceAnimListener(this));
+        }
     }
 
     @Override
@@ -135,34 +134,29 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (_mActivity.mPopMultipleNoAnim || mLocking) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
                 // fix popTo(在设置为库中横向动画时),引起的一个闪烁问题
-                return mAnimHelper.getFixNoAnim();
+                return mAnimHelper.getNoneAnimFixed();
             }
-            return mAnimHelper.getNoAnim();
+            return mAnimHelper.getNoneAnim();
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 if (mIsRoot) {  // 根Fragment设置为无入栈动画
-                    mEnterAnimFlag = true;
-                    return mAnimHelper.getNoAnim();
+                    mNoneEnterAnimFlag = true;
+                    return mAnimHelper.getNoneAnim();
                 }
                 return mAnimHelper.enterAnim;
             } else {
                 return mAnimHelper.popExitAnim;
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-            if (enter) {
-                return mAnimHelper.popEnterAnim;
-            } else {
+            return enter ? mAnimHelper.popEnterAnim : mAnimHelper.exitAnim;
+        } else {
+            if (mIsSharedElement && !enter && getEnterTransition() == null) {
                 return mAnimHelper.exitAnim;
             }
-        } else if (mIsSharedElement) {
-            if (enter) {    // 此处在设置SharedElement时,回调  transit=0, enter=true, nextAnim=0
-                mEnterAnimFlag = true;
-            } else if (getEnterTransition() == null) {
-                return mAnimHelper.exitAnim;
-            }
+            mNoneEnterAnimFlag = true;
+            return super.onCreateAnimation(transit, enter, nextAnim);
         }
-        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
     @Override
@@ -187,7 +181,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
             notifyEnterAnimationEnd(savedInstanceState);
             _mActivity.setFragmentClickable(true);
-        } else if (mEnterAnimFlag) { // 无动画
+        } else if (mNoneEnterAnimFlag) { // 无动画
             notifyEnterAnimationEnd(null);
             _mActivity.setFragmentClickable(true);
         }
@@ -510,11 +504,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     public void setFramgentResult(int resultCode, Bundle bundle) {
         Bundle args = getArguments();
-        if (args == null || !args.containsKey(Fragmentation.ARG_RESULT_RECORD)) {
+        if (args == null || !args.containsKey(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD)) {
             return;
         }
 
-        FragmentResultRecord fragmentResultRecord = args.getParcelable(Fragmentation.ARG_RESULT_RECORD);
+        FragmentResultRecord fragmentResultRecord = args.getParcelable(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD);
         if (fragmentResultRecord != null) {
             fragmentResultRecord.resultCode = resultCode;
             fragmentResultRecord.resultBundle = bundle;
@@ -532,7 +526,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, TargetFragment回调该方法
+     * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, 回调TargetFragment的该方法
      *
      * @param args 通过上个Fragment的putNewBundle(Bundle newBundle)时传递的数据
      */

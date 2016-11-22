@@ -31,9 +31,9 @@ import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
 public class Fragmentation {
     static final String TAG = Fragmentation.class.getSimpleName();
 
-    static final String ARG_RESULT_RECORD = "fragment_arg_result_record";
-    static final String ARG_IS_ROOT = "fragmentation_arg_is_root";
-    static final String ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
+    static final String FRAGMENTATION_ARG_RESULT_RECORD = "fragment_arg_result_record";
+    static final String FRAGMENTATION_ARG_IS_ROOT = "fragmentation_arg_is_root";
+    static final String FRAGMENTATION_ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
 
     static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
@@ -95,7 +95,7 @@ public class Fragmentation {
             }
 
             Bundle bundle = to.getArguments();
-            bundle.putBoolean(ARG_IS_ROOT, true);
+            bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         }
 
         ft.commit();
@@ -175,7 +175,7 @@ public class Fragmentation {
             ft.addToBackStack(to.getClass().getName());
         }
         Bundle bundle = to.getArguments();
-        bundle.putBoolean(ARG_IS_ROOT, true);
+        bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         ft.commit();
     }
 
@@ -203,14 +203,14 @@ public class Fragmentation {
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         } else {
             Bundle bundle = to.getArguments();
-            bundle.putBoolean(ARG_IS_SHARED_ELEMENT, true);
+            bundle.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
             ft.addSharedElement(sharedElement, name);
         }
         if (from == null) {
             ft.add(to.getArguments().getInt(FRAGMENTATION_ARG_CONTAINER), to, toName);
 
             Bundle bundle = to.getArguments();
-            bundle.putBoolean(ARG_IS_ROOT, true);
+            bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         } else {
             ft.add(from.getContainerId(), to, toName);
             ft.hide(from);
@@ -286,7 +286,9 @@ public class Fragmentation {
             List<Fragment> childFragmentList = fragmentManager.getFragments();
             if (childFragmentList == null) return null;
 
-            for (int i = childFragmentList.size() - 1; i >= 0; i--) {
+            int sizeChildFrgList = childFragmentList.size();
+
+            for (int i = sizeChildFrgList - 1; i >= 0; i--) {
                 Fragment childFragment = childFragmentList.get(i);
                 if (childFragment instanceof SupportFragment && childFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = childFragment;
@@ -344,33 +346,40 @@ public class Fragmentation {
     /**
      * handle LaunchMode
      */
-    private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment to, int launchMode) {
+    private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment toragment, int launchMode) {
         SupportFragment topFragment = getTopFragment(fragmentManager);
+        if (topFragment == null) return false;
+        Fragment stackToFragment = findStackFragment(toragment.getClass(), fragmentManager, false);
+        if (stackToFragment == null) return false;
 
-        if (topFragment != null) {
-            if (launchMode == SupportFragment.SINGLETOP) {
-                // 在栈顶
-                if (to == topFragment || to.getClass().getName().equals(topFragment.getClass().getName())) {
-                    if (handleNewBundle(to)) return true;
-                }
-            } else if (launchMode == SupportFragment.SINGLETASK) {
-                if (findStackFragment(to.getClass(), fragmentManager, false) != null) {
-                    popToFix(to.getClass(), 0, fragmentManager);
-                    if (handleNewBundle(to)) return true;
-                }
+        if (launchMode == SupportFragment.SINGLETOP) {
+            // 在栈顶
+            if (toragment == topFragment || toragment.getClass().getName().equals(topFragment.getClass().getName())) {
+                handleNewBundle(toragment, stackToFragment);
+                return true;
             }
+        } else if (launchMode == SupportFragment.SINGLETASK) {
+            popToFix(toragment.getClass(), 0, fragmentManager);
+            handleNewBundle(toragment, stackToFragment);
+            return true;
         }
+
         return false;
     }
 
-    private boolean handleNewBundle(Fragment to) {
-        if (to instanceof SupportFragment) {
-            SupportFragment supportTo = (SupportFragment) to;
-            Bundle newBundle = supportTo.getNewBundle();
-            supportTo.onNewBundle(newBundle);
-            return true;
+    private void handleNewBundle(SupportFragment toFragment, Fragment stackToFragment) {
+        Bundle argsNewBundle = toFragment.getNewBundle();
+
+        Bundle args = toFragment.getArguments();
+        if (args.containsKey(FRAGMENTATION_ARG_CONTAINER)) {
+            args.remove(FRAGMENTATION_ARG_CONTAINER);
         }
-        return false;
+
+        if (argsNewBundle != null) {
+            args.putAll(argsNewBundle);
+        }
+
+        ((SupportFragment) stackToFragment).onNewBundle(args);
     }
 
     /**
@@ -384,7 +393,7 @@ public class Fragmentation {
         }
         FragmentResultRecord resultRecord = new FragmentResultRecord();
         resultRecord.requestCode = requestCode;
-        bundle.putParcelable(ARG_RESULT_RECORD, resultRecord);
+        bundle.putParcelable(FRAGMENTATION_ARG_RESULT_RECORD, resultRecord);
     }
 
     void back(FragmentManager fragmentManager) {
@@ -413,8 +422,8 @@ public class Fragmentation {
                 final SupportFragment supportFragment = (SupportFragment) fragment;
                 if (!flag) {
                     Bundle args = supportFragment.getArguments();
-                    if (args == null || !args.containsKey(ARG_RESULT_RECORD)) break;
-                    fragmentResultRecord = args.getParcelable(ARG_RESULT_RECORD);
+                    if (args == null || !args.containsKey(FRAGMENTATION_ARG_RESULT_RECORD)) break;
+                    fragmentResultRecord = args.getParcelable(FRAGMENTATION_ARG_RESULT_RECORD);
                     if (fragmentResultRecord == null) break;
 
                     lastAnimTime = supportFragment.getExitAnimDuration();
