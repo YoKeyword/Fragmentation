@@ -28,7 +28,7 @@ import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
  * Controller
  * Created by YoKeyword on 16/1/22.
  */
-public class Fragmentation {
+class Fragmentation {
     static final String TAG = Fragmentation.class.getSimpleName();
 
     static final String FRAGMENTATION_ARG_RESULT_RECORD = "fragment_arg_result_record";
@@ -39,18 +39,18 @@ public class Fragmentation {
     static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
     static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
 
-    public static final long BUFFER_TIME = 300L;
-    public static final long BUFFER_TIME_FOR_RESULT = 50L;
+    private static final long BUFFER_TIME = 300L;
+    private static final long BUFFER_TIME_FOR_RESULT = 50L;
 
-    public static final int TYPE_ADD = 0;
-    public static final int TYPE_ADD_WITH_POP = 1;
-    public static final int TYPE_ADD_RESULT = 2;
+    static final int TYPE_ADD = 0;
+    static final int TYPE_ADD_WITH_POP = 1;
+    static final int TYPE_ADD_RESULT = 2;
 
     private SupportActivity mActivity;
 
     private Handler mHandler;
 
-    public Fragmentation(SupportActivity activity) {
+    Fragmentation(SupportActivity activity) {
         this.mActivity = activity;
         mHandler = mActivity.getHandler();
     }
@@ -569,7 +569,7 @@ public class Fragmentation {
                 SupportFragment preFragment = null;
 
                 // 在5.0之前的设备,在5.0之前的设备, popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable)
-                // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为何解决该问题
+                // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为解决该问题
                 if (toFragment == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     preFragment = getPreFragment(fromFragment);
                     if (preFragment != null) {
