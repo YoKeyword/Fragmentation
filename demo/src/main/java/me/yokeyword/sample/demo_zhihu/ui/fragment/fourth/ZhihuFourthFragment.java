@@ -8,14 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.child.AvatarFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.child.MeFragment;
 
 /**
  * Created by YoKeyword on 16/6/3.
  */
-public class ZhihuFourthFragment extends BaseLazyMainFragment {
+public class ZhihuFourthFragment extends BaseMainFragment {
     private Toolbar mToolbar;
     private View mView;
 
@@ -36,7 +36,8 @@ public class ZhihuFourthFragment extends BaseLazyMainFragment {
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         if (savedInstanceState == null) {
             loadFragment();
         } else {  // 这里可能会出现该Fragment没被初始化时,就被强杀导致的没有load子Fragment

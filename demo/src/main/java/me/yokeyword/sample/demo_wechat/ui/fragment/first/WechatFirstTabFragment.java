@@ -69,7 +69,8 @@ public class WechatFirstTabFragment extends BaseLazyMainFragment implements Swip
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         mRefreshLayout.setOnRefreshListener(this);
 
         mRecy.setLayoutManager(new LinearLayoutManager(_mActivity));

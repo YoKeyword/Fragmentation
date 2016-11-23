@@ -51,7 +51,8 @@ public class WechatSecondTabFragment extends BaseLazyMainFragment {
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         mViewPager.setAdapter(new WechatPagerFragmentAdapter(getChildFragmentManager()));
         mTab.setupWithViewPager(mViewPager);
     }
