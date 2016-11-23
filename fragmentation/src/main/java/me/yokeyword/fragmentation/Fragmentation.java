@@ -38,6 +38,7 @@ class Fragmentation {
 
     static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
     static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
+    static final String FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE = "fragmentation_state_save_invisible_when_leave";
 
     private static final long BUFFER_TIME = 300L;
     private static final long BUFFER_TIME_FOR_RESULT = 50L;
