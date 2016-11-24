@@ -27,7 +27,7 @@ import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
 /**
  * Created by YoKeyword on 16/1/22.
  */
-public class SupportFragment extends Fragment implements ISupportFragment, ISupportLifecycleCallback {
+public class SupportFragment extends Fragment implements ISupportFragment {
     // LaunchMode
     public static final int STANDARD = 0;
     public static final int SINGLETOP = 1;
@@ -298,7 +298,6 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
      * <p>
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
-    @Override
     public void onSupportVisible() {
         mIsSupportVisible = true;
         dispatchSupportVisible(true);
@@ -314,7 +313,6 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
      * <p>
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
-    @Override
     public void onSupportInvisible() {
         mIsSupportVisible = false;
         dispatchSupportVisible(false);
@@ -323,7 +321,6 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
     /**
      * Return true if the fragment has been supportVisible.
      */
-    @Override
     final public boolean isSupportVisible() {
         return mIsSupportVisible;
     }
@@ -333,7 +330,6 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
      * <p>
      * 同级下的 懒加载 ＋ ViewPager下的懒加载  的结合回调方法
      */
-    @Override
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
     }
 
@@ -506,7 +502,6 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
         start(toFragment, STANDARD);
     }
 
-
     @Override
     public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
         mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD, null, null);
@@ -523,13 +518,13 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
     }
 
     @Override
-    public void startWithSharedElement(SupportFragment toFragment, View sharedElement, String name) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD, sharedElement, name);
+    public void startWithSharedElement(SupportFragment toFragment, View sharedElement, String sharedName) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD, sharedElement, sharedName);
     }
 
     @Override
-    public void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String name) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, sharedElement, name);
+    public void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String sharedName) {
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, sharedElement, sharedName);
     }
 
     @Override
