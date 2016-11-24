@@ -640,7 +640,7 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
      * @param resultCode resultCode
      * @param bundle     设置Result数据
      */
-    public void setFramgentResult(int resultCode, Bundle bundle) {
+    public void setFragmentResult(int resultCode, Bundle bundle) {
         Bundle args = getArguments();
         if (args == null || !args.containsKey(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD)) {
             return;
