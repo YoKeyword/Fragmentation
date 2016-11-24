@@ -103,9 +103,8 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     /**
      * 不建议复写该方法,请使用 {@link #onBackPressedSupport} 代替
      */
-    @Deprecated
     @Override
-    public void onBackPressed() {
+    final public void onBackPressed() {
         // 这里是防止动画过程中，按返回键取消加载Fragment
         if (!mFragmentClickable) {
             setFragmentClickable(true);
