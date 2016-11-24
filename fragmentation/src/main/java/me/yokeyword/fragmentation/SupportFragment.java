@@ -469,7 +469,7 @@ public class SupportFragment extends Fragment implements ISupportFragment, ISupp
 
     @IntDef({STANDARD, SINGLETOP, SINGLETASK})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface LaunchMode {
+    @interface LaunchMode {
     }
 
     /**
