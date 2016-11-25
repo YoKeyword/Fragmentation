@@ -31,7 +31,7 @@ A powerful library that manage Fragment for Android!
 
 4、**类似Android事件分发机制的Fragment回退方法：onBackPressedSupport()，轻松为每个Fragment实现Back按键事件**
 
-5、**完美的防抖动解决方案(防止用户点击速度过快,导致启动多个Fragment)**
+5、**New！！！ 提供onSupportVisible()等生命周期方法，简化嵌套Fragment的开发过程； 提供统一的onLazyInitView()懒加载方法**
 
 6、**提供可轻松 设定Fragment转场动画 的解决方案**
 
@@ -42,28 +42,34 @@ A powerful library that manage Fragment for Android!
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
 # 重大更新日志
-### 0.7.X 来了！！
+### 0.8.X 来了！！
+[详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
-新: 0.7.7 : 更改方法,添加参数 onEnterAnimtionEnd() -> onEnterAnimtionEnd(Bundle savedInstanceState)
+1、提供onSupportVisible(),onSupportInvisible()等生命周期方法，简化嵌套Fragment的开发过程；
+
+2、提供统一的onLazyInitView()懒加载方法；
+
+3、可以自定义Tag了！
+
+4、start()方法可以指定commit的方式了：commitAllowingStateLoss(),commitImmediate()
+****
+
+0.7.X
 
 1、2个新demo: 仿知乎交互 ＋ 仿微信交互的新Demo，展示复杂嵌套Fragment的交互场景
 
-2、全新的Fragment恢复机制
+2、支持同级Fragment的处理
 
-3、更容易编写各种嵌套Fragment的代码
+3、实验性支持SharedElement－Material过渡动画
 
-4、支持同级Fragment的处理
-
-5、实验性支持SharedElement－Material过渡动画
-
-6、全新的类似Android事件分发机制的onBackPressedSupport()
+4、全新的类似Android事件分发机制的onBackPressedSupport()
 
 # 如何使用
 
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.7.13'
+compile 'me.yokeyword:fragmentation:0.8.0'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
