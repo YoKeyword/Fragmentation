@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.ShopFragment;
 
 /**
  * Created by YoKeyword on 16/6/3.
  */
-public class ZhihuThirdFragment extends BaseLazyMainFragment {
+public class ZhihuThirdFragment extends BaseMainFragment {
 
     public static ZhihuThirdFragment newInstance() {
 
@@ -32,7 +32,8 @@ public class ZhihuThirdFragment extends BaseLazyMainFragment {
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         if (savedInstanceState == null) {
             // ShopFragment是flow包里的
             loadRootFragment(R.id.fl_third_container, ShopFragment.newInstance());

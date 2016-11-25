@@ -20,7 +20,7 @@ import java.util.List;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.ChatAdapter;
-import me.yokeyword.sample.demo_wechat.base.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_wechat.base.BaseMainFragment;
 import me.yokeyword.sample.demo_wechat.entity.Chat;
 import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.event.TabSelectedEvent;
@@ -30,7 +30,7 @@ import me.yokeyword.sample.demo_wechat.ui.fragment.MainFragment;
 /**
  * Created by YoKeyword on 16/6/30.
  */
-public class WechatFirstTabFragment extends BaseLazyMainFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRefreshLayout.OnRefreshListener {
     private Toolbar mToolbar;
     private SwipeRefreshLayout mRefreshLayout;
     private RecyclerView mRecy;
@@ -69,7 +69,8 @@ public class WechatFirstTabFragment extends BaseLazyMainFragment implements Swip
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         mRefreshLayout.setOnRefreshListener(this);
 
         mRecy.setLayoutManager(new LinearLayoutManager(_mActivity));

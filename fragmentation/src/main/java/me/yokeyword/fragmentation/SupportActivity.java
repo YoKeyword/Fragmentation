@@ -33,7 +33,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         super.onCreate(savedInstanceState);
 
         mFragmentation = getFragmentation();
-
         mFragmentAnimator = onCreateFragmentAnimator();
     }
 
@@ -103,9 +102,8 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     /**
      * 不建议复写该方法,请使用 {@link #onBackPressedSupport} 代替
      */
-    @Deprecated
     @Override
-    public void onBackPressed() {
+    final public void onBackPressed() {
         // 这里是防止动画过程中，按返回键取消加载Fragment
         if (!mFragmentClickable) {
             setFragmentClickable(true);
@@ -183,7 +181,13 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getSupportFragmentManager(), false);
+        return mFragmentation.findStackFragment(fragmentClass, null, getSupportFragmentManager());
+    }
+
+    @Override
+    public <T extends SupportFragment> T findFragment(String fragmentTag) {
+        Fragmentation.checkNotNull(fragmentTag, "tag == null");
+        return mFragmentation.findStackFragment(null, fragmentTag, getSupportFragmentManager());
     }
 
     /**
@@ -202,7 +206,12 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf) {
-        mFragmentation.popTo(fragmentClass, includeSelf, null, getSupportFragmentManager());
+        popTo(fragmentClass.getName(), includeSelf);
+    }
+
+    @Override
+    public void popTo(String fragmentTag, boolean includeSelf) {
+        popTo(fragmentTag, includeSelf, null);
     }
 
     /**
@@ -210,7 +219,12 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
+        popTo(fragmentClass.getName(), includeSelf, afterPopTransactionRunnable);
+    }
+
+    @Override
+    public void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable) {
+        mFragmentation.popTo(fragmentTag, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
     }
 
     void preparePopMultiple() {

@@ -71,7 +71,7 @@ public class ModifyDetailFragment extends BaseBackFragment {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putString(DetailFragment.KEY_RESULT_TITLE, mEtModiyTitle.getText().toString());
-                setFramgentResult(RESULT_OK, bundle);
+                setFragmentResult(RESULT_OK, bundle);
 
                 Toast.makeText(_mActivity, "修改成功!", Toast.LENGTH_SHORT).show();
             }

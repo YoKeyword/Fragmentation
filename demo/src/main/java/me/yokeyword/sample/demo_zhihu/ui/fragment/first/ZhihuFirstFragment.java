@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.first.child.FirstHomeFragment;
 
 /**
  * Created by YoKeyword on 16/6/3.
  */
-public class ZhihuFirstFragment extends BaseLazyMainFragment {
+public class ZhihuFirstFragment extends BaseMainFragment {
 
     public static ZhihuFirstFragment newInstance() {
 
@@ -32,7 +32,8 @@ public class ZhihuFirstFragment extends BaseLazyMainFragment {
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         if (savedInstanceState == null) {
             loadRootFragment(R.id.fl_first_container, FirstHomeFragment.newInstance());
         }

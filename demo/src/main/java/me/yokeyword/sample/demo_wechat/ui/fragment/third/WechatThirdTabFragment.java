@@ -16,7 +16,7 @@ import java.util.List;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.HomeAdapter;
-import me.yokeyword.sample.demo_wechat.base.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_wechat.base.BaseMainFragment;
 import me.yokeyword.sample.demo_wechat.entity.Article;
 import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.listener.OnItemClickListener;
@@ -24,7 +24,7 @@ import me.yokeyword.sample.demo_wechat.listener.OnItemClickListener;
 /**
  * Created by YoKeyword on 16/6/30.
  */
-public class WechatThirdTabFragment extends BaseLazyMainFragment {
+public class WechatThirdTabFragment extends BaseMainFragment {
     private RecyclerView mRecy;
     private Toolbar mToolbar;
 
@@ -73,7 +73,8 @@ public class WechatThirdTabFragment extends BaseLazyMainFragment {
 
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         mAdapter = new HomeAdapter(_mActivity);
         LinearLayoutManager manager = new LinearLayoutManager(_mActivity);
         mRecy.setLayoutManager(manager);

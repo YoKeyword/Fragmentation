@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.WechatPagerFragmentAdapter;
-import me.yokeyword.sample.demo_wechat.base.BaseLazyMainFragment;
+import me.yokeyword.sample.demo_wechat.base.BaseMainFragment;
 
 /**
  * Created by YoKeyword on 16/6/30.
  */
-public class WechatSecondTabFragment extends BaseLazyMainFragment {
+public class WechatSecondTabFragment extends BaseMainFragment {
     private TabLayout mTab;
     private Toolbar mToolbar;
     private ViewPager mViewPager;
@@ -51,7 +51,8 @@ public class WechatSecondTabFragment extends BaseLazyMainFragment {
     }
 
     @Override
-    protected void initLazyView(@Nullable Bundle savedInstanceState) {
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         mViewPager.setAdapter(new WechatPagerFragmentAdapter(getChildFragmentManager()));
         mTab.setupWithViewPager(mViewPager);
     }
