@@ -1,11 +1,7 @@
 package me.yokeyword.fragmentation;
 
-import android.support.annotation.IntDef;
 import android.support.v4.app.Fragment;
 import android.view.View;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Add some action when calling {@link SupportFragment#start(SupportFragment)
@@ -16,32 +12,6 @@ import java.lang.annotation.RetentionPolicy;
 public abstract class SupportTransaction {
 
     /**
-     * default: FragmentTransaction.commit()
-     */
-    public static final int COMMIT = 0;
-    /**
-     * FragmentTransaction.commitAllowingStateLoss()
-     * <p>
-     * Allows the commit to be executed after an
-     * activity's state is saved.  This is dangerous because the commit can
-     * be lost if the activity needs to later be restored from its state, so
-     * this should only be used for cases where it is okay for the UI state
-     * to change unexpectedly on the user.
-     */
-    public static final int COMMIT_ALLOWING_STATE_LOSS = 1;
-    /**
-     * commit() + executePendingTransactions()
-     * <p>
-     * it is scheduled to be executed asynchronously on the process's main thread.
-     */
-    public static final int COMMIT_IMMEDIATE = 2;
-
-    @IntDef({COMMIT, COMMIT_ALLOWING_STATE_LOSS, COMMIT_IMMEDIATE})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface CommitMode {
-    }
-
-    /**
      * @param tag Optional tag name for the fragment, to later retrieve the
      *            fragment with {@link SupportFragment#findFragment(String)}
      *            , SupportFragment.pop(String)
@@ -49,15 +19,6 @@ public abstract class SupportTransaction {
      * @return the same SupportTransaction instance.
      */
     public abstract SupportTransaction setTag(String tag);
-
-    /**
-     * @param commitMode Select a commit mode for this transaction.
-     *                   <p>
-     *                   May be one of {@link #COMMIT}, {@link #COMMIT_ALLOWING_STATE_LOSS}
-     *                   or {@link #COMMIT_IMMEDIATE}.
-     * @return the same SupportTransaction instance.
-     */
-    public abstract SupportTransaction setCommitMode(@CommitMode int commitMode);
 
     /**
      * @param launchMode Can replace {@link SupportFragment#start(SupportFragment, int)}
@@ -92,4 +53,27 @@ public abstract class SupportTransaction {
      * @see Fragment#setSharedElementEnterTransition(Object)
      */
     public abstract SupportTransaction addSharedElement(View sharedElement, String sharedName);
+
+    /**
+     * same as FragmentTransaction.commit()
+     *
+     * Schedules a commit of this transaction.
+     */
+    public abstract <T extends SupportFragment> T commit();
+
+    /**
+     * Allows the commit to be executed after an
+     * activity's state is saved.  This is dangerous because the commit can
+     * be lost if the activity needs to later be restored from its state, so
+     * this should only be used for cases where it is okay for the UI state
+     * to change unexpectedly on the user.
+     */
+    public abstract <T extends SupportFragment> T commitAllowingStateLoss();
+
+    /**
+     * commit() + executePendingTransactions()
+     * <p>
+     * it is scheduled to be executed asynchronously on the process's main thread.
+     */
+    public abstract <T extends SupportFragment> T commitImmediate();
 }
