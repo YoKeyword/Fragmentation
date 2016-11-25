@@ -113,7 +113,7 @@ class Fragmentation {
      * @param type        类型
      */
     void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String sharedName) {
-        checkNotNull(to);
+        checkNotNull(to, "toFragment == null");
 
         // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
         if (sharedElement != null) {
@@ -199,7 +199,7 @@ class Fragmentation {
      * replace事务, 主要用于子Fragment之间的replace
      */
     void replaceTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
-        checkNotNull(to);
+        checkNotNull(to, "toFragment == null");
         bindContainerId(containerId, to);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(containerId, to, to.getClass().getName());
@@ -411,7 +411,7 @@ class Fragmentation {
                 return true;
             }
         } else if (launchMode == SupportFragment.SINGLETASK) {
-            popToFix(toFragment.getClass(), 0, fragmentManager);
+            popToFix(toFragmentTag, 0, fragmentManager);
             handleNewBundle(toFragment, stackToFragment);
             return true;
         }
@@ -511,15 +511,16 @@ class Fragmentation {
     /**
      * 出栈到目标fragment
      *
-     * @param fragmentClass 目标fragment
-     * @param includeSelf   是否包含该fragment
+     * @param fragmentTag tag
+     * @param includeSelf 是否包含该fragment
      */
-    void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
+    void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
         if (fragmentManager == null) return;
-        Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+
+        Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentTag);
 
         if (targetFragment == null) {
-            Log.e(TAG, "Pop failure! Can't find " + fragmentClass.getSimpleName() + " in the FragmentManager's Stack.");
+            Log.e(TAG, "Pop failure! Can't find FragmentTag:" + fragmentTag + " in the FragmentManager's Stack.");
             return;
         }
 
@@ -541,21 +542,21 @@ class Fragmentation {
 
             hackPopToAnim(targetFragment, fromFragment);
 
-            popToFix(fragmentClass, flag, fragmentManager);
+            popToFix(fragmentTag, flag, fragmentManager);
             mHandler.post(afterPopTransactionRunnable);
         } else {
-            popToFix(fragmentClass, flag, fragmentManager);
+            popToFix(fragmentTag, flag, fragmentManager);
         }
     }
 
     /**
      * 解决popTo多个fragment时动画引起的异常问题
      */
-    private void popToFix(Class<?> fragmentClass, int flag, final FragmentManager fragmentManager) {
+    private void popToFix(String fragmentTag, int flag, final FragmentManager fragmentManager) {
         if (fragmentManager.getFragments() == null) return;
 
         mActivity.preparePopMultiple();
-        fragmentManager.popBackStackImmediate(fragmentClass.getName(), flag);
+        fragmentManager.popBackStackImmediate(fragmentTag, flag);
         mActivity.popFinish();
 
         mHandler.post(new Runnable() {
@@ -565,32 +566,6 @@ class Fragmentation {
             }
         });
     }
-
-//    /**
-//     * 解决以singleTask或singleTop模式start时,pop多个fragment时动画引起的异常问题
-//     */
-//    @Deprecated   // 为了优化响应速度,废弃该方法
-//    private void popToFix(Fragment targetFragment, int flag, final FragmentManager fragmentManager) {
-//        if (fragmentManager.getFragments() == null) return;
-//
-//        fragmentManager.popBackStackImmediate(targetFragment.getClass().getName(), flag);
-//
-//        long popAniDuration;
-//
-//        if (targetFragment instanceof SupportFragment) {
-//            SupportFragment fragment = (SupportFragment) targetFragment;
-//            popAniDuration = Math.max(fragment.getPopEnterAnimDuration(), fragment.getPopExitAnimDuration());
-//        } else {
-//            popAniDuration = BUFFER_TIME;
-//        }
-//
-//        mHandler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
-//            }
-//        }, popAniDuration);
-//    }
 
     /**
      * hack anim
@@ -700,9 +675,9 @@ class Fragmentation {
         }
     }
 
-    private <T> T checkNotNull(T value) {
+    static <T> T checkNotNull(T value, String message) {
         if (value == null) {
-            throw new NullPointerException("toFragment == null");
+            throw new NullPointerException(message);
         }
         return value;
     }

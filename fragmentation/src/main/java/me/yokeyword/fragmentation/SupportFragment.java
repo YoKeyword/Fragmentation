@@ -529,6 +529,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * It is recommended to use fg.transaction().addSharedElement().commit() instead
+     *
      * @param toFragment    TargetFragment
      * @param sharedElement A View in a disappearing Fragment to match with a View in an
      *                      appearing Fragment.
@@ -586,7 +587,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public <T extends SupportFragment> T findFragment(String fragmentTag) {
-        return null;
+        Fragmentation.checkNotNull(fragmentTag, "tag == null");
+        return mFragmentation.findStackFragment(null, fragmentTag, getFragmentManager());
     }
 
     /**
@@ -599,7 +601,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public <T extends SupportFragment> T findChildFragment(String fragmentTag) {
-        return null;
+        Fragmentation.checkNotNull(fragmentTag, "tag == null");
+        return mFragmentation.findStackFragment(null, fragmentTag, getChildFragmentManager());
     }
 
     /**
@@ -626,25 +629,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf) {
-        popTo(fragmentClass, includeSelf, null);
+        popTo(fragmentClass.getName(), includeSelf);
     }
 
     @Override
     public void popTo(String fragmentTag, boolean includeSelf) {
-
-    }
-
-    /**
-     * 子栈内
-     */
-    @Override
-    public void popToChild(Class<?> fragmentClass, boolean includeSelf) {
-        popToChild(fragmentClass, includeSelf, null);
-    }
-
-    @Override
-    public void popToChild(String fragmentTag, boolean includeSelf) {
-
+        popTo(fragmentTag, includeSelf, null);
     }
 
     /**
@@ -652,25 +642,35 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getFragmentManager());
+        popTo(fragmentClass.getName(), includeSelf, afterPopTransactionRunnable);
     }
 
     @Override
     public void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable) {
-
+        mFragmentation.popTo(fragmentTag, includeSelf, afterPopTransactionRunnable, getFragmentManager());
     }
 
     /**
      * 子栈内
      */
     @Override
+    public void popToChild(Class<?> fragmentClass, boolean includeSelf) {
+        popToChild(fragmentClass.getName(), includeSelf);
+    }
+
+    @Override
+    public void popToChild(String fragmentTag, boolean includeSelf) {
+        popToChild(fragmentTag, includeSelf, null);
+    }
+
+    @Override
     public void popToChild(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getChildFragmentManager());
+        popTo(fragmentClass.getName(), includeSelf, afterPopTransactionRunnable);
     }
 
     @Override
     public void popToChild(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable) {
-
+        mFragmentation.popTo(fragmentTag, includeSelf, afterPopTransactionRunnable, getChildFragmentManager());
     }
 
     void popForSwipeBack() {
