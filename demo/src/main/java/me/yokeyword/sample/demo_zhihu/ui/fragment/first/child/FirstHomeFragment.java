@@ -106,7 +106,7 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
                     // 因为使用add的原因,Material过渡动画只有在进栈时有,返回时没有;
                     // 如果想进栈和出栈都有过渡动画,需要replace,目前库暂不支持,后续会调研看是否可以支持
                     // 建议使用该方式
-                    fragment = fragment.transaction()
+                    fragment.transaction()
                             .addSharedElement(((FirstHomeAdapter.VH) vh).img, getResources().getString(R.string.image_transition))
                             .commit();
                     // 现在不建议再使用该方法
