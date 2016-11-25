@@ -33,7 +33,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         super.onCreate(savedInstanceState);
 
         mFragmentation = getFragmentation();
-
         mFragmentAnimator = onCreateFragmentAnimator();
     }
 
@@ -182,7 +181,12 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getSupportFragmentManager(), false);
+        return mFragmentation.findStackFragment(fragmentClass, null,getSupportFragmentManager());
+    }
+
+    @Override
+    public <T extends SupportFragment> T findFragment(String fragmentTag) {
+        return null;
     }
 
     /**
@@ -204,12 +208,22 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mFragmentation.popTo(fragmentClass, includeSelf, null, getSupportFragmentManager());
     }
 
+    @Override
+    public void popTo(String fragmentTag, boolean includeSelf) {
+
+    }
+
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
     @Override
     public void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
+    }
+
+    @Override
+    public void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable) {
+
     }
 
     void preparePopMultiple() {

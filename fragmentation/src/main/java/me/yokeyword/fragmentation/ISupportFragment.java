@@ -11,18 +11,18 @@ interface ISupportFragment extends ISupport {
     /**
      * add目标Fragment, 以addSharedElement方式
      *
-     * @param toFragment    目标Fragment
+     * @param toFragment    TargetFragment
      * @param sharedElement A View in a disappearing Fragment to match with a View in an
      *                      appearing Fragment.
-     * @param name          The transitionName for a View in an appearing Fragment to match to the shared
+     * @param sharedName    The transitionName for a View in an appearing Fragment to match to the shared
      *                      element.
      */
-    void startWithSharedElement(SupportFragment toFragment, View sharedElement, String name);
+    void startWithSharedElement(SupportFragment toFragment, View sharedElement, String sharedName);
 
     /**
      * 同上, startForResult版本的addSharedElement
      */
-    void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String name);
+    void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String sharedName);
 
     /**
      * replace目标Fragment, 主要用于Fragment之间的replace
@@ -49,6 +49,8 @@ interface ISupportFragment extends ISupport {
      */
     <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass);
 
+    <T extends SupportFragment> T findChildFragment(String fragmentTag);
+
     /**
      * 子栈内 出栈
      */
@@ -62,6 +64,8 @@ interface ISupportFragment extends ISupport {
      */
     void popToChild(Class<?> fragmentClass, boolean includeSelf);
 
+    void popToChild(String fragmentTag, boolean includeSelf);
+
     /**
      * 子栈内 出栈到目标Fragment,并在出栈后立即进行Fragment事务(可以防止出栈后,直接进行Fragment事务的异常)
      *
@@ -70,4 +74,6 @@ interface ISupportFragment extends ISupport {
      * @param afterPopTransactionRunnable 出栈后紧接着的Fragment事务
      */
     void popToChild(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable);
+
+    void popToChild(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable);
 }

@@ -43,12 +43,16 @@ interface ISupport {
     void start(SupportFragment toFragment);
 
     /**
+     * 启动目标Fragment
+     *
      * @param toFragment 目标Fragment
      * @param launchMode 启动模式
      */
     void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode);
 
     /**
+     * 类似startActivityForResult
+     *
      * @param toFragment  目标Fragment
      * @param requestCode requsetCode
      */
@@ -73,6 +77,8 @@ interface ISupport {
      */
     <T extends SupportFragment> T findFragment(Class<T> fragmentClass);
 
+    <T extends SupportFragment> T findFragment(String fragmentTag);
+
     /**
      * 出栈
      */
@@ -86,6 +92,8 @@ interface ISupport {
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf);
 
+    void popTo(String fragmentTag, boolean includeSelf);
+
     /**
      * 出栈到目标Fragment,并在出栈后立即进行Fragment事务(可以防止出栈后,直接进行Fragment事务的异常)
      *
@@ -94,4 +102,6 @@ interface ISupport {
      * @param afterPopTransactionRunnable 出栈后紧接着的Fragment事务
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable);
+
+    void popTo(String fragmentTag,  boolean includeSelf, Runnable afterPopTransactionRunnable);
 }

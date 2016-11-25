@@ -14,7 +14,6 @@ import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.base.BaseFragment;
 import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.event.TabSelectedEvent;
-import me.yokeyword.sample.demo_wechat.ui.fragment.first.MsgFragment;
 import me.yokeyword.sample.demo_wechat.ui.fragment.first.WechatFirstTabFragment;
 import me.yokeyword.sample.demo_wechat.ui.fragment.second.WechatSecondTabFragment;
 import me.yokeyword.sample.demo_wechat.ui.fragment.third.WechatThirdTabFragment;

@@ -97,19 +97,22 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
                 FirstDetailFragment fragment = FirstDetailFragment.newInstance(mAdapter.getItem(position));
 
                 // 这里是使用SharedElement的用例
+                // 这里如果5.0以下系统调用startWithSharedElement(),会无动画,所以低于5.0,start(fragment)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     setExitTransition(new Fade());
                     setSharedElementReturnTransition(new DetailTransition());
-//                    fragment.setEnterTransition(new Fade());
                     fragment.setSharedElementEnterTransition(new DetailTransition());
 
                     // 因为使用add的原因,Material过渡动画只有在进栈时有,返回时没有;
                     // 如果想进栈和出栈都有过渡动画,需要replace,目前库暂不支持,后续会调研看是否可以支持
-                    startWithSharedElement(fragment, ((FirstHomeAdapter.VH) vh).img, getResources().getString(R.string.image_transition));
-                } else {
-                    // 这里如果5.0以下系统调用startWithSharedElement(),会无动画,所以低于5.0,start(fragment)
-                    start(fragment);
+                    // 建议使用该方式
+                    fragment = fragment.transaction()
+                            .addSharedElement(((FirstHomeAdapter.VH) vh).img, getResources().getString(R.string.image_transition))
+                            .commit();
+                    // 现在不建议再使用该方法
+//                    startWithSharedElement(fragment, ((FirstHomeAdapter.VH) vh).img, getResources().getString(R.string.image_transition));
                 }
+                start(fragment);
             }
         });
 

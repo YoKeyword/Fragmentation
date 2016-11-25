@@ -11,10 +11,11 @@ public final class TransactionRecord {
     public static final int COMMIT_IMMEDIATE = 2;
 
     public String tag;
-    public int launchMode;
-    public boolean withPop;
+    public Integer requestCode;
+    public Integer launchMode;
+    public Boolean withPop;
     public SharedElement sharedElement;
-    public int commitMode;
+    public Integer commitMode;
 
     public static class SharedElement {
         public View sharedElement;

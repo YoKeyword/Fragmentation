@@ -26,6 +26,12 @@ final class SupportTransactionImpl<T extends SupportFragment> extends SupportTra
     }
 
     @Override
+    public SupportTransaction forResult(int requestCode) {
+        mRecord.requestCode = requestCode;
+        return this;
+    }
+
+    @Override
     public SupportTransaction setLaunchMode(@SupportFragment.LaunchMode int launchMode) {
         mRecord.launchMode = launchMode;
         return this;
@@ -46,18 +52,21 @@ final class SupportTransactionImpl<T extends SupportFragment> extends SupportTra
     @Override
     public T commit() {
         mRecord.commitMode = TransactionRecord.COMMIT;
+        mSupportFragment.setTransactionRecord(mRecord);
         return mSupportFragment;
     }
 
     @Override
     public T commitAllowingStateLoss() {
         mRecord.commitMode = TransactionRecord.COMMIT_ALLOWING_STATE_LOSS;
+        mSupportFragment.setTransactionRecord(mRecord);
         return mSupportFragment;
     }
 
     @Override
     public T commitImmediate() {
         mRecord.commitMode = TransactionRecord.COMMIT_IMMEDIATE;
+        mSupportFragment.setTransactionRecord(mRecord);
         return mSupportFragment;
     }
 }

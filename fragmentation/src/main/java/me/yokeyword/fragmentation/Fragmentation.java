@@ -19,9 +19,10 @@ import java.util.List;
 
 import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
 import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
-import me.yokeyword.fragmentation.helper.FragmentResultRecord;
+import me.yokeyword.fragmentation.helper.ResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
+import me.yokeyword.fragmentation.helper.TransactionRecord;
 
 
 /**
@@ -111,21 +112,50 @@ class Fragmentation {
      * @param launchMode  启动模式
      * @param type        类型
      */
-    void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String name) {
+    void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String sharedName) {
+        checkNotNull(to);
+
         // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
         if (sharedElement != null) {
             FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
-        }
-
-        if (type == TYPE_ADD_RESULT) {
-            saveRequestCode(to, requestCode);
         }
 
         if (from != null) {
             bindContainerId(from.getContainerId(), to);
         }
 
-        if (handleLaunchMode(fragmentManager, to, launchMode)) return;
+        // process SupportTransaction
+        String toFragmentTag = to.getClass().getName();
+        TransactionRecord mRecord = to.getTransactionRecord();
+        if (mRecord != null) {
+            if (mRecord.tag != null) {
+                toFragmentTag = mRecord.tag;
+            }
+
+            if (mRecord.requestCode != null && mRecord.requestCode != 0) {
+                requestCode = mRecord.requestCode;
+                type = TYPE_ADD_RESULT;
+            }
+
+            if (mRecord.launchMode != null) {
+                launchMode = mRecord.launchMode;
+            }
+
+            if (mRecord.withPop != null && mRecord.withPop) {
+                type = TYPE_ADD_WITH_POP;
+            }
+
+            if (mRecord.sharedElement != null) {
+                sharedElement = mRecord.sharedElement.sharedElement;
+                sharedName = mRecord.sharedElement.sharedName;
+            }
+        }
+
+        if (type == TYPE_ADD_RESULT) {
+            saveRequestCode(to, requestCode);
+        }
+
+        if (handleLaunchMode(fragmentManager, to, toFragmentTag, launchMode)) return;
 
         // 在SingleTask/SingleTop启动模式之后 开启防抖动
         mActivity.setFragmentClickable(false);
@@ -133,13 +163,13 @@ class Fragmentation {
         switch (type) {
             case TYPE_ADD:
             case TYPE_ADD_RESULT:
-                start(fragmentManager, from, to, sharedElement, name);
+                start(fragmentManager, from, to, toFragmentTag, sharedElement, sharedName);
                 break;
             case TYPE_ADD_WITH_POP:
                 if (from != null) {
-                    startWithPop(fragmentManager, from, to);
+                    startWithPop(fragmentManager, from, to, toFragmentTag);
                 } else {
-                    throw new RuntimeException("startWithPop(): getTopFragment() is null");
+                    throw new RuntimeException("start(): getTopFragment() is null, may be you need call loadRootFragment()");
                 }
                 break;
         }
@@ -169,6 +199,7 @@ class Fragmentation {
      * replace事务, 主要用于子Fragment之间的replace
      */
     void replaceTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
+        checkNotNull(to);
         bindContainerId(containerId, to);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(containerId, to, to.getClass().getName());
@@ -196,8 +227,7 @@ class Fragmentation {
                 .commit();
     }
 
-    void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, View sharedElement, String name) {
-        String toName = to.getClass().getName();
+    void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, View sharedElement, String name) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
         if (sharedElement == null) {
@@ -208,36 +238,55 @@ class Fragmentation {
             ft.addSharedElement(sharedElement, name);
         }
         if (from == null) {
-            ft.add(to.getArguments().getInt(FRAGMENTATION_ARG_CONTAINER), to, toName);
+            ft.add(to.getArguments().getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);
 
             Bundle bundle = to.getArguments();
             bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         } else {
-            ft.add(from.getContainerId(), to, toName);
+            ft.add(from.getContainerId(), to, toFragmentTag);
             ft.hide(from);
         }
 
-        ft.addToBackStack(toName);
-        ft.commit();
+        ft.addToBackStack(toFragmentTag);
+        supportCommit(fragmentManager, ft, to.getTransactionRecord());
     }
 
-    void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to) {
+    void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag) {
         SupportFragment preFragment = getPreFragment(from);
         handlePopAnim(preFragment, from, to);
 
         fragmentManager.beginTransaction().remove(from).commit();
         handleBack(fragmentManager, true);
 
-        String toName = to.getClass().getName();
         FragmentTransaction ft = fragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .add(from.getContainerId(), to, toName)
-                .addToBackStack(toName);
+                .add(from.getContainerId(), to, toFragmentTag)
+                .addToBackStack(toFragmentTag);
 
         if (preFragment != null) {
             ft.hide(preFragment);
         }
-        ft.commit();
+
+        supportCommit(fragmentManager, ft, to.getTransactionRecord());
+    }
+
+    private void supportCommit(FragmentManager fragmentManager, FragmentTransaction fragmentTransaction, TransactionRecord record) {
+        if (record != null && record.commitMode != null) {
+            switch (record.commitMode) {
+                case TransactionRecord.COMMIT_ALLOWING_STATE_LOSS:
+                    fragmentTransaction.commitAllowingStateLoss();
+                    break;
+                case TransactionRecord.COMMIT_IMMEDIATE:
+                    fragmentTransaction.commit();
+                    fragmentManager.executePendingTransactions();
+                    break;
+                default:
+                    fragmentTransaction.commit();
+                    break;
+            }
+        } else {
+            fragmentTransaction.commit();
+        }
     }
 
     /**
@@ -279,26 +328,28 @@ class Fragmentation {
      * find Fragment from FragmentStack
      */
     @SuppressWarnings("unchecked")
-    <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, FragmentManager fragmentManager, boolean isChild) {
+    <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
         Fragment fragment = null;
-        if (isChild) {
-            // 如果是 查找子Fragment,则有可能是在FragmentPagerAdapter/FragmentStatePagerAdapter中,这种情况下,
-            // 它们的Tag是以android:switcher开头,所以这里我们使用下面的方式
-            List<Fragment> childFragmentList = fragmentManager.getFragments();
-            if (childFragmentList == null) return null;
 
-            int sizeChildFrgList = childFragmentList.size();
+        if (toFragmentTag == null) {
+            // 如果是 查找Fragment时,则有可能是在FragmentPagerAdapter/FragmentStatePagerAdapter中,这种情况下,
+            // 它们的Tag是以android:switcher开头,所以这里我们使用下面的方式
+            List<Fragment> fragmentList = fragmentManager.getFragments();
+            if (fragmentList == null) return null;
+
+            int sizeChildFrgList = fragmentList.size();
 
             for (int i = sizeChildFrgList - 1; i >= 0; i--) {
-                Fragment childFragment = childFragmentList.get(i);
-                if (childFragment instanceof SupportFragment && childFragment.getClass().getName().equals(fragmentClass.getName())) {
-                    fragment = childFragment;
+                Fragment brotherFragment = fragmentList.get(i);
+                if (brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
+                    fragment = brotherFragment;
                     break;
                 }
             }
         } else {
-            fragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+            fragment = fragmentManager.findFragmentByTag(toFragmentTag);
         }
+
         if (fragment == null) {
             return null;
         }
@@ -347,21 +398,21 @@ class Fragmentation {
     /**
      * handle LaunchMode
      */
-    private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment toragment, int launchMode) {
+    private boolean handleLaunchMode(FragmentManager fragmentManager, SupportFragment toFragment, String toFragmentTag, int launchMode) {
         SupportFragment topFragment = getTopFragment(fragmentManager);
         if (topFragment == null) return false;
-        Fragment stackToFragment = findStackFragment(toragment.getClass(), fragmentManager, false);
+        Fragment stackToFragment = findStackFragment(toFragment.getClass(), toFragmentTag, fragmentManager);
         if (stackToFragment == null) return false;
 
         if (launchMode == SupportFragment.SINGLETOP) {
             // 在栈顶
-            if (toragment == topFragment || toragment.getClass().getName().equals(topFragment.getClass().getName())) {
-                handleNewBundle(toragment, stackToFragment);
+            if (toFragment == topFragment || toFragment.getClass().getName().equals(topFragment.getClass().getName())) {
+                handleNewBundle(toFragment, stackToFragment);
                 return true;
             }
         } else if (launchMode == SupportFragment.SINGLETASK) {
-            popToFix(toragment.getClass(), 0, fragmentManager);
-            handleNewBundle(toragment, stackToFragment);
+            popToFix(toFragment.getClass(), 0, fragmentManager);
+            handleNewBundle(toFragment, stackToFragment);
             return true;
         }
 
@@ -392,7 +443,7 @@ class Fragmentation {
             bundle = new Bundle();
             to.setArguments(bundle);
         }
-        FragmentResultRecord resultRecord = new FragmentResultRecord();
+        ResultRecord resultRecord = new ResultRecord();
         resultRecord.requestCode = requestCode;
         bundle.putParcelable(FRAGMENTATION_ARG_RESULT_RECORD, resultRecord);
     }
@@ -414,7 +465,7 @@ class Fragmentation {
 
         boolean flag = false;
 
-        FragmentResultRecord fragmentResultRecord = null;
+        ResultRecord resultRecord = null;
         long lastAnimTime = 0;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
@@ -424,13 +475,13 @@ class Fragmentation {
                 if (!flag) {
                     Bundle args = supportFragment.getArguments();
                     if (args == null || !args.containsKey(FRAGMENTATION_ARG_RESULT_RECORD)) break;
-                    fragmentResultRecord = args.getParcelable(FRAGMENTATION_ARG_RESULT_RECORD);
-                    if (fragmentResultRecord == null) break;
+                    resultRecord = args.getParcelable(FRAGMENTATION_ARG_RESULT_RECORD);
+                    if (resultRecord == null) break;
 
                     lastAnimTime = supportFragment.getExitAnimDuration();
                     flag = true;
                 } else {
-                    final FragmentResultRecord finalFragmentResultRecord = fragmentResultRecord;
+                    final ResultRecord finalResultRecord = resultRecord;
                     long animTime = supportFragment.getPopEnterAnimDuration();
 
                     if (fromStartWithPop) {
@@ -442,7 +493,7 @@ class Fragmentation {
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            supportFragment.onFragmentResult(finalFragmentResultRecord.requestCode, finalFragmentResultRecord.resultCode, finalFragmentResultRecord.resultBundle);
+                            supportFragment.onFragmentResult(finalResultRecord.requestCode, finalResultRecord.resultCode, finalResultRecord.resultBundle);
                         }
                     }, Math.max(animTime, lastAnimTime) + BUFFER_TIME_FOR_RESULT);
                     return;
@@ -647,6 +698,13 @@ class Fragmentation {
         } catch (Exception e) {
             // ignore
         }
+    }
+
+    private <T> T checkNotNull(T value) {
+        if (value == null) {
+            throw new NullPointerException("toFragment == null");
+        }
+        return value;
     }
 
     /**

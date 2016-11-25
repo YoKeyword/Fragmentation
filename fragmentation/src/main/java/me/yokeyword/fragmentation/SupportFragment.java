@@ -20,9 +20,10 @@ import java.util.List;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.AnimatorHelper;
 import me.yokeyword.fragmentation.helper.DebounceAnimListener;
-import me.yokeyword.fragmentation.helper.FragmentResultRecord;
+import me.yokeyword.fragmentation.helper.ResultRecord;
 import me.yokeyword.fragmentation.helper.OnEnterAnimEndListener;
 import me.yokeyword.fragmentation.helper.OnFragmentDestoryViewListener;
+import me.yokeyword.fragmentation.helper.TransactionRecord;
 
 /**
  * Created by YoKeyword on 16/1/22.
@@ -69,6 +70,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
 
     private OnFragmentDestoryViewListener mFragmentDestoryViewListener;
+
+    private TransactionRecord mTransactionRecord;
+
+    @IntDef({STANDARD, SINGLETOP, SINGLETASK})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LaunchMode {
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -463,11 +471,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         }
     }
 
-    @IntDef({STANDARD, SINGLETOP, SINGLETASK})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface LaunchMode {
-    }
-
     /**
      * 按返回键触发,前提是SupportActivity的onBackPressed()方法能被调用
      *
@@ -475,6 +478,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     public boolean onBackPressedSupport() {
         return false;
+    }
+
+    /**
+     * Add some action when calling start()/startXX()
+     */
+    public SupportTransaction transaction() {
+        return new SupportTransactionImpl<>(this);
     }
 
     @Override
@@ -517,11 +527,21 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP, null, null);
     }
 
+    /**
+     * It is recommended to use fg.transaction().addSharedElement().commit() instead
+     * @param toFragment    TargetFragment
+     * @param sharedElement A View in a disappearing Fragment to match with a View in an
+     *                      appearing Fragment.
+     * @param sharedName    The transitionName for a View in an appearing Fragment to match to the shared
+     */
     @Override
     public void startWithSharedElement(SupportFragment toFragment, View sharedElement, String sharedName) {
         mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD, sharedElement, sharedName);
     }
 
+    /**
+     * It is recommended to use fg.transaction().addSharedElement().forResult(requestCode).commit() instead
+     */
     @Override
     public void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String sharedName) {
         mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, sharedElement, sharedName);
@@ -561,7 +581,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getFragmentManager(), false);
+        return mFragmentation.findStackFragment(fragmentClass, null, getFragmentManager());
+    }
+
+    @Override
+    public <T extends SupportFragment> T findFragment(String fragmentTag) {
+        return null;
     }
 
     /**
@@ -569,7 +594,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, getChildFragmentManager(), true);
+        return mFragmentation.findStackFragment(fragmentClass, null, getChildFragmentManager());
+    }
+
+    @Override
+    public <T extends SupportFragment> T findChildFragment(String fragmentTag) {
+        return null;
     }
 
     /**
@@ -599,12 +629,22 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         popTo(fragmentClass, includeSelf, null);
     }
 
+    @Override
+    public void popTo(String fragmentTag, boolean includeSelf) {
+
+    }
+
     /**
      * 子栈内
      */
     @Override
     public void popToChild(Class<?> fragmentClass, boolean includeSelf) {
         popToChild(fragmentClass, includeSelf, null);
+    }
+
+    @Override
+    public void popToChild(String fragmentTag, boolean includeSelf) {
+
     }
 
     /**
@@ -615,12 +655,22 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getFragmentManager());
     }
 
+    @Override
+    public void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable) {
+
+    }
+
     /**
      * 子栈内
      */
     @Override
     public void popToChild(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable) {
         mFragmentation.popTo(fragmentClass, includeSelf, afterPopTransactionRunnable, getChildFragmentManager());
+    }
+
+    @Override
+    public void popToChild(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable) {
+
     }
 
     void popForSwipeBack() {
@@ -641,10 +691,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             return;
         }
 
-        FragmentResultRecord fragmentResultRecord = args.getParcelable(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD);
-        if (fragmentResultRecord != null) {
-            fragmentResultRecord.resultCode = resultCode;
-            fragmentResultRecord.resultBundle = bundle;
+        ResultRecord resultRecord = args.getParcelable(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD);
+        if (resultRecord != null) {
+            resultRecord.resultCode = resultCode;
+            resultRecord.resultBundle = bundle;
         }
     }
 
@@ -698,6 +748,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     void setOnFragmentDestoryViewListener(OnFragmentDestoryViewListener listener) {
         this.mFragmentDestoryViewListener = listener;
+    }
+
+    void setTransactionRecord(TransactionRecord record) {
+        this.mTransactionRecord = record;
+    }
+
+    TransactionRecord getTransactionRecord() {
+        return mTransactionRecord;
     }
 
     @Override

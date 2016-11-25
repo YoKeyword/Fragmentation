@@ -8,29 +8,29 @@ import android.os.Parcelable;
  * Result 记录
  * Created by YoKeyword on 16/6/2.
  */
-public class FragmentResultRecord implements Parcelable {
+public final class ResultRecord implements Parcelable {
     public int requestCode;
     public int resultCode = 0;
     public Bundle resultBundle;
 
-    public FragmentResultRecord() {
+    public ResultRecord() {
     }
 
-    protected FragmentResultRecord(Parcel in) {
+    protected ResultRecord(Parcel in) {
         requestCode = in.readInt();
         resultCode = in.readInt();
         resultBundle = in.readBundle();
     }
 
-    public static final Creator<FragmentResultRecord> CREATOR = new Creator<FragmentResultRecord>() {
+    public static final Creator<ResultRecord> CREATOR = new Creator<ResultRecord>() {
         @Override
-        public FragmentResultRecord createFromParcel(Parcel in) {
-            return new FragmentResultRecord(in);
+        public ResultRecord createFromParcel(Parcel in) {
+            return new ResultRecord(in);
         }
 
         @Override
-        public FragmentResultRecord[] newArray(int size) {
-            return new FragmentResultRecord[size];
+        public ResultRecord[] newArray(int size) {
+            return new ResultRecord[size];
         }
     };
 

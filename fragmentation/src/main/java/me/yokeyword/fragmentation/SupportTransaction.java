@@ -21,6 +21,15 @@ public abstract class SupportTransaction {
     public abstract SupportTransaction setTag(String tag);
 
     /**
+     * start a SupportFragment for which you would like a result when it exits.
+     *
+     * @param requestCode If >= 0, this code will be returned in
+     *                    onFragmentResult() when the fragment exits.
+     * @return the same SupportTransaction instance.
+     */
+    public abstract SupportTransaction forResult(int requestCode);
+
+    /**
      * @param launchMode Can replace {@link SupportFragment#start(SupportFragment, int)}
      *                   <p>
      *                   May be one of {@link SupportFragment#STANDARD}, {@link SupportFragment#SINGLETASK}
@@ -56,7 +65,7 @@ public abstract class SupportTransaction {
 
     /**
      * same as FragmentTransaction.commit()
-     *
+     * <p>
      * Schedules a commit of this transaction.
      */
     public abstract <T extends SupportFragment> T commit();
