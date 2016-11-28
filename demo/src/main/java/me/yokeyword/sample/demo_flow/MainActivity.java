@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,10 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
+import me.yokeyword.fragmentation.helper.FragmentLifecycleCallbacks;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.account.LoginFragment;
@@ -54,6 +55,16 @@ public class MainActivity extends SupportActivity
         }
 
         initView();
+
+        registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks() {
+            // 可以监听该Activity下的所有Fragment的18个 生命周期方法
+
+            @Override
+            public void onFragmentCreated(SupportFragment fragment, Bundle savedInstanceState) {
+                super.onFragmentCreated(fragment, savedInstanceState);
+                Log.i("MainActivity", "onFragmentCreated---> Tag:" + fragment.getTag());
+            }
+        });
     }
 
     @Override
@@ -114,7 +125,7 @@ public class MainActivity extends SupportActivity
                     finish();
                 } else {
                     TOUCH_TIME = System.currentTimeMillis();
-                    Toast.makeText(this, R.string.press_again_exit,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.press_again_exit, Toast.LENGTH_SHORT).show();
                 }
             }
         }
