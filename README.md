@@ -49,9 +49,11 @@ A powerful library that manage Fragment for Android!
 
 2、提供统一的onLazyInitView()懒加载方法；
 
-3、可以自定义Tag了！
+3、SupportActivity提供registerFragmentLifecycleCallbacks()来监控其下所有Fragment的生命周期；
 
-4、start()方法可以指定commit的方式了：commitAllowingStateLoss(),commitImmediate()
+4、可以自定义Tag了！
+
+5、start()方法可以指定commit的方式了：commitAllowingStateLoss(),commitImmediate()
 ****
 
 0.7.X
@@ -69,7 +71,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.8.0'
+compile 'me.yokeyword:fragmentation:0.8.1'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````

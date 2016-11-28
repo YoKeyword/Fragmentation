@@ -38,13 +38,15 @@ The first demo shows the basic use case of this library, the second demo shows t
 
 [Detail](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
-1、Add onSupportVisible(),onSupportInvisible() to simplify the dev of nested-fragment;
+1、Added onSupportVisible(),onSupportInvisible() to simplify the dev of nested-fragment;
 
-2、Add onLazyInitView();
+2、Added onLazyInitView();
 
-3、Now you can set Tag！
+3、Added registerFragmentLifecycleCallbacks() to SupportActivity to monitor Fragments Lifecycle;
 
-4、Change the commit mode of start(), eg. commitAllowingStateLoss(),commitImmediate().
+4、Now you can set Tag！
+
+5、Change the commit mode of start(), eg. commitAllowingStateLoss(),commitImmediate().
 
 ****
 
@@ -63,7 +65,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 **1. Add dependency in build.gradle file of your app module：**
 ````gradle
 // appcompat v7 library is needed
-compile 'me.yokeyword:fragmentation:0.8.0'
+compile 'me.yokeyword:fragmentation:0.8.1'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
