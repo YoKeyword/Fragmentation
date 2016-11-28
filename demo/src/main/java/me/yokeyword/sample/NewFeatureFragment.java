@@ -31,6 +31,9 @@ public class NewFeatureFragment extends SupportFragment {
                 .forResult(1)   // 类似 startForResult()
                 .commitImmediate();
         start(homeFragment);
+
+        // or
+        // start(HomeFragment.newInstance().transaction().setTag("tag").commitAllowingStateLoss());
     }
 
     // 模拟执行一次 出栈
