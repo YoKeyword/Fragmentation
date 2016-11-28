@@ -169,6 +169,11 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     @Override
+    public void showHideFragment(SupportFragment showFragment) {
+        showHideFragment(showFragment, null);
+    }
+
+    @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
         mFragmentation.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
     }

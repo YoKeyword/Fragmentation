@@ -521,6 +521,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     @Override
+    public void showHideFragment(SupportFragment showFragment) {
+        showHideFragment(showFragment, null);
+    }
+
+    @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
         mFragmentation.showHideFragment(getChildFragmentManager(), showFragment, hideFragment);
     }

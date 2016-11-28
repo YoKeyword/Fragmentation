@@ -221,11 +221,25 @@ class Fragmentation {
     void showHideFragment(FragmentManager fragmentManager, SupportFragment showFragment, SupportFragment hideFragment) {
         if (showFragment == hideFragment) return;
 
-        // 如果show和hide的Fragment不是同一个
-        fragmentManager.beginTransaction()
-                .show(showFragment)
-                .hide(hideFragment)
-                .commit();
+        FragmentTransaction ft = fragmentManager.beginTransaction().show(showFragment);
+
+        if (hideFragment == null) {
+            List<Fragment> fragmentList = fragmentManager.getFragments();
+            if (fragmentList != null) {
+                for (Fragment fragment : fragmentList) {
+                    if (fragment instanceof SupportFragment) {
+                        SupportFragment supportFragment = (SupportFragment) fragment;
+                        if (supportFragment != showFragment && supportFragment.isSupportVisible()) {
+                            System.out.println(supportFragment.getClass().getSimpleName());
+                            ft.hide(fragment);
+                        }
+                    }
+                }
+            }
+        } else {
+            ft.hide(hideFragment);
+        }
+        ft.commit();
     }
 
     void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, View sharedElement, String name) {

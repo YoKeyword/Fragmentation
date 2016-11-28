@@ -28,6 +28,14 @@ interface ISupport {
     void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments);
 
     /**
+     * show一个Fragment,hide上一个Fragment
+     * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
+     *
+     * @param showFragment 需要show的Fragment
+     */
+    void showHideFragment(SupportFragment showFragment);
+
+    /**
      * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
      *
      * @param showFragment 需要show的Fragment
@@ -103,5 +111,5 @@ interface ISupport {
      */
     void popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable);
 
-    void popTo(String fragmentTag,  boolean includeSelf, Runnable afterPopTransactionRunnable);
+    void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable);
 }
