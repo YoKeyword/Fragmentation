@@ -153,31 +153,63 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         }
     }
 
+    /**
+     * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
+     *
+     * @param containerId 容器id
+     * @param toFragment  目标Fragment
+     */
     @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
         mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
     }
 
+    /**
+     * 以replace方式加载根Fragment
+     */
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
         mFragmentation.replaceLoadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBack);
     }
 
+    /**
+     * 加载多个根Fragment
+     *
+     * @param containerId 容器id
+     * @param toFragments 目标Fragments
+     */
     @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
         mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
     }
 
+    /**
+     * show一个Fragment,hide上一个Fragment
+     * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
+     *
+     * @param showFragment 需要show的Fragment
+     */
     @Override
     public void showHideFragment(SupportFragment showFragment) {
         showHideFragment(showFragment, null);
     }
 
+    /**
+     * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
+     *
+     * @param showFragment 需要show的Fragment
+     * @param hideFragment 需要hide的Fragment
+     */
     @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
         mFragmentation.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
     }
 
+    /**
+     * 启动目标Fragment
+     *
+     * @param toFragment 目标Fragment
+     */
     @Override
     public void start(SupportFragment toFragment) {
         start(toFragment, SupportFragment.STANDARD);
