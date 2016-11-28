@@ -1,4 +1,4 @@
-package me.yokeyword.fragmentation.helper;
+package me.yokeyword.fragmentation.helper.internal;
 
 import android.content.Context;
 import android.view.animation.Animation;
@@ -8,6 +8,7 @@ import me.yokeyword.fragmentation.R;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 
 /**
+ * Hide
  * Created by YoKeyword on 16/7/26.
  */
 public final class AnimatorHelper {

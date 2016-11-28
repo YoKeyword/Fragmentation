@@ -1,6 +1,7 @@
-package me.yokeyword.fragmentation.helper;
+package me.yokeyword.fragmentation.helper.internal;
 
 /**
+ * Hide
  * 动画结束 监听
  * Created by YoKeyword on 16/1/28.
  */

@@ -1,8 +1,9 @@
-package me.yokeyword.fragmentation.helper;
+package me.yokeyword.fragmentation.helper.internal;
 
 import android.view.View;
 
 /**
+ * Hide
  * Created by YoKey on 16/11/25.
  */
 public final class TransactionRecord {

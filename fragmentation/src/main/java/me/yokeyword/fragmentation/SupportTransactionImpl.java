@@ -2,7 +2,7 @@ package me.yokeyword.fragmentation;
 
 import android.view.View;
 
-import me.yokeyword.fragmentation.helper.TransactionRecord;
+import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
 /**
  * Add some action when calling {@link SupportFragment#start(SupportFragment)

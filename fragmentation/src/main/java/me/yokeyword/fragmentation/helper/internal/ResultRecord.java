@@ -1,10 +1,11 @@
-package me.yokeyword.fragmentation.helper;
+package me.yokeyword.fragmentation.helper.internal;
 
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * Hide
  * Result 记录
  * Created by YoKeyword on 16/6/2.
  */
