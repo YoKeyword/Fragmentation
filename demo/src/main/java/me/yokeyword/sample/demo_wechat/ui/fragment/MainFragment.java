@@ -80,10 +80,20 @@ public class MainFragment extends BaseFragment {
                 .addItem(new BottomBarTab(_mActivity, R.drawable.ic_account_circle_white_24dp, "联系人"))
                 .addItem(new BottomBarTab(_mActivity, R.drawable.ic_discover_white_24dp, "发现"));
 
+        // 模拟未读消息
+        mBottomBar.getItem(FIRST).setUnreadCount(9);
+
         mBottomBar.setOnTabSelectedListener(new BottomBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position, int prePosition) {
                 showHideFragment(mFragments[position], mFragments[prePosition]);
+
+                BottomBarTab tab = mBottomBar.getItem(FIRST);
+                if (position == FIRST) {
+                    tab.setUnreadCount(0);
+                } else {
+                    tab.setUnreadCount(tab.getUnreadCount() + 1);
+                }
             }
 
             @Override
