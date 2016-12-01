@@ -230,7 +230,6 @@ class Fragmentation {
                     if (fragment instanceof SupportFragment) {
                         SupportFragment supportFragment = (SupportFragment) fragment;
                         if (supportFragment != showFragment && supportFragment.isSupportVisible()) {
-                            System.out.println(supportFragment.getClass().getSimpleName());
                             ft.hide(fragment);
                         }
                     }
@@ -239,7 +238,7 @@ class Fragmentation {
         } else {
             ft.hide(hideFragment);
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, View sharedElement, String name) {
