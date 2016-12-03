@@ -184,8 +184,10 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * show一个Fragment,hide上一个Fragment
+     * show一个Fragment,hide其他同栈所有Fragment
      * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
+     * <p>
+     * 建议使用更明确的{@link #showHideFragment(SupportFragment, SupportFragment)}
      *
      * @param showFragment 需要show的Fragment
      */

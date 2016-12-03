@@ -213,7 +213,7 @@ class Fragmentation {
     }
 
     /**
-     * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
+     * show一个Fragment,hide另一个／多个Fragment ; 主要用于类似微信主页那种 切换tab的情况
      *
      * @param showFragment 需要show的Fragment
      * @param hideFragment 需要hide的Fragment
@@ -227,11 +227,8 @@ class Fragmentation {
             List<Fragment> fragmentList = fragmentManager.getFragments();
             if (fragmentList != null) {
                 for (Fragment fragment : fragmentList) {
-                    if (fragment instanceof SupportFragment) {
-                        SupportFragment supportFragment = (SupportFragment) fragment;
-                        if (supportFragment != showFragment && supportFragment.isSupportVisible()) {
-                            ft.hide(fragment);
-                        }
+                    if (fragment != showFragment) {
+                        ft.hide(fragment);
                     }
                 }
             }
