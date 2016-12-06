@@ -502,7 +502,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * Add some action when calling start()/startXX()
      */
     public SupportTransaction transaction() {
-        return new SupportTransactionImpl<>(this);
+        return new SupportTransaction.SupportTransactionImpl<>(this);
     }
 
     /**

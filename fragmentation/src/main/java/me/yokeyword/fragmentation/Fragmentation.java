@@ -305,7 +305,7 @@ class Fragmentation {
     private void supportCommit(FragmentManager fragmentManager, FragmentTransaction transaction) {
         boolean stateSaved = FragmentTransactionBugFixHack.isStateSaved(fragmentManager);
         if (stateSaved) {
-            // 这里的警告请重视，建议在onPostResume()中执行该事务
+            // 这里的警告请重视，建议在Activity回来后，在onPostResume()中执行该事务
             Log.e(TAG, "Can not perform this action after onSaveInstanceState!");
             RuntimeException e = new IllegalStateException("Can not perform this action after onSaveInstanceState!");
             e.printStackTrace();
