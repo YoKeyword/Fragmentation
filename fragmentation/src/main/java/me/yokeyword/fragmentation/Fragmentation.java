@@ -379,7 +379,7 @@ class Fragmentation {
             Fragment fragment = fragmentList.get(i);
             if (fragment instanceof SupportFragment) {
                 SupportFragment supportFragment = (SupportFragment) fragment;
-                if (!supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
+                if (supportFragment.isResumed() && !supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
                     return getActiveFragment(supportFragment, supportFragment.getChildFragmentManager());
                 }
             }
