@@ -34,9 +34,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
 # ChangeLog
-### V 0.8.X is available！！
-
-[Detail](https://github.com/YoKeyword/Fragmentation/wiki/Home)
+### V 0.8.X is available！！[Detail](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
 1、Added onSupportVisible(),onSupportInvisible() to simplify the dev of nested-fragment;
 
@@ -65,7 +63,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 **1. Add dependency in build.gradle file of your app module：**
 ````gradle
 // appcompat v7 library is needed
-compile 'me.yokeyword:fragmentation:0.8.3'
+compile 'me.yokeyword:fragmentation:0.8.4'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
