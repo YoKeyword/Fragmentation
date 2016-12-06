@@ -101,7 +101,7 @@ class Fragmentation {
             bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         }
 
-        ft.commit();
+        supportCommit(fragmentManager, ft);
     }
 
     /**
@@ -209,7 +209,7 @@ class Fragmentation {
         }
         Bundle bundle = to.getArguments();
         bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
-        ft.commit();
+        supportCommit(fragmentManager, ft);
     }
 
     /**
@@ -235,7 +235,7 @@ class Fragmentation {
         } else {
             ft.hide(hideFragment);
         }
-        ft.commitAllowingStateLoss();
+        supportCommit(fragmentManager, ft);
     }
 
     void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, View sharedElement, String name) {
@@ -259,14 +259,16 @@ class Fragmentation {
         }
 
         ft.addToBackStack(toFragmentTag);
-        supportCommit(fragmentManager, ft, to.getTransactionRecord());
+        startCommit(fragmentManager, ft, to.getTransactionRecord());
     }
 
     void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag) {
         SupportFragment preFragment = getPreFragment(from);
         handlePopAnim(preFragment, from, to);
 
-        fragmentManager.beginTransaction().remove(from).commit();
+        FragmentTransaction removeFt = fragmentManager.beginTransaction().remove(from);
+        supportCommit(fragmentManager, removeFt);
+
         handleBack(fragmentManager, true);
 
         FragmentTransaction ft = fragmentManager.beginTransaction()
@@ -278,26 +280,37 @@ class Fragmentation {
             ft.hide(preFragment);
         }
 
-        supportCommit(fragmentManager, ft, to.getTransactionRecord());
+        startCommit(fragmentManager, ft, to.getTransactionRecord());
     }
 
-    private void supportCommit(FragmentManager fragmentManager, FragmentTransaction fragmentTransaction, TransactionRecord record) {
+    private void startCommit(FragmentManager fragmentManager, FragmentTransaction transaction, TransactionRecord record) {
         if (record != null && record.commitMode != null) {
             switch (record.commitMode) {
                 case TransactionRecord.COMMIT_ALLOWING_STATE_LOSS:
-                    fragmentTransaction.commitAllowingStateLoss();
+                    supportCommit(fragmentManager, transaction);
                     break;
                 case TransactionRecord.COMMIT_IMMEDIATE:
-                    fragmentTransaction.commit();
+                    supportCommit(fragmentManager, transaction);
                     fragmentManager.executePendingTransactions();
                     break;
                 default:
-                    fragmentTransaction.commit();
+                    transaction.commit();
                     break;
             }
         } else {
-            fragmentTransaction.commit();
+            supportCommit(fragmentManager, transaction);
         }
+    }
+
+    private void supportCommit(FragmentManager fragmentManager, FragmentTransaction transaction) {
+        boolean stateSaved = FragmentTransactionBugFixHack.isStateSaved(fragmentManager);
+        if (stateSaved) {
+            // 这里的警告请重视，建议在onPostResume()中执行该事务
+            Log.e(TAG, "Can not perform this action after onSaveInstanceState!");
+            RuntimeException e = new IllegalStateException("Can not perform this action after onSaveInstanceState!");
+            e.printStackTrace();
+        }
+        transaction.commitAllowingStateLoss();
     }
 
     /**

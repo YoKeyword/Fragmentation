@@ -23,4 +23,16 @@ public class FragmentTransactionBugFixHack {
         }
     }
 
+    public static boolean isStateSaved(FragmentManager fragmentManager) {
+        if (!(fragmentManager instanceof FragmentManagerImpl))
+            return false;
+        try {
+            FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
+            // 从5年前一直到当前的Support-25.0.1,该字段没有变化过
+            return fragmentManagerImpl.mStateSaved;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
