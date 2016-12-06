@@ -73,8 +73,7 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
 
             @Override
             public void onFragmentSupportVisible(SupportFragment fragment) {
-                super.onFragmentSupportVisible(fragment);
-                Log.i("MainActivity", "onFragmentSupportVisible---> Tag:" + fragment.getTag());
+                Log.i("MainActivity", "onFragmentSupportVisible--->" + fragment.getClass().getSimpleName());
             }
         });
     }

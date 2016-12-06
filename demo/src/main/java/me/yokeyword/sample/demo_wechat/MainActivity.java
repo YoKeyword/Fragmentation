@@ -32,8 +32,7 @@ public class MainActivity extends SupportActivity {
 
             @Override
             public void onFragmentSupportVisible(SupportFragment fragment) {
-                super.onFragmentSupportVisible(fragment);
-                Log.i("MainActivity", "onFragmentSupportVisible: " + fragment.getTag());
+                Log.i("MainActivity", "onFragmentSupportVisible--->" + fragment.getClass().getSimpleName());
             }
 
             @Override
@@ -42,21 +41,11 @@ public class MainActivity extends SupportActivity {
             }
 
             @Override
-            public void onFragmentEnterAnimationEnd(SupportFragment fragment, Bundle savedInstanceState) {
-                super.onFragmentEnterAnimationEnd(fragment, savedInstanceState);
-            }
-
-            @Override
             public void onFragmentHiddenChanged(SupportFragment fragment, boolean hidden) {
                 super.onFragmentHiddenChanged(fragment, hidden);
             }
 
-            @Override
-            public void onFragmentLazyInitView(SupportFragment fragment, Bundle savedInstanceState) {
-                super.onFragmentLazyInitView(fragment, savedInstanceState);
-            }
-
-            // 省略剩余13个生命周期方法
+            // 省略其余生命周期方法
         });
     }
 

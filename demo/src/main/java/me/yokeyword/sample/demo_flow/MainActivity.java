@@ -61,8 +61,7 @@ public class MainActivity extends SupportActivity
 
             @Override
             public void onFragmentCreated(SupportFragment fragment, Bundle savedInstanceState) {
-                super.onFragmentCreated(fragment, savedInstanceState);
-                Log.i("MainActivity", "onFragmentCreated---> Tag:" + fragment.getTag());
+                Log.i("MainActivity", "onFragmentCreated--->" + fragment.getClass().getSimpleName());
             }
         });
     }
