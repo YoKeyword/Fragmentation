@@ -50,6 +50,12 @@ public class MainActivity extends SupportActivity {
     }
 
     @Override
+    public void onExceptionAfterOnSaveInstanceState(Exception e) {
+        // TODO: 16/12/7 在此可以监听到警告： Can not perform this action after onSaveInstanceState!
+        // 建议在线上包中，此处上传到异常检测服务器（eg. 自家异常检测系统或Bugtags等崩溃检测第三方），来监控该异常
+    }
+
+    @Override
     public void onBackPressedSupport() {
         // 对于 4个类别的主Fragment内的回退back逻辑,已经在其onBackPressedSupport里各自处理了
         super.onBackPressedSupport();
