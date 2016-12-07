@@ -307,8 +307,9 @@ class Fragmentation {
         if (stateSaved) {
             // 这里的警告请重视，请在Activity回来后，在onPostResume()中执行该事务
             Log.e(TAG, "Please beginTransaction in onPostResume() after the Activity returns!");
-            RuntimeException e = new IllegalStateException("Can not perform this action after onSaveInstanceState!");
+            IllegalStateException e = new IllegalStateException("Can not perform this action after onSaveInstanceState!");
             e.printStackTrace();
+            mActivity.onExceptionAfterOnSaveInstanceState(e);
         }
         transaction.commitAllowingStateLoss();
     }

@@ -291,6 +291,12 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mFragmentation.popTo(fragmentTag, includeSelf, afterPopTransactionRunnable, getSupportFragmentManager());
     }
 
+    /**
+     * 当抛该异常："Can not perform this action after onSaveInstanceState!"时（不会crash，仅警告），会回调该方法
+     */
+    public void onExceptionAfterOnSaveInstanceState(Exception e) {
+    }
+
     void preparePopMultiple() {
         mPopMultipleNoAnim = true;
     }
