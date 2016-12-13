@@ -19,7 +19,6 @@ import java.util.List;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
-import me.yokeyword.fragmentation.helper.internal.DebounceAnimListener;
 import me.yokeyword.fragmentation.helper.internal.LifecycleHelper;
 import me.yokeyword.fragmentation.helper.internal.OnEnterAnimEndListener;
 import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
@@ -148,10 +147,23 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     private void initAnim() {
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
-
         // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
         if (!mNoneEnterAnimFlag) {
-            mAnimHelper.enterAnim.setAnimationListener(new DebounceAnimListener(this));
+            mAnimHelper.enterAnim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    _mActivity.setFragmentClickable(false);  // 开启防抖动
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    notifyEnterAnimEnd();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
         }
     }
 
@@ -791,7 +803,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     /**
      * 入场动画结束时,回调
      */
-    public final void notifyEnterAnimEnd() {
+    void notifyEnterAnimEnd() {
         notifyEnterAnimationEnd(null);
         _mActivity.setFragmentClickable(true);
 
