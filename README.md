@@ -44,8 +44,6 @@ A powerful library that manage Fragment for Android!
 # 重大更新日志
 ### 0.8.X 来了！ [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
-0.8.5更新日志：
-* Fix 同时点击操作 不同栈层级的Fragment事务时，可能导致的防抖动失效问题
 
 0.8.4更新日志：
 * Fix点击Back键过快时，同一onBackPressedSupport()重复调用的问题；
@@ -76,7 +74,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.8.5'
+compile 'me.yokeyword:fragmentation:0.8.4'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
