@@ -328,7 +328,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         // 防抖动(防止点击速度过快)
-        if (!mFragmentClickable) return true;
+//        if (!mFragmentClickable) return true;
 
         return super.dispatchTouchEvent(ev);
     }
