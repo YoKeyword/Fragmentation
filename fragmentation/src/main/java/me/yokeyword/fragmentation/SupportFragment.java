@@ -847,6 +847,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void onDestroyView() {
+        _mActivity.setFragmentClickable();
         if (mFragmentDestoryViewListener != null) {
             mFragmentDestoryViewListener.onDestoryView();
         }
@@ -854,7 +855,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         super.onDestroyView();
 
-        _mActivity.setFragmentClickable();
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
 
