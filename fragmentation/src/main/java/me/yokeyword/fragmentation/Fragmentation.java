@@ -19,9 +19,9 @@ import java.util.List;
 
 import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
 import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
-import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.OnEnterAnimEndListener;
 import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
+import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
 
@@ -52,6 +52,7 @@ class Fragmentation {
     private SupportActivity mActivity;
 
     private Handler mHandler;
+    private FragmentManager mPopToTempFragmentManager;
 
     Fragmentation(SupportActivity activity) {
         this.mActivity = activity;
@@ -83,6 +84,8 @@ class Fragmentation {
      * 加载多个根Fragment
      */
     void loadMultipleRootTransaction(FragmentManager fragmentManager, int containerId, int showPosition, SupportFragment... tos) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return;
         FragmentTransaction ft = fragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         for (int i = 0; i < tos.length; i++) {
@@ -114,6 +117,14 @@ class Fragmentation {
      * @param type        类型
      */
     void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String sharedName) {
+        fragmentManager = checkFragmentManager(fragmentManager, from);
+        if (fragmentManager == null) return;
+
+        if ((from != null && from.isRemoving())) {
+            Log.e(TAG, from.getClass().getSimpleName() + " is poped, maybe you want to call startWithPop()!");
+            return;
+        }
+
         checkNotNull(to, "toFragment == null");
 
         // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
@@ -166,8 +177,6 @@ class Fragmentation {
             case TYPE_ADD_WITH_POP:
                 if (from != null) {
                     startWithPop(fragmentManager, from, to, toFragmentTag);
-                } else {
-                    throw new RuntimeException("start(): getTopFragment() is null, may be you need call loadRootFragment()");
                 }
                 break;
         }
@@ -197,6 +206,9 @@ class Fragmentation {
      * replace事务, 主要用于子Fragment之间的replace
      */
     void replaceTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return;
+
         checkNotNull(to, "toFragment == null");
         bindContainerId(containerId, to);
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -216,6 +228,9 @@ class Fragmentation {
      * @param hideFragment 需要hide的Fragment
      */
     void showHideFragment(FragmentManager fragmentManager, SupportFragment showFragment, SupportFragment hideFragment) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return;
+
         if (showFragment == hideFragment) return;
 
         FragmentTransaction ft = fragmentManager.beginTransaction().show(showFragment);
@@ -252,7 +267,9 @@ class Fragmentation {
             bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         } else {
             ft.add(from.getContainerId(), to, toFragmentTag);
-            ft.hide(from);
+            if (from.getTag() != null) {
+                ft.hide(from);
+            }
         }
 
         ft.addToBackStack(toFragmentTag);
@@ -260,6 +277,12 @@ class Fragmentation {
     }
 
     void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag) {
+        fragmentManager.executePendingTransactions();
+        if (from.isHidden()) {
+            Log.e(TAG, from.getClass().getSimpleName() + " is hidden, " + "the transaction of startWithPop() is invalid!");
+            return;
+        }
+
         SupportFragment preFragment = getPreFragment(from);
         handlePopAnim(preFragment, from, to);
 
@@ -278,6 +301,7 @@ class Fragmentation {
         }
 
         startCommit(fragmentManager, ft, to.getTransactionRecord());
+        fragmentManager.executePendingTransactions();
     }
 
     private void startCommit(FragmentManager fragmentManager, FragmentTransaction transaction, TransactionRecord record) {
@@ -315,6 +339,8 @@ class Fragmentation {
      * 获得栈顶SupportFragment
      */
     SupportFragment getTopFragment(FragmentManager fragmentManager) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return null;
         List<Fragment> fragmentList = fragmentManager.getFragments();
         if (fragmentList == null) return null;
 
@@ -333,6 +359,10 @@ class Fragmentation {
      * @param fragment 目标Fragment
      */
     SupportFragment getPreFragment(Fragment fragment) {
+        FragmentManager fragmentManager = fragment.getFragmentManager();
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return null;
+
         List<Fragment> fragmentList = fragment.getFragmentManager().getFragments();
         if (fragmentList == null) return null;
 
@@ -351,6 +381,9 @@ class Fragmentation {
      */
     @SuppressWarnings("unchecked")
     <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return null;
+
         Fragment fragment = null;
 
         if (toFragmentTag == null) {
@@ -471,6 +504,7 @@ class Fragmentation {
     }
 
     void back(FragmentManager fragmentManager) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
 
         int count = fragmentManager.getBackStackEntryCount();
@@ -537,6 +571,7 @@ class Fragmentation {
      * @param includeSelf 是否包含该fragment
      */
     void popTo(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable, FragmentManager fragmentManager) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
 
         Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentTag);
@@ -557,15 +592,25 @@ class Fragmentation {
         SupportFragment fromFragment = getTopFragment(fragmentManager);
 
         if (afterPopTransactionRunnable != null) {
-            if (targetFragment == fromFragment) {
-                mHandler.post(afterPopTransactionRunnable);
-                return;
+            if (targetFragment != fromFragment) {
+                hackPopToAnim(targetFragment, fromFragment);
+                popToFix(fragmentTag, flag, fragmentManager);
             }
 
-            hackPopToAnim(targetFragment, fromFragment);
-
-            popToFix(fragmentTag, flag, fragmentManager);
+            final FragmentManager finalFragmentManager = fragmentManager;
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mPopToTempFragmentManager = finalFragmentManager;
+                }
+            });
             mHandler.post(afterPopTransactionRunnable);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mPopToTempFragmentManager = null;
+                }
+            });
         } else {
             popToFix(fragmentTag, flag, fragmentManager);
         }
@@ -702,6 +747,18 @@ class Fragmentation {
             throw new NullPointerException(message);
         }
         return value;
+    }
+
+    private FragmentManager checkFragmentManager(FragmentManager fragmentManager, Fragment from) {
+        if (fragmentManager == null) {
+            if (mPopToTempFragmentManager == null) {
+                String fromName = from == null ? "Fragment" : from.getClass().getSimpleName();
+                Log.e(TAG, fromName + "'s FragmentManager is null, " + " Please check if " + fromName + " is destroyed!");
+                return null;
+            }
+            return mPopToTempFragmentManager;
+        }
+        return fragmentManager;
     }
 
     /**
