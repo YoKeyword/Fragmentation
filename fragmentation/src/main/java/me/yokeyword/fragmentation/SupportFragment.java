@@ -114,6 +114,9 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mIsHidden = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
             mIsSupportVisible = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_SUPPORT_VISIBLE);
             mInvisibleWhenLeave = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
+            if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
+                mContainerId = savedInstanceState.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
+            }
         }
 
         if (restoreInstanceState()) {
@@ -200,6 +203,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER, mContainerId);
         outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_SUPPORT_VISIBLE, mIsSupportVisible);
