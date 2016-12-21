@@ -248,17 +248,16 @@ class Fragmentation {
     void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, View sharedElement, String name) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
+        Bundle bundle = to.getArguments();
+
         if (sharedElement == null) {
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         } else {
-            Bundle bundle = to.getArguments();
             bundle.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
             ft.addSharedElement(sharedElement, name);
         }
         if (from == null) {
-            ft.add(to.getArguments().getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);
-
-            Bundle bundle = to.getArguments();
+            ft.add(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);
             bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         } else {
             ft.add(from.getContainerId(), to, toFragmentTag);
@@ -571,15 +570,15 @@ class Fragmentation {
 
         Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentTag);
 
+        if (targetFragment == null) {
+            Log.e(TAG, "Pop failure! Can't find FragmentTag:" + fragmentTag + " in the FragmentManager's Stack.");
+            return;
+        }
+
         int flag = 0;
         if (includeSelf) {
             flag = FragmentManager.POP_BACK_STACK_INCLUSIVE;
             targetFragment = getPreFragment(targetFragment);
-        }
-
-        if (targetFragment == null) {
-            Log.e(TAG, "Pop failure! Can't find FragmentTag:" + fragmentTag + " in the FragmentManager's Stack.");
-            return;
         }
 
         SupportFragment fromFragment = getTopFragment(fragmentManager);

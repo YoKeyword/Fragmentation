@@ -61,7 +61,9 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     private FragmentAnimator mFragmentAnimator;
     private AnimatorHelper mAnimHelper;
-    private boolean mNoneEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
+
+    private boolean mNoneEnterAnimFlag = false;
+    private boolean mActivityCreatedFlag; // Compat v4 25.0+
 
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
 
@@ -145,23 +147,21 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private void initAnim() {
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
         // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
-        if (!mNoneEnterAnimFlag) {
-            mAnimHelper.enterAnim.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    _mActivity.setFragmentClickable(false);  // 开启防抖动
-                }
+        mAnimHelper.enterAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                _mActivity.setFragmentClickable(false);  // 开启防抖动
+            }
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    notifyEnterAnimEnd();
-                }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                notifyEnterAnimEnd();
+            }
 
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-        }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
     }
 
     @Override
@@ -176,7 +176,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 if (mIsRoot) {  // 根Fragment设置为无入栈动画
-                    mNoneEnterAnimFlag = true;
                     return mAnimHelper.getNoneAnim();
                 }
                 return mAnimHelper.enterAnim;
@@ -186,10 +185,9 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             return enter ? mAnimHelper.popEnterAnim : mAnimHelper.exitAnim;
         } else {
-            if (mIsSharedElement && !enter && getEnterTransition() == null) {
-                return mAnimHelper.exitAnim;
+            if (mIsSharedElement && enter) {
+                notifyNoAnim();
             }
-            mNoneEnterAnimFlag = true;
             return super.onCreateAnimation(transit, enter, nextAnim);
         }
     }
@@ -217,13 +215,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             view.setClickable(true);
         }
 
+        mActivityCreatedFlag = true;
+
         if (savedInstanceState != null) {
-            // 强杀重启时,系统默认Fragment恢复时无动画,所以这里手动调用下
-            notifyEnterAnimationEnd(savedInstanceState);
-            _mActivity.setFragmentClickable(true);
-        } else if (mNoneEnterAnimFlag) { // 无动画
-            notifyEnterAnimationEnd(null);
-            _mActivity.setFragmentClickable(true);
+            notifyNoAnim();
+            mFixUserVisibleHintWhenRestore = true;
+        } else if (mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
+            notifyNoAnim();
         }
 
         if (!mInvisibleWhenLeave && !isHidden() && getUserVisibleHint()) {
@@ -233,11 +231,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             }
         }
 
-        if (savedInstanceState != null) {
-            mFixUserVisibleHintWhenRestore = true;
-        }
-
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONACTIVITYCREATED, this, savedInstanceState);
+    }
+
+    private void notifyNoAnim() {
+        notifyEnterAnimationEnd(mSaveInstanceState);
+        _mActivity.setFragmentClickable(true);
     }
 
     protected void initFragmentBackground(View view) {
@@ -831,6 +830,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onDestroyView() {
         _mActivity.setFragmentClickable();
+        mActivityCreatedFlag = false;
+        mNoneEnterAnimFlag = false;
         super.onDestroyView();
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
