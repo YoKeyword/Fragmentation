@@ -20,8 +20,6 @@ import java.util.List;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
 import me.yokeyword.fragmentation.helper.internal.LifecycleHelper;
-import me.yokeyword.fragmentation.helper.internal.OnEnterAnimEndListener;
-import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
@@ -57,8 +55,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private InputMethodManager mIMM;
     private boolean mNeedHideSoft;  // 隐藏软键盘
 
-    private OnEnterAnimEndListener mOnAnimEndListener; // fragmentation中需要
-
     protected SupportActivity _mActivity;
     protected Fragmentation mFragmentation;
     private int mContainerId;   // 该Fragment所处的Container的id
@@ -68,8 +64,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mNoneEnterAnimFlag = false; // 用于记录无动画时,解除 防抖动处理
 
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
-
-    private OnFragmentDestoryViewListener mFragmentDestoryViewListener;
 
     private TransactionRecord mTransactionRecord;
 
@@ -800,27 +794,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         return mNewBundle;
     }
 
-    void setEnterAnimEndListener(OnEnterAnimEndListener onAnimEndListener) {
-        this.mOnAnimEndListener = onAnimEndListener;
-    }
-
     /**
      * 入场动画结束时,回调
      */
     void notifyEnterAnimEnd() {
         notifyEnterAnimationEnd(null);
         _mActivity.setFragmentClickable(true);
-
-        if (mOnAnimEndListener != null) {
-            mOnAnimEndListener.onAnimationEnd();
-        }
-    }
-
-    /**
-     * @see OnFragmentDestoryViewListener
-     */
-    void setOnFragmentDestoryViewListener(OnFragmentDestoryViewListener listener) {
-        this.mFragmentDestoryViewListener = listener;
     }
 
     void setTransactionRecord(TransactionRecord record) {
@@ -852,20 +831,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onDestroyView() {
         _mActivity.setFragmentClickable();
-        if (mFragmentDestoryViewListener != null) {
-            mFragmentDestoryViewListener.onDestoryView();
-        }
-        mFragmentDestoryViewListener = null;
-
         super.onDestroyView();
-
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mOnAnimEndListener = null;
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROY, SupportFragment.this);
     }
 
