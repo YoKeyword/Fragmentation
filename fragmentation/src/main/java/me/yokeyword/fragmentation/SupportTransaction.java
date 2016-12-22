@@ -66,27 +66,15 @@ public abstract class SupportTransaction {
     public abstract SupportTransaction addSharedElement(View sharedElement, String sharedName);
 
     /**
-     * same as FragmentTransaction.commit()
+     * same as FragmentTransaction.commitAllowingStateLoss()
      * <p>
-     * Schedules a commit of this transaction.
-     */
-    public abstract <T extends SupportFragment> T commit();
-
-    /**
      * Allows the commit to be executed after an
      * activity's state is saved.  This is dangerous because the commit can
      * be lost if the activity needs to later be restored from its state, so
      * this should only be used for cases where it is okay for the UI state
      * to change unexpectedly on the user.
      */
-    public abstract <T extends SupportFragment> T commitAllowingStateLoss();
-
-    /**
-     * commit() + executePendingTransactions()
-     * <p>
-     * it is scheduled to be executed asynchronously on the process's main thread.
-     */
-    public abstract <T extends SupportFragment> T commitImmediate();
+    public abstract <T extends SupportFragment> T commit();
 
     /**
      * Add some action when calling {@link SupportFragment#start(SupportFragment)
@@ -133,21 +121,6 @@ public abstract class SupportTransaction {
 
         @Override
         public T commit() {
-            mRecord.commitMode = TransactionRecord.COMMIT;
-            mSupportFragment.setTransactionRecord(mRecord);
-            return mSupportFragment;
-        }
-
-        @Override
-        public T commitAllowingStateLoss() {
-            mRecord.commitMode = TransactionRecord.COMMIT_ALLOWING_STATE_LOSS;
-            mSupportFragment.setTransactionRecord(mRecord);
-            return mSupportFragment;
-        }
-
-        @Override
-        public T commitImmediate() {
-            mRecord.commitMode = TransactionRecord.COMMIT_IMMEDIATE;
             mSupportFragment.setTransactionRecord(mRecord);
             return mSupportFragment;
         }

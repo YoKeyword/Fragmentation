@@ -267,7 +267,7 @@ class Fragmentation {
         }
 
         ft.addToBackStack(toFragmentTag);
-        startCommit(fragmentManager, ft, to.getTransactionRecord());
+        supportCommit(fragmentManager, ft);
     }
 
     void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag) {
@@ -294,27 +294,8 @@ class Fragmentation {
             ft.hide(preFragment);
         }
 
-        startCommit(fragmentManager, ft, to.getTransactionRecord());
+        supportCommit(fragmentManager, ft);
         fragmentManager.executePendingTransactions();
-    }
-
-    private void startCommit(FragmentManager fragmentManager, FragmentTransaction transaction, TransactionRecord record) {
-        if (record != null && record.commitMode != null) {
-            switch (record.commitMode) {
-                case TransactionRecord.COMMIT_ALLOWING_STATE_LOSS:
-                    supportCommit(fragmentManager, transaction);
-                    break;
-                case TransactionRecord.COMMIT_IMMEDIATE:
-                    supportCommit(fragmentManager, transaction);
-                    fragmentManager.executePendingTransactions();
-                    break;
-                default:
-                    transaction.commit();
-                    break;
-            }
-        } else {
-            supportCommit(fragmentManager, transaction);
-        }
     }
 
     private void supportCommit(FragmentManager fragmentManager, FragmentTransaction transaction) {

@@ -62,9 +62,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private FragmentAnimator mFragmentAnimator;
     private AnimatorHelper mAnimHelper;
 
-    private boolean mNoneEnterAnimFlag = false;
-    private boolean mActivityCreatedFlag; // Compat v4 25.0+
-
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
 
     private TransactionRecord mTransactionRecord;
@@ -214,8 +211,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (view != null) {
             view.setClickable(true);
         }
-
-        mActivityCreatedFlag = true;
 
         if (savedInstanceState != null) {
             notifyNoAnim();
@@ -830,8 +825,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onDestroyView() {
         _mActivity.setFragmentClickable();
-        mActivityCreatedFlag = false;
-        mNoneEnterAnimFlag = false;
         super.onDestroyView();
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
