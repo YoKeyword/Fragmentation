@@ -165,16 +165,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (_mActivity.mPopMultipleNoAnim || mLocking) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
-                // fix popTo(在设置为库中横向动画时),引起的一个闪烁问题
                 return mAnimHelper.getNoneAnimFixed();
             }
             return mAnimHelper.getNoneAnim();
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                if (mIsRoot) {  // 根Fragment设置为无入栈动画
-                    return mAnimHelper.getNoneAnim();
-                }
+                if (mIsRoot) return mAnimHelper.getNoneAnim();
                 return mAnimHelper.enterAnim;
             } else {
                 return mAnimHelper.popExitAnim;
@@ -182,9 +179,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             return enter ? mAnimHelper.popEnterAnim : mAnimHelper.exitAnim;
         } else {
-            if (mIsSharedElement && enter) {
-                notifyNoAnim();
-            }
+            if (mIsSharedElement && enter) notifyNoAnim();
             return super.onCreateAnimation(transit, enter, nextAnim);
         }
     }

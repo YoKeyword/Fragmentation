@@ -270,7 +270,7 @@ class Fragmentation {
         supportCommit(fragmentManager, ft);
     }
 
-    void startWithPop(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag) {
+    void startWithPop(final FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag) {
         fragmentManager.executePendingTransactions();
         if (from.isHidden()) {
             Log.e(TAG, from.getClass().getSimpleName() + " is hidden, " + "the transaction of startWithPop() is invalid!");
@@ -278,12 +278,14 @@ class Fragmentation {
         }
 
         SupportFragment preFragment = getPreFragment(from);
-        handlePopAnim(preFragment, from, to);
+        if (preFragment != null) {
+            handlePopAnim(preFragment, from, to);
+        }
 
         FragmentTransaction removeFt = fragmentManager.beginTransaction().remove(from);
         supportCommit(fragmentManager, removeFt);
 
-        handleBack(fragmentManager, true);
+        handleBack(fragmentManager);
 
         FragmentTransaction ft = fragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -338,7 +340,7 @@ class Fragmentation {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return null;
 
-        List<Fragment> fragmentList = fragment.getFragmentManager().getFragments();
+        List<Fragment> fragmentList = fragmentManager.getFragments();
         if (fragmentList == null) return null;
 
         int index = fragmentList.indexOf(fragment);
@@ -484,14 +486,14 @@ class Fragmentation {
 
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
-            handleBack(fragmentManager, false);
+            handleBack(fragmentManager);
         }
     }
 
     /**
      * handle result
      */
-    private void handleBack(final FragmentManager fragmentManager, boolean fromStartWithPop) {
+    private void handleBack(final FragmentManager fragmentManager) {
         List<Fragment> fragmentList = fragmentManager.getFragments();
 
         boolean flag = false;
@@ -515,11 +517,7 @@ class Fragmentation {
                     final ResultRecord finalResultRecord = resultRecord;
                     long animTime = supportFragment.getPopEnterAnimDuration();
 
-                    if (fromStartWithPop) {
-                        fragmentManager.popBackStack();
-                    } else {
-                        fragmentManager.popBackStackImmediate();
-                    }
+                    fragmentManager.popBackStackImmediate();
 
                     mHandler.postDelayed(new Runnable() {
                         @Override
@@ -532,11 +530,7 @@ class Fragmentation {
             }
         }
 
-        if (fromStartWithPop) {
-            fragmentManager.popBackStack();
-        } else {
-            fragmentManager.popBackStackImmediate();
-        }
+        fragmentManager.popBackStackImmediate();
     }
 
     /**
@@ -611,33 +605,33 @@ class Fragmentation {
      * hack startWithPop/popTo anim
      */
     private void handlePopAnim(Fragment targetFragment, SupportFragment fromFragment, SupportFragment toFragment) {
-        try {
-            if (targetFragment == null) return;
+        if (targetFragment == null) return;
 
-            View view = targetFragment.getView();
-            if (view == null || !(view instanceof ViewGroup)) return;
-            final ViewGroup viewGroup = (ViewGroup) view;
+        View view = targetFragment.getView();
+        if (view == null || !(view instanceof ViewGroup)) return;
+        final ViewGroup viewGroup = (ViewGroup) view;
 
-            final View fromView = fromFragment.getView();
-            if (fromView == null) return;
+        final View fromView = fromFragment.getView();
+        if (fromView == null) return;
 
-            ViewGroup preViewGroup = null;
+        ViewGroup preViewGroup = null;
 
-            // 在5.0之前的设备, popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable)
-            // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为解决该问题
-            if (toFragment == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                SupportFragment preFragment = getPreFragment(fromFragment);
-                if (preFragment != targetFragment) {
-                    View preView = preFragment.getView();
-                    if (preView != null && preView instanceof ViewGroup) {
-                        preViewGroup = (ViewGroup) preView;
-                    }
+        // 在5.0之前的设备, popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable)
+        // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为解决该问题
+        if (toFragment == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            SupportFragment preFragment = getPreFragment(fromFragment);
+            if (preFragment != targetFragment) {
+                View preView = preFragment.getView();
+                if (preView != null && preView instanceof ViewGroup) {
+                    preViewGroup = (ViewGroup) preView;
                 }
             }
+        }
 
-            // 不调用 会闪屏
-            view.setVisibility(View.VISIBLE);
+        // 不调用 会闪屏
+        view.setVisibility(View.VISIBLE);
 
+        try {
             ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
             if (container != null) {
                 container.removeView(fromView);
