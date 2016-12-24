@@ -17,6 +17,7 @@ import java.util.List;
 
 import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
 import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
+import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
@@ -278,13 +279,10 @@ class Fragmentation {
         }
 
         SupportFragment preFragment = getPreFragment(from);
-        if (preFragment != null) {
-            handlePopAnim(preFragment, from, to);
-        }
+        handlePopAnim(preFragment, from, to);
 
         FragmentTransaction removeFt = fragmentManager.beginTransaction().remove(from);
         supportCommit(fragmentManager, removeFt);
-
         handleBack(fragmentManager);
 
         FragmentTransaction ft = fragmentManager.beginTransaction()
@@ -609,18 +607,19 @@ class Fragmentation {
 
         View view = targetFragment.getView();
         if (view == null || !(view instanceof ViewGroup)) return;
-        final ViewGroup viewGroup = (ViewGroup) view;
+        ViewGroup viewGroup = (ViewGroup) view;
 
         final View fromView = fromFragment.getView();
         if (fromView == null) return;
 
+        SupportFragment preFragment = null;
         ViewGroup preViewGroup = null;
 
         // 在5.0之前的设备, popTo(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable)
         // 在出栈多个Fragment并随后立即执行start操作时,会出现一瞬间的闪屏. 下面的代码为解决该问题
         if (toFragment == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            SupportFragment preFragment = getPreFragment(fromFragment);
-            if (preFragment != targetFragment) {
+            preFragment = getPreFragment(fromFragment);
+            if (preFragment != null && preFragment != targetFragment) {
                 View preView = preFragment.getView();
                 if (preView != null && preView instanceof ViewGroup) {
                     preViewGroup = (ViewGroup) preView;
@@ -635,6 +634,9 @@ class Fragmentation {
             ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
             if (container != null) {
                 container.removeView(fromView);
+                if (fromFragment.mSaveInstanceState != null && toFragment != null) {
+                    viewGroup = container;
+                }
 
                 if (fromView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
                     fromView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -645,31 +647,35 @@ class Fragmentation {
                     preViewGroup.addView(fromView);
 
                     final ViewGroup finalPreViewGroup = preViewGroup;
-                    mHandler.post(new Runnable() {
+                    final ViewGroup finalViewGroup = viewGroup;
+                    preFragment.setOnFragmentDestoryViewListener(new OnFragmentDestoryViewListener() {
                         @Override
-                        public void run() {
+                        public void onDestoryView() {
                             finalPreViewGroup.removeView(fromView);
-                            showHideChildView(finalPreViewGroup, true);
 
-                            showHideChildView(viewGroup, false);
-                            viewGroup.addView(fromView);
+                            showHideChildView(finalViewGroup, false);
+                            finalViewGroup.addView(fromView);
+                            restoreView(finalViewGroup, fromView, BUFFER_TIME);
                         }
                     });
                 } else {
                     showHideChildView(viewGroup, false);
                     viewGroup.addView(fromView);
+                    restoreView(viewGroup, fromView, toFragment == null ? BUFFER_TIME : Math.max(fromFragment.getEnterAnimDuration(), fromFragment.getPopExitAnimDuration()) + BUFFER_TIME);
                 }
-
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        viewGroup.removeView(fromView);
-                        showHideChildView(viewGroup, true);
-                    }
-                }, toFragment == null ? BUFFER_TIME : Math.max(fromFragment.getEnterAnimDuration(), fromFragment.getPopExitAnimDuration()) + BUFFER_TIME);
             }
         } catch (Exception ignored) {
         }
+    }
+
+    private void restoreView(final ViewGroup viewGroup, final View fromView, long delay) {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewGroup.removeView(fromView);
+                showHideChildView(viewGroup, true);
+            }
+        }, delay);
     }
 
     private void showHideChildView(ViewGroup viewGroup, boolean show) {

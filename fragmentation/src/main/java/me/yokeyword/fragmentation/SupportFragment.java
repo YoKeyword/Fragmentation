@@ -20,6 +20,7 @@ import java.util.List;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
 import me.yokeyword.fragmentation.helper.internal.LifecycleHelper;
+import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
@@ -50,7 +51,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mInvisibleWhenLeave;
     private boolean mFixUserVisibleHintWhenRestore;
     private boolean mIsFirstVisible = true;
-    private Bundle mSaveInstanceState;
+    Bundle mSaveInstanceState;
 
     private InputMethodManager mIMM;
     private boolean mNeedHideSoft;  // 隐藏软键盘
@@ -63,6 +64,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private AnimatorHelper mAnimHelper;
 
     protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
+
+    private OnFragmentDestoryViewListener mOnDestoryViewListener;
 
     private TransactionRecord mTransactionRecord;
 
@@ -799,6 +802,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         return mTransactionRecord;
     }
 
+    /**
+     * @see OnFragmentDestoryViewListener
+     */
+    void setOnFragmentDestoryViewListener(OnFragmentDestoryViewListener listener) {
+        this.mOnDestoryViewListener = listener;
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -821,6 +831,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onDestroyView() {
         _mActivity.setFragmentClickable();
         super.onDestroyView();
+        if (mOnDestoryViewListener != null) {
+            mOnDestoryViewListener.onDestoryView();
+            mOnDestoryViewListener = null;
+        }
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
 
