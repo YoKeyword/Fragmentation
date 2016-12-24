@@ -573,38 +573,17 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD, null, null);
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
     }
 
     @Override
     public void startForResult(SupportFragment toFragment, int requestCode) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, null, null);
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT);
     }
 
     @Override
     public void startWithPop(SupportFragment toFragment) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP, null, null);
-    }
-
-    /**
-     * It is recommended to use fg.transaction().addSharedElement().commit() instead
-     *
-     * @param toFragment    TargetFragment
-     * @param sharedElement A View in a disappearing Fragment to match with a View in an
-     *                      appearing Fragment.
-     * @param sharedName    The transitionName for a View in an appearing Fragment to match to the shared
-     */
-    @Override
-    public void startWithSharedElement(SupportFragment toFragment, View sharedElement, String sharedName) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD, sharedElement, sharedName);
-    }
-
-    /**
-     * It is recommended to use fg.transaction().addSharedElement().forResult(requestCode).commit() instead
-     */
-    @Override
-    public void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String sharedName) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT, sharedElement, sharedName);
+        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
     }
 
     @Override

@@ -63,7 +63,7 @@ class Fragmentation {
      */
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to) {
         bindContainerId(containerId, to);
-        dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_ADD, null, null);
+        dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_ADD);
     }
 
     /**
@@ -112,7 +112,7 @@ class Fragmentation {
      * @param launchMode  启动模式
      * @param type        类型
      */
-    void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type, View sharedElement, String sharedName) {
+    void dispatchStartTransaction(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, int requestCode, int launchMode, int type) {
         fragmentManager = checkFragmentManager(fragmentManager, from);
         if (fragmentManager == null) return;
 
@@ -123,39 +123,34 @@ class Fragmentation {
 
         checkNotNull(to, "toFragment == null");
 
-        // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
-        if (sharedElement != null) {
-            FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
-        }
-
         if (from != null) {
             bindContainerId(from.getContainerId(), to);
         }
 
         // process SupportTransaction
         String toFragmentTag = to.getClass().getName();
-        TransactionRecord mRecord = to.getTransactionRecord();
-        if (mRecord != null) {
-            if (mRecord.tag != null) {
-                toFragmentTag = mRecord.tag;
+        TransactionRecord transactionRecord = to.getTransactionRecord();
+        if (transactionRecord != null) {
+            if (transactionRecord.tag != null) {
+                toFragmentTag = transactionRecord.tag;
             }
 
-            if (mRecord.requestCode != null && mRecord.requestCode != 0) {
-                requestCode = mRecord.requestCode;
+            if (transactionRecord.requestCode != null && transactionRecord.requestCode != 0) {
+                requestCode = transactionRecord.requestCode;
                 type = TYPE_ADD_RESULT;
             }
 
-            if (mRecord.launchMode != null) {
-                launchMode = mRecord.launchMode;
+            if (transactionRecord.launchMode != null) {
+                launchMode = transactionRecord.launchMode;
             }
 
-            if (mRecord.withPop != null && mRecord.withPop) {
+            if (transactionRecord.withPop != null && transactionRecord.withPop) {
                 type = TYPE_ADD_WITH_POP;
             }
 
-            if (mRecord.sharedElement != null) {
-                sharedElement = mRecord.sharedElement.sharedElement;
-                sharedName = mRecord.sharedElement.sharedName;
+            // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
+            if (transactionRecord.sharedElementList != null) {
+                FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
             }
         }
 
@@ -168,7 +163,7 @@ class Fragmentation {
         switch (type) {
             case TYPE_ADD:
             case TYPE_ADD_RESULT:
-                start(fragmentManager, from, to, toFragmentTag, sharedElement, sharedName);
+                start(fragmentManager, from, to, toFragmentTag, transactionRecord == null ? null : transactionRecord.sharedElementList);
                 break;
             case TYPE_ADD_WITH_POP:
                 if (from != null) {
@@ -246,16 +241,18 @@ class Fragmentation {
         supportCommit(fragmentManager, ft);
     }
 
-    void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, View sharedElement, String name) {
+    void start(FragmentManager fragmentManager, SupportFragment from, SupportFragment to, String toFragmentTag, ArrayList<TransactionRecord.SharedElement> sharedElementList) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
         Bundle bundle = to.getArguments();
 
-        if (sharedElement == null) {
+        if (sharedElementList == null) {
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         } else {
             bundle.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
-            ft.addSharedElement(sharedElement, name);
+            for (TransactionRecord.SharedElement item : sharedElementList) {
+                ft.addSharedElement(item.sharedElement, item.sharedName);
+            }
         }
         if (from == null) {
             ft.add(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);

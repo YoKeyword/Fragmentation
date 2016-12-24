@@ -2,6 +2,8 @@ package me.yokeyword.fragmentation.helper.internal;
 
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * Hide
  * Created by YoKey on 16/11/25.
@@ -11,7 +13,7 @@ public final class TransactionRecord {
     public Integer requestCode;
     public Integer launchMode;
     public Boolean withPop;
-    public SharedElement sharedElement;
+    public ArrayList<SharedElement> sharedElementList;
 
     public static class SharedElement {
         public View sharedElement;

@@ -3,6 +3,8 @@ package me.yokeyword.fragmentation;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
 /**
@@ -115,7 +117,10 @@ public abstract class SupportTransaction {
 
         @Override
         public SupportTransaction addSharedElement(View sharedElement, String sharedName) {
-            mRecord.sharedElement = new TransactionRecord.SharedElement(sharedElement, sharedName);
+            if (mRecord.sharedElementList == null) {
+                mRecord.sharedElementList = new ArrayList<>();
+            }
+            mRecord.sharedElementList.add(new TransactionRecord.SharedElement(sharedElement, sharedName));
             return this;
         }
 

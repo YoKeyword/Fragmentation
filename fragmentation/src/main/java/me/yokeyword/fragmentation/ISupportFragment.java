@@ -1,28 +1,10 @@
 package me.yokeyword.fragmentation;
 
 
-import android.view.View;
-
 /**
  * Created by YoKeyword on 16/6/2.
  */
 interface ISupportFragment extends ISupport {
-
-    /**
-     * add目标Fragment, 以addSharedElement方式
-     *
-     * @param toFragment    TargetFragment
-     * @param sharedElement A View in a disappearing Fragment to match with a View in an
-     *                      appearing Fragment.
-     * @param sharedName    The transitionName for a View in an appearing Fragment to match to the shared
-     *                      element.
-     */
-    void startWithSharedElement(SupportFragment toFragment, View sharedElement, String sharedName);
-
-    /**
-     * 同上, startForResult版本的addSharedElement
-     */
-    void startForResultWithSharedElement(SupportFragment toFragment, int requestCode, View sharedElement, String sharedName);
 
     /**
      * replace目标Fragment, 主要用于Fragment之间的replace
