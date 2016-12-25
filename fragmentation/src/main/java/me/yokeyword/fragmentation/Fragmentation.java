@@ -39,6 +39,7 @@ class Fragmentation {
     static final String FRAGMENTATION_STATE_SAVE_IS_SUPPORT_VISIBLE = "fragmentation_state_save_support_visible";
     static final String FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE = "fragmentation_state_save_invisible_when_leave";
 
+    private long mShareElementDebounceTime;
     private static final long BUFFER_TIME = 50L;
 
     static final int TYPE_ADD = 0;
@@ -280,7 +281,7 @@ class Fragmentation {
 
         FragmentTransaction removeFt = fragmentManager.beginTransaction().remove(from);
         supportCommit(fragmentManager, removeFt);
-        handleBack(fragmentManager);
+        debouncePop(from, fragmentManager);
 
         FragmentTransaction ft = fragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -480,50 +481,19 @@ class Fragmentation {
         if (fragmentManager == null) return;
 
         int count = fragmentManager.getBackStackEntryCount();
-        if (count > 1) {
-            handleBack(fragmentManager);
+        if (count > 0) {
+            debouncePop(null, fragmentManager);
         }
     }
 
-    /**
-     * handle result
-     */
-    private void handleBack(final FragmentManager fragmentManager) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
-
-        boolean flag = false;
-
-        ResultRecord resultRecord = null;
-        long lastAnimTime = 0;
-
-        for (int i = fragmentList.size() - 1; i >= 0; i--) {
-            Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
-                final SupportFragment supportFragment = (SupportFragment) fragment;
-                if (!flag) {
-                    Bundle args = supportFragment.getArguments();
-                    if (args == null || !args.containsKey(FRAGMENTATION_ARG_RESULT_RECORD)) break;
-                    resultRecord = args.getParcelable(FRAGMENTATION_ARG_RESULT_RECORD);
-                    if (resultRecord == null) break;
-
-                    lastAnimTime = supportFragment.getExitAnimDuration();
-                    flag = true;
-                } else {
-                    final ResultRecord finalResultRecord = resultRecord;
-                    long animTime = supportFragment.getPopEnterAnimDuration();
-
-                    fragmentManager.popBackStackImmediate();
-
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            supportFragment.onFragmentResult(finalResultRecord.requestCode, finalResultRecord.resultCode, finalResultRecord.resultBundle);
-                        }
-                    }, Math.max(animTime, lastAnimTime) + BUFFER_TIME);
-                    return;
-                }
-            }
+    private void debouncePop(SupportFragment from, FragmentManager fragmentManager) {
+        // Debounce
+        if (from == null) {
+            from = getTopFragment(fragmentManager);
         }
+        long now = System.currentTimeMillis();
+        if (now < mShareElementDebounceTime) return;
+        mShareElementDebounceTime = System.currentTimeMillis() + from.getExitAnimDuration();
 
         fragmentManager.popBackStackImmediate();
     }
@@ -631,7 +601,7 @@ class Fragmentation {
             ViewGroup container = (ViewGroup) mActivity.findViewById(fromFragment.getContainerId());
             if (container != null) {
                 container.removeView(fromView);
-                if (fromFragment.mSaveInstanceState != null && toFragment != null) {
+                if (fromFragment.getSaveInstanceState() != null && toFragment != null) {
                     viewGroup = container;
                 }
 

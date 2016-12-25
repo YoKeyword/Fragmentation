@@ -51,7 +51,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mInvisibleWhenLeave;
     private boolean mFixUserVisibleHintWhenRestore;
     private boolean mIsFirstVisible = true;
-    Bundle mSaveInstanceState;
+    private Bundle mSaveInstanceState;
 
     private InputMethodManager mIMM;
     private boolean mNeedHideSoft;  // 隐藏软键盘
@@ -111,6 +111,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mIsSupportVisible = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_SUPPORT_VISIBLE);
             mInvisibleWhenLeave = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
             if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
+                mIsRoot = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
+                mIsSharedElement = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
                 mContainerId = savedInstanceState.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
             }
         }
@@ -190,6 +192,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mIsRoot) {
+            outState.putBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, true);
+        }
+        if (mIsSharedElement) {
+            outState.putBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
+        }
         outState.putInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER, mContainerId);
         outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
@@ -383,6 +391,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
                 _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONLAZYINITVIEW, this);
             }
 
+            _mActivity.setFragmentClickable(true);
             onSupportVisible();
             _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTVISIBLE, this, true);
         } else {
@@ -779,6 +788,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     TransactionRecord getTransactionRecord() {
         return mTransactionRecord;
+    }
+
+    Bundle getSaveInstanceState() {
+        return mSaveInstanceState;
+    }
+
+    boolean isSharedElement() {
+        return mIsSharedElement;
     }
 
     /**

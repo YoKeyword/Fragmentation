@@ -1,5 +1,7 @@
 package me.yokeyword.fragmentation;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -51,8 +53,6 @@ public abstract class SupportTransaction {
     public abstract SupportTransaction withPop(boolean with);
 
     /**
-     * Can replace {@link SupportFragment#startWithSharedElement(SupportFragment, View, String)}
-     * <p>
      * Used with custom Transitions to map a View from a removed or hidden
      * Fragment to a View from a shown or added Fragment.
      * <var>sharedElement</var> must have a unique transitionName in the View hierarchy.
@@ -65,6 +65,7 @@ public abstract class SupportTransaction {
      * @see Fragment#setSharedElementReturnTransition(Object)
      * @see Fragment#setSharedElementEnterTransition(Object)
      */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     public abstract SupportTransaction addSharedElement(View sharedElement, String sharedName);
 
     /**
