@@ -53,6 +53,7 @@ public class FirstHomeAdapter extends RecyclerView.Adapter<FirstHomeAdapter.VH> 
         // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱
         // Fragment支持多个View进行变换, 使用适配器时, 需要加以区分
         ViewCompat.setTransitionName(holder.img, String.valueOf(position) + "_image");
+        ViewCompat.setTransitionName(holder.tvTitle, String.valueOf(position) + "_tv");
 
         holder.img.setImageResource(item.getImgRes());
         holder.tvTitle.setText(item.getTitle());

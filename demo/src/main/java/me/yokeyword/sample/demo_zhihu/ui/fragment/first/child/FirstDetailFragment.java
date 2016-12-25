@@ -2,6 +2,7 @@ package me.yokeyword.sample.demo_zhihu.ui.fragment.first.child;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class FirstDetailFragment extends BaseBackFragment {
     private Toolbar mToolbar;
     private ImageView mImgDetail;
     private TextView mTvTitle;
+    private FloatingActionButton mFab;
 
     public static FirstDetailFragment newInstance(Article article) {
 
@@ -52,14 +54,15 @@ public class FirstDetailFragment extends BaseBackFragment {
     private void initView(View view) {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mImgDetail = (ImageView) view.findViewById(R.id.img_detail);
-        mTvTitle = (TextView) view.findViewById(R.id.tv_title);
+        mTvTitle = (TextView) view.findViewById(R.id.tv_content);
+        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         mToolbar.setTitle("");
         initToolbarNav(mToolbar);
         mImgDetail.setImageResource(mArticle.getImgRes());
         mTvTitle.setText(mArticle.getTitle());
 
-        mImgDetail.setOnClickListener(new View.OnClickListener() {
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start(CycleFragment.newInstance(1));

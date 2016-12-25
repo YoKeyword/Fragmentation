@@ -23,11 +23,11 @@ import java.util.List;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.MainActivity;
 import me.yokeyword.sample.demo_zhihu.adapter.FirstHomeAdapter;
+import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.entity.Article;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_zhihu.helper.DetailTransition;
 import me.yokeyword.sample.demo_zhihu.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/5.
@@ -44,15 +44,15 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
     private int mScrollTotal;
 
     private String[] mTitles = new String[]{
-            "超美艳的18位古装新娘：朱茵、唐嫣、赵丽颖、佟丽娅等",
-            "盘点娱乐圈女星，你肯定想不到还有她",
-            "娱圈中原配与情人相处无事的明星们，原来大傻一点都不傻",
-            "娱乐圈十大演技好、绯闻绝缘体女星，无视潜规则难上位",
-            "他是中国最牛X主持,是龙年春晚主持第七人"
+            "Use imagery to express a distinctive voice and exemplify creative excellence.",
+            "An image that tells a story is infinitely more interesting and informative.",
+            "The most powerful iconic images consist of a few meaningful elements, with minimal distractions.",
+            "Properly contextualized concepts convey your message and brand more effectively.",
+            "Have an iconic point of focus in your imagery. Focus ranges from a single entity to an overarching composition."
     };
 
     private int[] mImgRes = new int[]{
-            R.drawable.img_3, R.drawable.img_4, R.drawable.img_5, R.drawable.img_1, R.drawable.img_2
+            R.drawable.bg_first, R.drawable.bg_second, R.drawable.bg_third, R.drawable.bg_fourth, R.drawable.bg_fifth
     };
 
 
@@ -97,20 +97,19 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
                 FirstDetailFragment fragment = FirstDetailFragment.newInstance(mAdapter.getItem(position));
 
                 // 这里是使用SharedElement的用例
-                // 这里如果5.0以下系统调用startWithSharedElement(),会无动画,所以低于5.0,start(fragment)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // LOLLIPOP(5.0)系统的 SharedElement支持有 系统BUG， 这里判断大于 > LOLLIPOP
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                     setExitTransition(new Fade());
                     fragment.setEnterTransition(new Fade());
-                    setSharedElementReturnTransition(new DetailTransition());
+                    fragment.setSharedElementReturnTransition(new DetailTransition());
                     fragment.setSharedElementEnterTransition(new DetailTransition());
 
-                    // 25.0以下的support包,Material过渡动画只有在进栈时有,返回时没有;
-                    // 25.0+的support包，SharedElement正常
+                    // 25.1.0以下的support包,Material过渡动画只有在进栈时有,返回时没有;
+                    // 25.1.0+的support包，SharedElement正常
                     fragment.transaction()
-                            .addSharedElement(((FirstHomeAdapter.VH) vh).img, getResources().getString(R.string.image_transition))
+                            .addSharedElement(((FirstHomeAdapter.VH) vh).img, getString(R.string.image_transition))
+                            .addSharedElement(((FirstHomeAdapter.VH) vh).tvTitle, "tv")
                             .commit();
-                    // 现在不建议再使用该方法
-//                    startWithSharedElement(fragment, ((FirstHomeAdapter.VH) vh).img, getResources().getString(R.string.image_transition));
                 }
                 start(fragment);
             }
