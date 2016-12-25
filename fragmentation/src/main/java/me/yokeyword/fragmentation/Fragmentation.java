@@ -498,6 +498,19 @@ class Fragmentation {
         fragmentManager.popBackStackImmediate();
     }
 
+    void handleResultRecord(Fragment from) {
+        SupportFragment preFragment = getPreFragment(from);
+        if (preFragment == null) return;
+
+        Bundle args = from.getArguments();
+        if (args == null || !args.containsKey(FRAGMENTATION_ARG_RESULT_RECORD)) return;
+
+        ResultRecord resultRecord = args.getParcelable(FRAGMENTATION_ARG_RESULT_RECORD);
+        if (resultRecord == null) return;
+
+        preFragment.onFragmentResult(resultRecord.requestCode, resultRecord.resultCode, resultRecord.resultBundle);
+    }
+
     /**
      * 出栈到目标fragment
      *

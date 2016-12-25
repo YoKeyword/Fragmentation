@@ -836,6 +836,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void onDestroy() {
+        mFragmentation.handleResultRecord(this);
         super.onDestroy();
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROY, SupportFragment.this);
     }
