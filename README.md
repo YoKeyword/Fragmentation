@@ -23,7 +23,7 @@ A powerful library that manage Fragment for Android!
 
 # 特性
 
-1、**有效解决各种复杂嵌套、同级等Fragment重叠问题**
+1、**快速开发出各种嵌套设计的Fragment App**
 
 2、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
 
@@ -33,25 +33,25 @@ A powerful library that manage Fragment for Android!
 
 5、**New！！！ 提供onSupportVisible()等生命周期方法，简化嵌套Fragment的开发过程； 提供统一的onLazyInitView()懒加载方法**
 
-6、**提供可轻松 设定Fragment转场动画 的解决方案**
+6、**提供靠谱的 Fragment转场动画 的解决方案**
 
-7、**修复官方库里pop(tag/id)出栈多个Fragment时的一些BUG**
+7、**更强的兼容性, 解决多点触控、重叠等问题**
 
 8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
 # 重大更新日志
-### 0.8.X 来了！ [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
+### 0.9.X 来了！ [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
+1、解决多点触控问题
 
-0.8.6更新日志：
-* 彻底解决 多点触控Fragment事务时，可能导致的防抖动失效问题
+2、`onFragmentResult()`现在在任何情况都可以被正确触发了
 
-0.8.4更新日志：
-* Fix点击Back键过快时，同一onBackPressedSupport()重复调用的问题；
-* 为提升**特殊情况**下的稳定性，库中事务commit模式改为`commitAllowingStateLoss()`；
-同时对于正常情况下的使用错误，会以警告形式提示:`Can not perform this action after onSaveInstanceState!`
+3、更强的兼容性，解决已知BUG
 
+4、对于25.1.0+的 v4包，完善了SharedElement！
+
+### 0.8.X 来了!
 1、提供onSupportVisible(),onSupportInvisible()等生命周期方法，简化嵌套Fragment的开发过程；
 
 2、提供统一的onLazyInitView()懒加载方法；
@@ -60,23 +60,15 @@ A powerful library that manage Fragment for Android!
 
 4、可以自定义Tag了！
 
-5、start()方法可以指定commit的方式了：commitAllowingStateLoss(),commitImmediate()
-****
+5、事务提交模式默认为`commitAllowingStateLoss()`.
 
-0.7.X
-
-1、2个新demo: 仿知乎交互 ＋ 仿微信交互的新Demo，展示复杂嵌套Fragment的交互场景
-
-2、支持同级Fragment的处理
-
-3、全新的类似Android事件分发机制的onBackPressedSupport()
 
 # 如何使用
 
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.8.6'
+compile 'me.yokeyword:fragmentation:0.9.0'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
