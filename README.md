@@ -44,7 +44,7 @@ A powerful library that manage Fragment for Android!
 # 重大更新日志
 ### 0.9.X 来了！ [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
-New: **v0.9.1: Fix onLazyInitView()在ViewPager的调用时机**
+New: **v0.9.1: Fix `onLazyInitView()`在ViewPager的调用时机**
 
 1、解决多点触控问题
 
