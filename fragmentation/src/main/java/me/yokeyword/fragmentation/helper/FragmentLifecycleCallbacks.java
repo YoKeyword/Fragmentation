@@ -10,20 +10,6 @@ import me.yokeyword.fragmentation.SupportFragment;
 public class FragmentLifecycleCallbacks {
 
     /**
-     * Called when the Fragment is called onHiddenChanged().
-     */
-    public void onFragmentHiddenChanged(SupportFragment fragment, boolean hidden) {
-
-    }
-
-    /**
-     * Called when the Fragment is called setUserVisibleHint().
-     */
-    public void onFragmentSetUserVisibleHint(SupportFragment fragment, boolean isVisibleToUser) {
-
-    }
-
-    /**
      * Called when the Fragment is called onSaveInstanceState().
      */
     public void onFragmentSaveInstanceState(SupportFragment fragment, Bundle outState) {

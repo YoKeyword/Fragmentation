@@ -13,25 +13,23 @@ import me.yokeyword.fragmentation.helper.FragmentLifecycleCallbacks;
  * Created by YoKey dispatch 16/11/28.
  */
 public class LifecycleHelper {
-    public static final int LIFECYLCE_ONHIDDENCHANGED = 1;
-    public static final int LIFECYLCE_ONSETUSERVISIBLEHINT = 2;
-    public static final int LIFECYLCE_ONSAVEINSTANCESTATE = 3;
-    public static final int LIFECYLCE_ONENTERANIMATIONEND = 4;
-    public static final int LIFECYLCE_ONLAZYINITVIEW = 5;
-    public static final int LIFECYLCE_ONSUPPORTVISIBLE = 6;
-    public static final int LIFECYLCE_ONSUPPORTINVISIBLE = 7;
-    public static final int LIFECYLCE_ONATTACH = 8;
-    public static final int LIFECYLCE_ONCREATE = 9;
-//    public static final int LIFECYLCE_ONCREATEVIEW = 10;
-    public static final int LIFECYLCE_ONVIEWCREATED = 11;
-    public static final int LIFECYLCE_ONACTIVITYCREATED = 12;
-    public static final int LIFECYLCE_ONSTART = 13;
-    public static final int LIFECYLCE_ONRESUME = 14;
-    public static final int LIFECYLCE_ONPAUSE = 15;
-    public static final int LIFECYLCE_ONSTOP = 16;
-    public static final int LIFECYLCE_ONDESTROYVIEW = 17;
-    public static final int LIFECYLCE_ONDESTROY = 18;
-    public static final int LIFECYLCE_ONDETACH = 19;
+    public static final int LIFECYLCE_ONSAVEINSTANCESTATE = 0;
+    public static final int LIFECYLCE_ONENTERANIMATIONEND = 1;
+    public static final int LIFECYLCE_ONLAZYINITVIEW = 2;
+    public static final int LIFECYLCE_ONSUPPORTVISIBLE = 3;
+    public static final int LIFECYLCE_ONSUPPORTINVISIBLE = 4;
+    public static final int LIFECYLCE_ONATTACH = 5;
+    public static final int LIFECYLCE_ONCREATE = 6;
+//    public static final int LIFECYLCE_ONCREATEVIEW = 7;
+    public static final int LIFECYLCE_ONVIEWCREATED = 8;
+    public static final int LIFECYLCE_ONACTIVITYCREATED = 9;
+    public static final int LIFECYLCE_ONSTART = 10;
+    public static final int LIFECYLCE_ONRESUME = 11;
+    public static final int LIFECYLCE_ONPAUSE = 12;
+    public static final int LIFECYLCE_ONSTOP = 13;
+    public static final int LIFECYLCE_ONDESTROYVIEW = 14;
+    public static final int LIFECYLCE_ONDESTROY = 15;
+    public static final int LIFECYLCE_ONDETACH = 16;
 
     private ArrayList<FragmentLifecycleCallbacks> mFragmentLifecycleCallbacks;
 
@@ -41,12 +39,6 @@ public class LifecycleHelper {
 
     public void dispatchLifecycle(int lifecycle, SupportFragment fragment, Bundle bundle, boolean visible) {
         switch (lifecycle) {
-            case LIFECYLCE_ONHIDDENCHANGED:
-                dispatchFragmentHiddenChanged(fragment, visible);
-                break;
-            case LIFECYLCE_ONSETUSERVISIBLEHINT:
-                dispatchFragmentSetUserVisibleHint(fragment, visible);
-                break;
             case LIFECYLCE_ONSAVEINSTANCESTATE:
                 dispatchFragmentSaveInstanceState(fragment, bundle);
                 break;
@@ -98,18 +90,6 @@ public class LifecycleHelper {
             case LIFECYLCE_ONDETACH:
                 dispatchFragmentDetached(fragment);
                 break;
-        }
-    }
-
-    private void dispatchFragmentHiddenChanged(SupportFragment fragment, boolean hidden) {
-        for (int i = 0; i < mFragmentLifecycleCallbacks.size(); i++) {
-            mFragmentLifecycleCallbacks.get(i).onFragmentHiddenChanged(fragment, hidden);
-        }
-    }
-
-    private void dispatchFragmentSetUserVisibleHint(SupportFragment fragment, boolean isVisibleToUser) {
-        for (int i = 0; i < mFragmentLifecycleCallbacks.size(); i++) {
-            mFragmentLifecycleCallbacks.get(i).onFragmentSetUserVisibleHint(fragment, isVisibleToUser);
         }
     }
 

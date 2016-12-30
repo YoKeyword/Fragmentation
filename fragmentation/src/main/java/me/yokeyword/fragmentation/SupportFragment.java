@@ -210,7 +210,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mIsFirstVisible = true;
 
         View view = getView();
         initFragmentBackground(view);
@@ -305,16 +304,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         if (isResumed()) {
             dispatchSupportVisible(!hidden);
         }
-
-        if (_mActivity != null) {
-            _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONHIDDENCHANGED, this, hidden);
-        }
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isResumed()) {
+        if (_mActivity != null) {
             if (!mIsSupportVisible && isVisibleToUser) {
                 dispatchSupportVisible(true);
             } else if (mIsSupportVisible && !isVisibleToUser) {
@@ -324,8 +319,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
                     mFixUserVisibleHintWhenRestore = false;
                 }
             }
-
-            _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSETUSERVISIBLEHINT, this, isVisibleToUser);
         }
     }
 
@@ -832,6 +825,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mOnDestoryViewListener.onDestoryView();
             mOnDestoryViewListener = null;
         }
+        mIsFirstVisible = true;
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
 
