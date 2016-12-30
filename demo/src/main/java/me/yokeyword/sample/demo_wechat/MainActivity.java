@@ -39,12 +39,6 @@ public class MainActivity extends SupportActivity {
             public void onFragmentCreated(SupportFragment fragment, Bundle savedInstanceState) {
                 super.onFragmentCreated(fragment, savedInstanceState);
             }
-
-            @Override
-            public void onFragmentHiddenChanged(SupportFragment fragment, boolean hidden) {
-                super.onFragmentHiddenChanged(fragment, hidden);
-            }
-
             // 省略其余生命周期方法
         });
     }
