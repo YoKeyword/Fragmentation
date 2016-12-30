@@ -210,6 +210,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mIsFirstVisible = true;
 
         View view = getView();
         initFragmentBackground(view);
