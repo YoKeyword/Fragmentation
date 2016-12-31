@@ -36,6 +36,8 @@ The first demo shows the basic use case of this library, the second demo shows t
 # ChangeLog
 ### 0.9.X is available！！[Detail](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
+New: **v0.9.2: Fix `initLazyView()` callback timing in the ViewPager scene.**
+
 1、Solve the multi-touch problems.
 
 2、Fix the bug that `onFragmentResult()` does not work when calling popTo().
@@ -63,7 +65,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 **1. Add dependency in build.gradle file of your app module：**
 ````gradle
 // appcompat v7 library is needed
-compile 'me.yokeyword:fragmentation:0.9.1'
+compile 'me.yokeyword:fragmentation:0.9.2'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
