@@ -49,7 +49,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mIsSupportVisible;
     private boolean mNeedDispatch = true;
     private boolean mInvisibleWhenLeave;
-    private boolean mFixUserVisibleHintWhenRestore;
     private boolean mIsFirstVisible = true;
     private Bundle mSaveInstanceState;
 
@@ -108,7 +107,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mSaveInstanceState = savedInstanceState;
             mFragmentAnimator = savedInstanceState.getParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
-            mIsSupportVisible = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_SUPPORT_VISIBLE);
             mInvisibleWhenLeave = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
             if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
                 mIsRoot = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
@@ -201,7 +199,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         outState.putInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER, mContainerId);
         outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
-        outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_SUPPORT_VISIBLE, mIsSupportVisible);
         outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE, mInvisibleWhenLeave);
 
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSAVEINSTANCESTATE, this, outState);
@@ -218,10 +215,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             view.setClickable(true);
         }
 
-        if (savedInstanceState != null) {
-            notifyNoAnim();
-            mFixUserVisibleHintWhenRestore = true;
-        } else if (mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
+        if (savedInstanceState != null || mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
             notifyNoAnim();
         }
 
@@ -309,16 +303,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (_mActivity != null) {
+        if (isResumed()) {
             if (!mIsSupportVisible && isVisibleToUser) {
                 dispatchSupportVisible(true);
             } else if (mIsSupportVisible && !isVisibleToUser) {
-                if (!mFixUserVisibleHintWhenRestore) {
-                    dispatchSupportVisible(false);
-                } else {
-                    mFixUserVisibleHintWhenRestore = false;
-                }
+                dispatchSupportVisible(false);
             }
+        } else if (isVisibleToUser) {
+            mInvisibleWhenLeave = false;
         }
     }
 
