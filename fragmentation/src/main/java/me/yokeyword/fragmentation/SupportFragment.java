@@ -50,6 +50,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mNeedDispatch = true;
     private boolean mInvisibleWhenLeave;
     private boolean mIsFirstVisible = true;
+    private boolean mFixStatePagerAdapter;
     private Bundle mSaveInstanceState;
 
     private InputMethodManager mIMM;
@@ -107,7 +108,9 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mSaveInstanceState = savedInstanceState;
             mFragmentAnimator = savedInstanceState.getParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
-            mInvisibleWhenLeave = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
+            if (!mFixStatePagerAdapter) { // setUserVisibleHint() may be called before onCreate()
+                mInvisibleWhenLeave = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
+            }
             if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
                 mIsRoot = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
                 mIsSharedElement = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
@@ -219,7 +222,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             notifyNoAnim();
         }
 
-        if (!mInvisibleWhenLeave && !isHidden() && getUserVisibleHint()) {
+        if (!mInvisibleWhenLeave && !isHidden() && (getUserVisibleHint() || mFixStatePagerAdapter)) {
             if ((getParentFragment() != null && !getParentFragment().isHidden()) || getParentFragment() == null) {
                 mNeedDispatch = false;
                 dispatchSupportVisible(true);
@@ -311,6 +314,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             }
         } else if (isVisibleToUser) {
             mInvisibleWhenLeave = false;
+            mFixStatePagerAdapter = true;
         }
     }
 
@@ -818,6 +822,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mOnDestoryViewListener = null;
         }
         mIsFirstVisible = true;
+        mFixStatePagerAdapter = false;
         _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, SupportFragment.this);
     }
 
