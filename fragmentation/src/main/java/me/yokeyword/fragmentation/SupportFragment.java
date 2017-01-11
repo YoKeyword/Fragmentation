@@ -378,15 +378,21 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             if (mIsFirstVisible) {
                 mIsFirstVisible = false;
                 onLazyInitView(mSaveInstanceState);
-                _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONLAZYINITVIEW, this);
+                if (_mActivity != null) {
+                    _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONLAZYINITVIEW, this);
+                }
             }
 
-            _mActivity.setFragmentClickable(true);
             onSupportVisible();
-            _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTVISIBLE, this, true);
+            if (_mActivity != null) {
+                _mActivity.setFragmentClickable(true);
+                _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTVISIBLE, this, true);
+            }
         } else {
             onSupportInvisible();
-            _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTINVISIBLE, this, false);
+            if (_mActivity != null) {
+                _mActivity.dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTINVISIBLE, this, false);
+            }
         }
     }
 
