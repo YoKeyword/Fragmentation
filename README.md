@@ -71,7 +71,7 @@ New: **v0.9.3:(0.9.1-0.9.3) Fix `onLazyInitView()`完全兼容ViewPager**
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.9.3'
+compile 'me.yokeyword:fragmentation:0.9.4'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
