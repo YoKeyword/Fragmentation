@@ -230,7 +230,7 @@ class Fragmentation {
             List<Fragment> fragmentList = fragmentManager.getFragments();
             if (fragmentList != null) {
                 for (Fragment fragment : fragmentList) {
-                    if (fragment != showFragment) {
+                    if (fragment != null && fragment != showFragment) {
                         ft.hide(fragment);
                     }
                 }
@@ -318,7 +318,7 @@ class Fragmentation {
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
+            if (fragment!=null && fragment instanceof SupportFragment) {
                 return (SupportFragment) fragment;
             }
         }
@@ -341,7 +341,7 @@ class Fragmentation {
         int index = fragmentList.indexOf(fragment);
         for (int i = index - 1; i >= 0; i--) {
             Fragment preFragment = fragmentList.get(i);
-            if (preFragment instanceof SupportFragment) {
+            if (preFragment!=null && preFragment instanceof SupportFragment) {
                 return (SupportFragment) preFragment;
             }
         }
@@ -368,7 +368,7 @@ class Fragmentation {
 
             for (int i = sizeChildFrgList - 1; i >= 0; i--) {
                 Fragment brotherFragment = fragmentList.get(i);
-                if (brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
+                if (brotherFragment!=null && brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = brotherFragment;
                     break;
                 }
@@ -393,7 +393,7 @@ class Fragmentation {
         }
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
+            if (fragment !=null && fragment instanceof SupportFragment) {
                 SupportFragment supportFragment = (SupportFragment) fragment;
                 if (supportFragment.isResumed() && !supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
                     return getActiveFragment(supportFragment, supportFragment.getChildFragmentManager());
