@@ -318,7 +318,7 @@ class Fragmentation {
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment!=null && fragment instanceof SupportFragment) {
+            if (fragment instanceof SupportFragment) {
                 return (SupportFragment) fragment;
             }
         }
@@ -341,7 +341,7 @@ class Fragmentation {
         int index = fragmentList.indexOf(fragment);
         for (int i = index - 1; i >= 0; i--) {
             Fragment preFragment = fragmentList.get(i);
-            if (preFragment!=null && preFragment instanceof SupportFragment) {
+            if (preFragment instanceof SupportFragment) {
                 return (SupportFragment) preFragment;
             }
         }
@@ -368,7 +368,7 @@ class Fragmentation {
 
             for (int i = sizeChildFrgList - 1; i >= 0; i--) {
                 Fragment brotherFragment = fragmentList.get(i);
-                if (brotherFragment!=null && brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
+                if (brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = brotherFragment;
                     break;
                 }
@@ -393,7 +393,7 @@ class Fragmentation {
         }
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment !=null && fragment instanceof SupportFragment) {
+            if (fragment instanceof SupportFragment) {
                 SupportFragment supportFragment = (SupportFragment) fragment;
                 if (supportFragment.isResumed() && !supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
                     return getActiveFragment(supportFragment, supportFragment.getChildFragmentManager());
@@ -600,7 +600,7 @@ class Fragmentation {
             preFragment = getPreFragment(fromFragment);
             if (preFragment != null && preFragment != targetFragment) {
                 View preView = preFragment.getView();
-                if (preView != null && preView instanceof ViewGroup) {
+                if (preView instanceof ViewGroup) {
                     preViewGroup = (ViewGroup) preView;
                 }
             }

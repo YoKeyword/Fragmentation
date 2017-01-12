@@ -366,7 +366,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
                 List<Fragment> childFragments = fragmentManager.getFragments();
                 if (childFragments != null) {
                     for (Fragment child : childFragments) {
-                        if (child!=null && child instanceof SupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
+                        if (child instanceof SupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
                             ((SupportFragment) child).dispatchSupportVisible(visible);
                         }
                     }
