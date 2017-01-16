@@ -41,21 +41,21 @@ interface ISupportFragment extends ISupport {
     /**
      * 子栈内 出栈到目标Fragment
      *
-     * @param fragmentClass 目标Fragment的Class
-     * @param includeSelf   是否包含目标Fragment
+     * @param targetFragment          目标Fragment的Class
+     * @param includeTargetFragment   是否包含目标Fragment
      */
-    void popToChild(Class<?> fragmentClass, boolean includeSelf);
+    void popToChild(Class<?> targetFragment, boolean includeTargetFragment);
 
-    void popToChild(String fragmentTag, boolean includeSelf);
+    void popToChild(String targetFragmentTag, boolean includeTargetFragment);
 
     /**
      * 子栈内 出栈到目标Fragment,并在出栈后立即进行Fragment事务(可以防止出栈后,直接进行Fragment事务的异常)
      *
-     * @param fragmentClass               目标Fragment的Class
-     * @param includeSelf                 是否包含目标Fragment
-     * @param afterPopTransactionRunnable 出栈后紧接着的Fragment事务
+     * @param targetFragment               目标Fragment的Class
+     * @param includeTargetFragment        是否包含目标Fragment
+     * @param afterPopTransactionRunnable  出栈后紧接着的Fragment事务
      */
-    void popToChild(Class<?> fragmentClass, boolean includeSelf, Runnable afterPopTransactionRunnable);
+    void popToChild(Class<?> targetFragment, boolean includeTargetFragment, Runnable afterPopTransactionRunnable);
 
-    void popToChild(String fragmentTag, boolean includeSelf, Runnable afterPopTransactionRunnable);
+    void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable);
 }
