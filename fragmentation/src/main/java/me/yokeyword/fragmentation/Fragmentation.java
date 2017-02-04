@@ -101,6 +101,8 @@ class Fragmentation {
         }
 
         supportCommit(fragmentManager, ft);
+        // for compatibility with 25.1.1
+        fragmentManager.executePendingTransactions();
     }
 
     /**
