@@ -44,7 +44,6 @@ public class ShopFragment extends BaseFragment {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         mToolbar.setTitle("商店");
-        initToolbarMenu(mToolbar);
 
         if (savedInstanceState == null) {
             ArrayList<String> listMenus = new ArrayList<>();

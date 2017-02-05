@@ -29,10 +29,6 @@ public class BaseMainFragment extends BaseFragment {
                 }
             }
         });
-
-        if(!isHome) {
-            initToolbarMenu(toolbar);
-        }
     }
 
 

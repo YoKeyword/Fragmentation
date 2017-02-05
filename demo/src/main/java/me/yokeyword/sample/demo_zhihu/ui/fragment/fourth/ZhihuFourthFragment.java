@@ -48,7 +48,6 @@ public class ZhihuFourthFragment extends BaseMainFragment {
 
         mToolbar = (Toolbar) mView.findViewById(R.id.toolbar);
         mToolbar.setTitle("我的");
-        initToolbarMenu(mToolbar);
     }
 
     private void loadFragment() {

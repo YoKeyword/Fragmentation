@@ -18,7 +18,5 @@ public class BaseBackFragment extends BaseFragment {
                 _mActivity.onBackPressed();
             }
         });
-
-        initToolbarMenu(toolbar);
     }
 }

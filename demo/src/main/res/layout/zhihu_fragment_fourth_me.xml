@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackground"
             android:drawableLeft="@drawable/ic_settings_grey_500_24dp"
             android:paddingLeft="16dp"
-            android:drawableRight="@drawable/ic_right"
+            android:drawableRight="@drawable/fragmentation_ic_right"
             android:paddingRight="16dp"/>
     </LinearLayout>
 </FrameLayout>

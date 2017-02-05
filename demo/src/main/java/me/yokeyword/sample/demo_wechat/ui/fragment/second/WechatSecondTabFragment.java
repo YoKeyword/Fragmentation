@@ -44,7 +44,6 @@ public class WechatSecondTabFragment extends BaseMainFragment {
         mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
         mToolbar.setTitle("联系人");
-        initToolbarMenu(mToolbar);
 
         mTab.addTab(mTab.newTab().setText("全部"));
         mTab.addTab(mTab.newTab().setText("陌生人"));

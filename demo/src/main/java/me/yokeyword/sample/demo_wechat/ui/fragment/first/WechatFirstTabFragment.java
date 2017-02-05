@@ -65,7 +65,6 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
         EventBus.getDefault().register(this);
 
         mToolbar.setTitle("首页");
-        initToolbarMenu(mToolbar);
     }
 
     @Override

@@ -68,7 +68,6 @@ public class WechatThirdTabFragment extends BaseMainFragment {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         mToolbar.setTitle("发现");
-        initToolbarMenu(mToolbar);
     }
 
 

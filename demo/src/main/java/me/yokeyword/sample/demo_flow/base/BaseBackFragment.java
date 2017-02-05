@@ -18,7 +18,5 @@ public class BaseBackFragment extends BaseFragment {
                 pop();
             }
         });
-
-        initToolbarMenu(toolbar);
     }
 }

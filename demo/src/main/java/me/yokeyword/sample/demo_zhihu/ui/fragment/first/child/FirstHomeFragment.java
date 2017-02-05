@@ -81,7 +81,6 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         mToolbar.setTitle("首页");
-        initToolbarMenu(mToolbar);
 
         mRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         mRefreshLayout.setOnRefreshListener(this);
