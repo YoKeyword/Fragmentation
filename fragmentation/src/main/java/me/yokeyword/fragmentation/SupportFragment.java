@@ -57,7 +57,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mNeedHideSoft;  // 隐藏软键盘
 
     protected SupportActivity _mActivity;
-    protected Fragmentation mFragmentation;
+    protected FragmentationDelegate mFragmentationDelegate;
     private int mContainerId;   // 该Fragment所处的Container的id
 
     private FragmentAnimator mFragmentAnimator;
@@ -80,7 +80,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         if (activity instanceof SupportActivity) {
             this._mActivity = (SupportActivity) activity;
-            mFragmentation = _mActivity.getFragmentation();
+            mFragmentationDelegate = _mActivity.getFragmentationDelegate();
         } else {
             throw new RuntimeException(activity.toString() + "must extends SupportActivity!");
         }
@@ -94,9 +94,9 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mIsRoot = bundle.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
-            mIsSharedElement = bundle.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
-            mContainerId = bundle.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
+            mIsRoot = bundle.getBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_ROOT, false);
+            mIsSharedElement = bundle.getBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
+            mContainerId = bundle.getInt(FragmentationDelegate.FRAGMENTATION_ARG_CONTAINER);
         }
 
         if (savedInstanceState == null) {
@@ -106,15 +106,15 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             }
         } else {
             mSaveInstanceState = savedInstanceState;
-            mFragmentAnimator = savedInstanceState.getParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR);
-            mIsHidden = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
+            mFragmentAnimator = savedInstanceState.getParcelable(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR);
+            mIsHidden = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
             if (!mFixStatePagerAdapter) { // setUserVisibleHint() may be called before onCreate()
-                mInvisibleWhenLeave = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
+                mInvisibleWhenLeave = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
             }
             if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
-                mIsRoot = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, false);
-                mIsSharedElement = savedInstanceState.getBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
-                mContainerId = savedInstanceState.getInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER);
+                mIsRoot = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_ROOT, false);
+                mIsSharedElement = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
+                mContainerId = savedInstanceState.getInt(FragmentationDelegate.FRAGMENTATION_ARG_CONTAINER);
             }
         }
 
@@ -194,15 +194,15 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mIsRoot) {
-            outState.putBoolean(Fragmentation.FRAGMENTATION_ARG_IS_ROOT, true);
+            outState.putBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_ROOT, true);
         }
         if (mIsSharedElement) {
-            outState.putBoolean(Fragmentation.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
+            outState.putBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
         }
-        outState.putInt(Fragmentation.FRAGMENTATION_ARG_CONTAINER, mContainerId);
-        outState.putParcelable(Fragmentation.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
-        outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
-        outState.putBoolean(Fragmentation.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE, mInvisibleWhenLeave);
+        outState.putInt(FragmentationDelegate.FRAGMENTATION_ARG_CONTAINER, mContainerId);
+        outState.putParcelable(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
+        outState.putBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
+        outState.putBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE, mInvisibleWhenLeave);
 
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSAVEINSTANCESTATE, outState, false);
     }
@@ -516,7 +516,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        mFragmentation.loadRootTransaction(getChildFragmentManager(), containerId, toFragment);
+        mFragmentationDelegate.loadRootTransaction(getChildFragmentManager(), containerId, toFragment);
     }
 
     /**
@@ -524,7 +524,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
-        mFragmentation.replaceLoadRootTransaction(getChildFragmentManager(), containerId, toFragment, addToBack);
+        mFragmentationDelegate.replaceLoadRootTransaction(getChildFragmentManager(), containerId, toFragment, addToBack);
     }
 
     /**
@@ -535,7 +535,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
-        mFragmentation.loadMultipleRootTransaction(getChildFragmentManager(), containerId, showPosition, toFragments);
+        mFragmentationDelegate.loadMultipleRootTransaction(getChildFragmentManager(), containerId, showPosition, toFragments);
     }
 
     /**
@@ -559,7 +559,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
-        mFragmentation.showHideFragment(getChildFragmentManager(), showFragment, hideFragment);
+        mFragmentationDelegate.showHideFragment(getChildFragmentManager(), showFragment, hideFragment);
     }
 
     /**
@@ -574,22 +574,22 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void start(final SupportFragment toFragment, @LaunchMode final int launchMode) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+        mFragmentationDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, FragmentationDelegate.TYPE_ADD);
     }
 
     @Override
     public void startForResult(SupportFragment toFragment, int requestCode) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, Fragmentation.TYPE_ADD_RESULT);
+        mFragmentationDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, FragmentationDelegate.TYPE_ADD_RESULT);
     }
 
     @Override
     public void startWithPop(SupportFragment toFragment) {
-        mFragmentation.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
+        mFragmentationDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, FragmentationDelegate.TYPE_ADD_WITH_POP);
     }
 
     @Override
     public void replaceFragment(SupportFragment toFragment, boolean addToBack) {
-        mFragmentation.replaceTransaction(this, toFragment, addToBack);
+        mFragmentationDelegate.replaceTransaction(this, toFragment, addToBack);
     }
 
     /**
@@ -597,7 +597,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public SupportFragment getTopFragment() {
-        return mFragmentation.getTopFragment(getFragmentManager());
+        return mFragmentationDelegate.getTopFragment(getFragmentManager());
     }
 
     /**
@@ -605,7 +605,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public SupportFragment getTopChildFragment() {
-        return mFragmentation.getTopFragment(getChildFragmentManager());
+        return mFragmentationDelegate.getTopFragment(getChildFragmentManager());
     }
 
     /**
@@ -613,7 +613,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public SupportFragment getPreFragment() {
-        return mFragmentation.getPreFragment(this);
+        return mFragmentationDelegate.getPreFragment(this);
     }
 
     /**
@@ -621,13 +621,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, null, getFragmentManager());
+        return mFragmentationDelegate.findStackFragment(fragmentClass, null, getFragmentManager());
     }
 
     @Override
     public <T extends SupportFragment> T findFragment(String fragmentTag) {
-        Fragmentation.checkNotNull(fragmentTag, "tag == null");
-        return mFragmentation.findStackFragment(null, fragmentTag, getFragmentManager());
+        FragmentationDelegate.checkNotNull(fragmentTag, "tag == null");
+        return mFragmentationDelegate.findStackFragment(null, fragmentTag, getFragmentManager());
     }
 
     /**
@@ -635,13 +635,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public <T extends SupportFragment> T findChildFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, null, getChildFragmentManager());
+        return mFragmentationDelegate.findStackFragment(fragmentClass, null, getChildFragmentManager());
     }
 
     @Override
     public <T extends SupportFragment> T findChildFragment(String fragmentTag) {
-        Fragmentation.checkNotNull(fragmentTag, "tag == null");
-        return mFragmentation.findStackFragment(null, fragmentTag, getChildFragmentManager());
+        FragmentationDelegate.checkNotNull(fragmentTag, "tag == null");
+        return mFragmentationDelegate.findStackFragment(null, fragmentTag, getChildFragmentManager());
     }
 
     /**
@@ -649,7 +649,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void pop() {
-        mFragmentation.back(getFragmentManager());
+        mFragmentationDelegate.back(getFragmentManager());
     }
 
     /**
@@ -657,7 +657,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void popChild() {
-        mFragmentation.back(getChildFragmentManager());
+        mFragmentationDelegate.back(getChildFragmentManager());
     }
 
     /**
@@ -686,7 +686,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getFragmentManager());
+        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getFragmentManager());
     }
 
     /**
@@ -709,12 +709,12 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager());
+        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager());
     }
 
     void popForSwipeBack() {
         mLocking = true;
-        mFragmentation.back(getFragmentManager());
+        mFragmentationDelegate.back(getFragmentManager());
         mLocking = false;
     }
 
@@ -726,11 +726,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     public void setFragmentResult(int resultCode, Bundle bundle) {
         Bundle args = getArguments();
-        if (args == null || !args.containsKey(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD)) {
+        if (args == null || !args.containsKey(FragmentationDelegate.FRAGMENTATION_ARG_RESULT_RECORD)) {
             return;
         }
 
-        ResultRecord resultRecord = args.getParcelable(Fragmentation.FRAGMENTATION_ARG_RESULT_RECORD);
+        ResultRecord resultRecord = args.getParcelable(FragmentationDelegate.FRAGMENTATION_ARG_RESULT_RECORD);
         if (resultRecord != null) {
             resultRecord.resultCode = resultCode;
             resultRecord.resultBundle = bundle;
@@ -786,10 +786,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         return mSaveInstanceState;
     }
 
-    boolean isSharedElement() {
-        return mIsSharedElement;
-    }
-
     /**
      * @see OnFragmentDestoryViewListener
      */
@@ -817,7 +813,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void onDestroyView() {
-        _mActivity.setFragmentClickable();
+        _mActivity.setFragmentClickable(true);
         super.onDestroyView();
         if (mOnDestoryViewListener != null) {
             mOnDestoryViewListener.onDestoryView();
@@ -830,7 +826,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void onDestroy() {
-        mFragmentation.handleResultRecord(this);
+        mFragmentationDelegate.handleResultRecord(this);
         super.onDestroy();
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROY, null, false);
     }

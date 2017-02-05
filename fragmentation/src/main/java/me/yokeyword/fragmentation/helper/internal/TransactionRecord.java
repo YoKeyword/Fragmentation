@@ -5,7 +5,7 @@ import android.view.View;
 import java.util.ArrayList;
 
 /**
- * Hide
+ * @Hide
  * Created by YoKey on 16/11/25.
  */
 public final class TransactionRecord {

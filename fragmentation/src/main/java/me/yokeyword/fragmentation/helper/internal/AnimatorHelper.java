@@ -8,7 +8,7 @@ import me.yokeyword.fragmentation.R;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 
 /**
- * Hide
+ * @Hide
  * Created by YoKeyword on 16/7/26.
  */
 public final class AnimatorHelper {

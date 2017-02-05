@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Hide
+ * @Hide
  * Result 记录
  * Created by YoKeyword on 16/6/2.
  */

@@ -9,7 +9,7 @@ import me.yokeyword.fragmentation.helper.FragmentLifecycleCallbacks;
 
 
 /**
- * Hiden
+ * @Hiden
  * Created by YoKey dispatch 16/11/28.
  */
 public class LifecycleHelper {

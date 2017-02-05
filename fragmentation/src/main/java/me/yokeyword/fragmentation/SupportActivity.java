@@ -1,25 +1,37 @@
 package me.yokeyword.fragmentation;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
+import me.yokeyword.fragmentation.debug.StackViewTouchListener;
 import me.yokeyword.fragmentation.helper.FragmentLifecycleCallbacks;
 import me.yokeyword.fragmentation.helper.internal.LifecycleHelper;
 
 /**
  * Created by YoKeyword on 16/1/22.
  */
-public class SupportActivity extends AppCompatActivity implements ISupport {
-    private Fragmentation mFragmentation;
+public class SupportActivity extends AppCompatActivity implements ISupport, SensorEventListener {
+    private FragmentationDelegate mFragmentationDelegate;
 
     private LifecycleHelper mLifecycleHelper;
     private ArrayList<FragmentLifecycleCallbacks> mFragmentLifecycleCallbacks;
@@ -35,12 +47,15 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     private Handler mHandler;
 
+    private SensorManager mSensorManager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFragmentation = getFragmentation();
+        mFragmentationDelegate = getFragmentationDelegate();
         mFragmentAnimator = onCreateFragmentAnimator();
+        initSensorManager();
     }
 
     public void registerFragmentLifecycleCallbacks(FragmentLifecycleCallbacks callback) {
@@ -61,11 +76,11 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         }
     }
 
-    Fragmentation getFragmentation() {
-        if (mFragmentation == null) {
-            mFragmentation = new Fragmentation(this);
+    FragmentationDelegate getFragmentationDelegate() {
+        if (mFragmentationDelegate == null) {
+            mFragmentationDelegate = new FragmentationDelegate(this);
         }
-        return mFragmentation;
+        return mFragmentationDelegate;
     }
 
     Handler getHandler() {
@@ -75,8 +90,26 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return mHandler;
     }
 
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        super.setContentView(layoutResID);
+        setStackFloatingView();
+    }
+
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+        setStackFloatingView();
+    }
+
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        super.setContentView(view, params);
+        setStackFloatingView();
+    }
+
     /**
-     * 获取设置的全局动画, copy
+     * 获取设置的全局动画 copy
      *
      * @return FragmentAnimator
      */
@@ -88,7 +121,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
     }
 
     /**
-     * 设置全局动画, 建议使用onCreateFragmentAnimator()设置
+     * 设置全局动画, 一般情况建议复写onCreateFragmentAnimator()设置
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
@@ -135,8 +168,8 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         }
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
-        SupportFragment activeFragment = mFragmentation.getActiveFragment(null, getSupportFragmentManager());
-        if (mFragmentation.dispatchBackPressedEvent(activeFragment)) return;
+        SupportFragment activeFragment = mFragmentationDelegate.getActiveFragment(null, getSupportFragmentManager());
+        if (mFragmentationDelegate.dispatchBackPressedEvent(activeFragment)) return;
 
         onBackPressedSupport();
     }
@@ -161,7 +194,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        mFragmentation.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
+        mFragmentationDelegate.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment);
     }
 
     /**
@@ -169,7 +202,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void replaceLoadRootFragment(int containerId, SupportFragment toFragment, boolean addToBack) {
-        mFragmentation.replaceLoadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBack);
+        mFragmentationDelegate.replaceLoadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBack);
     }
 
     /**
@@ -180,7 +213,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
-        mFragmentation.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
+        mFragmentationDelegate.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
     }
 
     /**
@@ -204,7 +237,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
-        mFragmentation.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
+        mFragmentationDelegate.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
     }
 
     /**
@@ -219,17 +252,17 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     @Override
     public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
-        mFragmentation.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, launchMode, Fragmentation.TYPE_ADD);
+        mFragmentationDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, launchMode, FragmentationDelegate.TYPE_ADD);
     }
 
     @Override
     public void startForResult(SupportFragment toFragment, int requestCode) {
-        mFragmentation.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, requestCode, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_RESULT);
+        mFragmentationDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, requestCode, SupportFragment.STANDARD, FragmentationDelegate.TYPE_ADD_RESULT);
     }
 
     @Override
     public void startWithPop(SupportFragment toFragment) {
-        mFragmentation.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, Fragmentation.TYPE_ADD_WITH_POP);
+        mFragmentationDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, FragmentationDelegate.TYPE_ADD_WITH_POP);
     }
 
     /**
@@ -237,7 +270,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public SupportFragment getTopFragment() {
-        return mFragmentation.getTopFragment(getSupportFragmentManager());
+        return mFragmentationDelegate.getTopFragment(getSupportFragmentManager());
     }
 
     /**
@@ -245,13 +278,13 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public <T extends SupportFragment> T findFragment(Class<T> fragmentClass) {
-        return mFragmentation.findStackFragment(fragmentClass, null, getSupportFragmentManager());
+        return mFragmentationDelegate.findStackFragment(fragmentClass, null, getSupportFragmentManager());
     }
 
     @Override
     public <T extends SupportFragment> T findFragment(String fragmentTag) {
-        Fragmentation.checkNotNull(fragmentTag, "tag == null");
-        return mFragmentation.findStackFragment(null, fragmentTag, getSupportFragmentManager());
+        FragmentationDelegate.checkNotNull(fragmentTag, "tag == null");
+        return mFragmentationDelegate.findStackFragment(null, fragmentTag, getSupportFragmentManager());
     }
 
     /**
@@ -259,14 +292,14 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
      */
     @Override
     public void pop() {
-        mFragmentation.back(getSupportFragmentManager());
+        mFragmentationDelegate.back(getSupportFragmentManager());
     }
 
     /**
      * 出栈到目标fragment
      *
-     * @param targetFragmentClass 目标fragment
-     * @param includeTargetFragment   是否包含该fragment
+     * @param targetFragmentClass   目标fragment
+     * @param includeTargetFragment 是否包含该fragment
      */
     @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
@@ -288,13 +321,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
 
     @Override
     public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mFragmentation.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getSupportFragmentManager());
-    }
-
-    /**
-     * 当抛该异常："Can not perform this action after onSaveInstanceState!"时（不会crash，仅警告），会回调该方法
-     */
-    public void onExceptionAfterOnSaveInstanceState(Exception e) {
+        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getSupportFragmentManager());
     }
 
     void preparePopMultiple() {
@@ -305,12 +332,14 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         mPopMultipleNoAnim = false;
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mFragmentLifecycleCallbacks != null) {
             mFragmentLifecycleCallbacks.clear();
+        }
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(this);
         }
     }
 
@@ -344,26 +373,70 @@ public class SupportActivity extends AppCompatActivity implements ISupport {
         return mDefaultFragmentBackground;
     }
 
-    public void setFragmentClickable() {
-        mFragmentClickable = true;
+    void dispatchFragmentLifecycle(int lifecycle, SupportFragment fragment, Bundle bundle, boolean visible) {
+        if (mLifecycleHelper == null) return;
+        mLifecycleHelper.dispatchLifecycle(lifecycle, fragment, bundle, visible);
     }
 
     /**
      * 显示栈视图dialog,调试时使用
      */
     public void showFragmentStackHierarchyView() {
-        mFragmentation.showFragmentStackHierarchyView();
+        mFragmentationDelegate.showFragmentStackHierarchyView();
     }
 
     /**
      * 显示栈视图日志,调试时使用
      */
     public void logFragmentStackHierarchy(String TAG) {
-        mFragmentation.logFragmentRecords(TAG);
+        mFragmentationDelegate.logFragmentRecords(TAG);
     }
 
-    void dispatchFragmentLifecycle(int lifecycle, SupportFragment fragment, Bundle bundle, boolean visible) {
-        if (mLifecycleHelper == null) return;
-        mLifecycleHelper.dispatchLifecycle(lifecycle, fragment, bundle, visible);
+    private void setStackFloatingView() {
+        if (Fragmentation.getDefault().getMode() != Fragmentation.BUBBLE) return;
+        View root = findViewById(android.R.id.content);
+        if (root instanceof FrameLayout) {
+            FrameLayout content = (FrameLayout) root;
+            final ImageView stackView = new ImageView(this);
+            stackView.setImageResource(R.drawable.fragmentation_ic_stack);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.END;
+            final int dp18 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 18, getResources().getDisplayMetrics());
+            params.topMargin = dp18 * 5;
+            params.rightMargin = dp18;
+            stackView.setLayoutParams(params);
+            content.addView(stackView);
+            stackView.setOnTouchListener(new StackViewTouchListener(stackView, dp18 / 4));
+            stackView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showFragmentStackHierarchyView();
+                }
+            });
+        }
+    }
+
+    private void initSensorManager() {
+        if (Fragmentation.getDefault().getMode() != Fragmentation.SHAKE) return;
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorManager.registerListener(this,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int sensorType = event.sensor.getType();
+        float[] values = event.values;
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            int value = 14;
+            if ((Math.abs(values[0]) > value || Math.abs(values[1]) > value || Math.abs(values[2]) > value)) {
+                showFragmentStackHierarchyView();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 }
