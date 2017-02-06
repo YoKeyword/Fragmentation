@@ -10,14 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="260dp"
         android:background="@android:color/white"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:elevation="0dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:contentScrim="?attr/colorPrimary">
 
             <ImageView
                 android:id="@+id/img_detail"
@@ -25,14 +25,12 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:src="@drawable/bg_second"
-                android:transitionName="@string/image_transition"
-                app:layout_collapseMode="parallax"/>
+                android:transitionName="@string/image_transition"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
