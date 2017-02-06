@@ -83,8 +83,7 @@ class FragmentationDelegate {
     void loadMultipleRootTransaction(FragmentManager fragmentManager, int containerId, int showPosition, SupportFragment... tos) {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
-        FragmentTransaction ft = fragmentManager.beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        FragmentTransaction ft = fragmentManager.beginTransaction();
         for (int i = 0; i < tos.length; i++) {
             SupportFragment to = tos[i];
 
@@ -96,14 +95,9 @@ class FragmentationDelegate {
             if (i != showPosition) {
                 ft.hide(to);
             }
-
-            Bundle bundle = to.getArguments();
-            bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         }
 
         supportCommit(fragmentManager, ft);
-        // for compatibility with 25.1.1
-        fragmentManager.executePendingTransactions();
     }
 
     /**
