@@ -429,8 +429,8 @@ public class SupportActivity extends AppCompatActivity implements ISupport, Sens
         int sensorType = event.sensor.getType();
         float[] values = event.values;
         if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-            int value = 14;
-            if ((Math.abs(values[0]) > value || Math.abs(values[1]) > value || Math.abs(values[2]) > value)) {
+            int value = 12;
+            if ((Math.abs(values[0]) >= value || Math.abs(values[1]) >= value || Math.abs(values[2]) >= value)) {
                 showFragmentStackHierarchyView();
             }
         }

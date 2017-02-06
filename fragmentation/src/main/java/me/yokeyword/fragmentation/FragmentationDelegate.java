@@ -49,6 +49,7 @@ class FragmentationDelegate {
 
     private Handler mHandler;
     private FragmentManager mPopToTempFragmentManager;
+    private AlertDialog mStackDialog;
 
     FragmentationDelegate(SupportActivity activity) {
         this.mActivity = activity;
@@ -695,15 +696,17 @@ class FragmentationDelegate {
      * 调试相关:以dialog形式 显示 栈视图
      */
     void showFragmentStackHierarchyView() {
+        if (mStackDialog != null && mStackDialog.isShowing()) return;
         DebugHierarchyViewContainer container = new DebugHierarchyViewContainer(mActivity);
         container.bindFragmentRecords(getFragmentRecords());
         container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        new AlertDialog.Builder(mActivity)
+        mStackDialog = new AlertDialog.Builder(mActivity)
                 .setTitle("栈视图")
                 .setView(container)
                 .setPositiveButton("关闭", null)
                 .setCancelable(true)
-                .show();
+                .create();
+        mStackDialog.show();
     }
 
     /**
