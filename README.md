@@ -23,9 +23,9 @@ A powerful library that manage Fragment for Android!
 
 # 特性
 
-1、**快速开发出各种嵌套设计的Fragment App**
+1、**可以快速开发出各种嵌套设计的Fragment App**
 
-2、**实时查看Fragment的(包括嵌套Fragment)栈视图的对话框和Log，方便调试**
+2、**悬浮球／摇一摇实时查看Fragment的栈视图Dialog，大大降低开发难度**
 
 3、**增加启动模式、startForResult等类似Activity方法**
 
@@ -37,49 +37,49 @@ A powerful library that manage Fragment for Android!
 
 7、**更强的兼容性, 解决多点触控、重叠等问题**
 
-8、**支持SwipeBack滑动边缘退出(需要使用Fragmentation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
+8、**支持SwipeBack滑动边缘退出(需要使用Fragment｀ation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
 # TODO
-* 栈视图悬浮球
+* ~~栈视图悬浮球／摇一摇唤出 栈视图~~
 * Activity侧滑返回：更换实现方式
 * Fragment侧滑返回：实现视觉差效果
 * replace进一步的支持
 * Fragment路由module
 
 # 重大更新日志
-### 0.9.X 来了！ [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
 
-**v0.9.5: Fix `showHideFragment()`可能hide一个null对象的问题**
-**v0.9.3: Fix `onLazyInitView()`完全兼容ViewPager**
+### 0.10.X [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
+1、解决官方v4-25.1.1在加载多个Fragment时引起的阻塞问题
 
-1、解决多点触控问题
+2、添加可全局配置的Fragmentaion Builder类：
+* 提供方便打开栈视图Dialog的方法：
+    * bubble: 显示悬浮球，可点击唤出栈视图Dialog，可自由拖拽
+    * shake: 摇一摇唤出栈视图Dialog
+    * none: 默认不显示栈视图Dialog
 
-2、`onFragmentResult()`现在在任何情况都可以被正确触发了
+* 根据是否是Debug环境，方便区别处理异常（"Can not perform this action after onSaveInstanceState!"）
 
-3、更强的兼容性，解决已知BUG
+### 0.9.X
 
-4、对于25.1.0+的 v4包，完善了SharedElement！
+1、解决多点触控问题，多项优化、兼容、Fix
 
-### 0.8.X 来了!
-1、提供onSupportVisible(),onSupportInvisible()等生命周期方法，简化嵌套Fragment的开发过程；
+2、对于25.1.0+的 v4包，完善了SharedElement！
 
-2、提供统一的onLazyInitView()懒加载方法；
+### 0.8.X
+1、提供onLazyInitView()懒加载，onSupportVisible()，onSupportInvisible()等生命周期方法，简化开发；
 
-3、SupportActivity提供registerFragmentLifecycleCallbacks()来监控其下所有Fragment的生命周期；
+2、SupportActivity提供registerFragmentLifecycleCallbacks()来监控其下所有Fragment的生命周期；
 
-4、可以自定义Tag了！
-
-5、事务提交模式默认为`commitAllowingStateLoss()`.
-
+3、自定义Tag
 
 # 如何使用
 
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.9.5'
+compile 'me.yokeyword:fragmentation:0.10.0'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
@@ -93,8 +93,13 @@ public class MainActivity extends SupportActivity {
         super.onCreate(savedInstanceState);
         setContentView(...);
         if (savedInstanceState == null) {
-            loadRootFragment(R.id.fl_container, HomeFragment.newInstance());  
+            loadRootFragment(R.id.fl_container, HomeFragment.newInstance());  // 加载根Fragment
         }
+        // 栈视图功能，大大降低Fragment的开发难度，建议在Application里初始化
+        Fragmentation.builder()
+                // 显示悬浮球 ; 其他Mode:SHAKE: 摇一摇唤出   NONE：隐藏
+                .stackViewMode(Fragmentation.BUBBLE)
+                .install();
     }
 ````
 

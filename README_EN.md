@@ -17,7 +17,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 
 1、**Solved nested or "same-level" Fragments overlapping issue**
 
-2、**Use the Fragment stack view dialog and logs to easily debug**
+2、**Use the Fragment stack view Dialog to easily debug**
 
 3、**add launch mode， startForResult and others that mimicking methods in Activity class**
 
@@ -34,38 +34,37 @@ The first demo shows the basic use case of this library, the second demo shows t
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
 # ChangeLog
-### 0.9.X is available！！[Detail](https://github.com/YoKeyword/Fragmentation/wiki/Home)
+
+### 0.10.X [Detail](https://github.com/YoKeyword/Fragmentation/wiki/Home)
+
+1、Add the Builder to provide stack view bubble and a better exception handling mechanism.
+
+2、For compatibility with 25.1.1
+
+### 0.9.X
 
 New: **v0.9.2: Fix `initLazyView()` callback timing in the ViewPager scene.**
 
-1、Solve the multi-touch problems.
+1、Solve the multi-touch problems, stronger compatibility, fixed BUGs.
 
-2、Fix the bug that `onFragmentResult()` does not work when calling popTo().
-
-3、Stronger compatibility.
-
-4、for support-25.1.0+，perfect SharedElement！
+2、for support-25.1.0+，perfect SharedElement！
 
 ****
 
 0.8.X
 
-1、Added onSupportVisible(),onSupportInvisible() to simplify the dev of nested-fragment;
+1、Added onLazyInitView(),onSupportVisible(),onSupportInvisible() to simplify the dev of nested-fragment;
 
-2、Added onLazyInitView();
+2、Added registerFragmentLifecycleCallbacks() to SupportActivity to monitor Fragments Lifecycle;
 
-3、Added registerFragmentLifecycleCallbacks() to SupportActivity to monitor Fragments Lifecycle;
-
-4、Now you can set Tag！
-
-5、Change the commit mode to commitAllowingStateLoss().
+3、Now you can set Tag！
 
 # How to use this llibrary
 
 **1. Add dependency in build.gradle file of your app module：**
 ````gradle
 // appcompat v7 library is needed
-compile 'me.yokeyword:fragmentation:0.9.5'
+compile 'me.yokeyword:fragmentation:0.10.0'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
@@ -80,6 +79,10 @@ public class MainActivity extends SupportActivity {
         if (savedInstanceState == null) {
             loadRootFragment(R.id.fl_container, HomeFragment.newInstance());  
         }
+        Fragmentation.builder()
+                // Display StackView Bubble ; other mode: SHAKE, NONE
+                .stackViewMode(Fragmentation.BUBBLE)
+                .install();
     }
 ````
 
