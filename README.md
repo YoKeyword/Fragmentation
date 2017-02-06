@@ -51,15 +51,16 @@ A powerful library that manage Fragment for Android!
 # 重大更新日志
 
 ### 0.10.X [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
-1、解决官方v4-25.1.1在加载多个Fragment时引起的阻塞问题
 
-2、添加可全局配置的Fragmentaion Builder类：
+1、添加可全局配置的Fragmentaion Builder类：
 * 提供方便打开栈视图Dialog的方法：
     * bubble: 显示悬浮球，可点击唤出栈视图Dialog，可自由拖拽
     * shake: 摇一摇唤出栈视图Dialog
     * none: 默认不显示栈视图Dialog
 
 * 根据是否是Debug环境，方便区别处理异常（"Can not perform this action after onSaveInstanceState!"）
+
+2、兼容v4-25.1.1
 
 ### 0.9.X
 
@@ -79,7 +80,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.10.0'
+compile 'me.yokeyword:fragmentation:0.10.1'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
