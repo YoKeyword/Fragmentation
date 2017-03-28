@@ -46,8 +46,7 @@ A powerful library that manage Fragment for Android!
 * Activity侧滑返回：更换实现方式
 * Fragment侧滑返回：实现视觉差效果
 * replace进一步的支持
-* Fragment路由module
-
+* ~~Fragment路由module~~ （建议使用阿里巴巴出品的[ARouter](https://github.com/alibaba/ARouter)）
 # 重大更新日志
 
 ### 0.10.X [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
