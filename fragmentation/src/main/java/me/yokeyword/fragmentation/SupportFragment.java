@@ -82,7 +82,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             this._mActivity = (SupportActivity) activity;
             mFragmentationDelegate = _mActivity.getFragmentationDelegate();
         } else {
-            throw new RuntimeException(activity.toString() + "must extends SupportActivity!");
+            throw new RuntimeException(activity.getClass().getSimpleName() + " must extends SupportActivity!");
         }
 
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONATTACH, null, false);
