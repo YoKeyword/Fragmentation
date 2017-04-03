@@ -63,6 +63,10 @@ class FragmentationDelegate {
      * @param to          目标Fragment
      */
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to) {
+        SupportFragment fragment = findFragmentByRoot(fragmentManager, to.getClass().getName());
+        if (fragment != null && containerId == fragment.getContainerId()) {
+            return;
+        }
         bindContainerId(containerId, to);
         dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_ADD);
     }
@@ -384,6 +388,21 @@ class FragmentationDelegate {
             return null;
         }
         return (T) fragment;
+    }
+
+    /**
+     * Find Fragment from the bottom of the stack
+     */
+    private SupportFragment findFragmentByRoot(FragmentManager fragmentManager, String tag) {
+        List<Fragment> fragmentList = fragmentManager.getFragments();
+        if (fragmentList != null) {
+            for (Fragment fragment : fragmentList) {
+                if (fragment instanceof SupportFragment && tag.equals(fragment.getTag())) {
+                    return (SupportFragment) fragment;
+                }
+            }
+        }
+        return null;
     }
 
     /**

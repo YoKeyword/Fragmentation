@@ -223,7 +223,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         }
 
         if (!mInvisibleWhenLeave && !isHidden() && (getUserVisibleHint() || mFixStatePagerAdapter)) {
-            if ((getParentFragment() != null && !getParentFragment().isHidden()) || getParentFragment() == null) {
+            if ((getParentFragment() != null && !getParentFragment().isHidden() && getParentFragment().getUserVisibleHint())
+                    || getParentFragment() == null) {
                 mNeedDispatch = false;
                 dispatchSupportVisible(true);
             }
@@ -663,8 +664,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     /**
      * 出栈到目标fragment
      *
-     * @param targetFragmentClass 目标fragment
-     * @param includeTargetFragment   是否包含该fragment
+     * @param targetFragmentClass   目标fragment
+     * @param includeTargetFragment 是否包含该fragment
      */
     @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
