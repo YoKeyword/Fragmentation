@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.animation.Animation;
@@ -15,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
@@ -23,6 +21,7 @@ import me.yokeyword.fragmentation.helper.internal.LifecycleHelper;
 import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
+import me.yokeyword.fragmentation.helper.internal.VisibleDelegate;
 
 /**
  * Created by YoKeyword on 16/1/22.
@@ -45,12 +44,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private boolean mIsRoot, mIsSharedElement;
     private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
 
-    // SupportVisible相关
-    private boolean mIsSupportVisible;
-    private boolean mNeedDispatch = true;
-    private boolean mInvisibleWhenLeave;
-    private boolean mIsFirstVisible = true;
-    private boolean mFixStatePagerAdapter;
+    // SupportVisible
+    private VisibleDelegate mVisibleDelegate;
     private Bundle mSaveInstanceState;
 
     private InputMethodManager mIMM;
@@ -91,6 +86,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getVisibleDelegate().onCreate(savedInstanceState);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -108,9 +104,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             mSaveInstanceState = savedInstanceState;
             mFragmentAnimator = savedInstanceState.getParcelable(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
-            if (!mFixStatePagerAdapter) { // setUserVisibleHint() may be called before onCreate()
-                mInvisibleWhenLeave = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
-            }
             if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
                 mIsRoot = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_ROOT, false);
                 mIsSharedElement = savedInstanceState.getBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
@@ -193,6 +186,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        getVisibleDelegate().onSaveInstanceState(outState);
         if (mIsRoot) {
             outState.putBoolean(FragmentationDelegate.FRAGMENTATION_ARG_IS_ROOT, true);
         }
@@ -202,7 +196,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         outState.putInt(FragmentationDelegate.FRAGMENTATION_ARG_CONTAINER, mContainerId);
         outState.putParcelable(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
-        outState.putBoolean(FragmentationDelegate.FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE, mInvisibleWhenLeave);
 
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSAVEINSTANCESTATE, outState, false);
     }
@@ -210,6 +203,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getVisibleDelegate().onActivityCreated(savedInstanceState);
 
         View view = getView();
         initFragmentBackground(view);
@@ -220,14 +214,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         if (savedInstanceState != null || mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
             notifyNoAnim();
-        }
-
-        if (!mInvisibleWhenLeave && !isHidden() && (getUserVisibleHint() || mFixStatePagerAdapter)) {
-            if ((getParentFragment() != null && !getParentFragment().isHidden() && getParentFragment().getUserVisibleHint())
-                    || getParentFragment() == null) {
-                mNeedDispatch = false;
-                dispatchSupportVisible(true);
-            }
         }
 
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONACTIVITYCREATED, savedInstanceState, false);
@@ -266,29 +252,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!mIsFirstVisible) {
-            if (!mIsSupportVisible && !mInvisibleWhenLeave && !isHidden() && getUserVisibleHint()) {
-                mNeedDispatch = false;
-                dispatchSupportVisible(true);
-            }
-        }
-
+        getVisibleDelegate().onResume();
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONRESUME, null, false);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        if (mIsSupportVisible && !isHidden() && getUserVisibleHint()) {
-            mNeedDispatch = false;
-            mInvisibleWhenLeave = false;
-            dispatchSupportVisible(false);
-        } else {
-            mInvisibleWhenLeave = true;
-        }
-
+        getVisibleDelegate().onPause();
         if (mNeedHideSoft) {
             hideSoftInput();
         }
@@ -299,24 +270,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (isResumed()) {
-            dispatchSupportVisible(!hidden);
-        }
+        getVisibleDelegate().onHiddenChanged(hidden);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isResumed()) {
-            if (!mIsSupportVisible && isVisibleToUser) {
-                dispatchSupportVisible(true);
-            } else if (mIsSupportVisible && !isVisibleToUser) {
-                dispatchSupportVisible(false);
-            }
-        } else if (isVisibleToUser) {
-            mInvisibleWhenLeave = false;
-            mFixStatePagerAdapter = true;
-        }
+        getVisibleDelegate().setUserVisibleHint(isVisibleToUser);
     }
 
     /**
@@ -325,6 +285,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
     public void onSupportVisible() {
+        if (_mActivity != null) {
+            _mActivity.setFragmentClickable(true);
+        }
+        dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTVISIBLE, null, true);
     }
 
     /**
@@ -333,13 +297,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
     public void onSupportInvisible() {
+        dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTINVISIBLE, null, false);
     }
 
     /**
      * Return true if the fragment has been supportVisible.
      */
     final public boolean isSupportVisible() {
-        return mIsSupportVisible;
+        return getVisibleDelegate().isSupportVisible();
     }
 
     /**
@@ -348,49 +313,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      * 同级下的 懒加载 ＋ ViewPager下的懒加载  的结合回调方法
      */
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONLAZYINITVIEW, null, false);
     }
 
     /**
      * 入栈动画 结束时,回调
      */
     protected void onEnterAnimationEnd(Bundle savedInstanceState) {
-    }
-
-    private void dispatchSupportVisible(boolean visible) {
-        mIsSupportVisible = visible;
-
-        if (!mNeedDispatch) {
-            mNeedDispatch = true;
-        } else {
-            FragmentManager fragmentManager = getChildFragmentManager();
-            if (fragmentManager != null) {
-                List<Fragment> childFragments = fragmentManager.getFragments();
-                if (childFragments != null) {
-                    for (Fragment child : childFragments) {
-                        if (child instanceof SupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
-                            ((SupportFragment) child).dispatchSupportVisible(visible);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (visible) {
-            if (mIsFirstVisible) {
-                mIsFirstVisible = false;
-                onLazyInitView(mSaveInstanceState);
-                dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONLAZYINITVIEW, null, false);
-            }
-
-            onSupportVisible();
-            if (_mActivity != null) {
-                _mActivity.setFragmentClickable(true);
-            }
-            dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTVISIBLE, null, true);
-        } else {
-            onSupportInvisible();
-            dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONSUPPORTINVISIBLE, null, false);
-        }
     }
 
     boolean isSupportHidden() {
@@ -419,13 +348,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             return DEFAULT_ANIM_DURATION;
         }
         return mAnimHelper.exitAnim.getDuration();
-    }
-
-    long getPopEnterAnimDuration() {
-        if (mAnimHelper == null) {
-            return DEFAULT_ANIM_DURATION;
-        }
-        return mAnimHelper.popEnterAnim.getDuration();
     }
 
     long getPopExitAnimDuration() {
@@ -547,6 +469,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      *
      * @param showFragment 需要show的Fragment
      */
+    @Deprecated
     @Override
     public void showHideFragment(SupportFragment showFragment) {
         showHideFragment(showFragment, null);
@@ -721,9 +644,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 设置Result数据 (通过startForResult)
-     *
-     * @param resultCode resultCode
-     * @param bundle     设置Result数据
      */
     public void setFragmentResult(int resultCode, Bundle bundle) {
         Bundle args = getArguments();
@@ -740,10 +660,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 接受Result数据 (通过startForResult的返回数据)
-     *
-     * @param requestCode requestCode
-     * @param resultCode  resultCode
-     * @param data        Result数据
      */
     protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {
     }
@@ -787,6 +703,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         return mSaveInstanceState;
     }
 
+    public VisibleDelegate getVisibleDelegate() {
+        if (mVisibleDelegate == null) {
+            mVisibleDelegate = new VisibleDelegate(this);
+        }
+        return mVisibleDelegate;
+    }
+
     /**
      * @see OnFragmentDestoryViewListener
      */
@@ -816,12 +739,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onDestroyView() {
         _mActivity.setFragmentClickable(true);
         super.onDestroyView();
+        getVisibleDelegate().onDestroyView();
         if (mOnDestoryViewListener != null) {
             mOnDestoryViewListener.onDestoryView();
             mOnDestoryViewListener = null;
         }
-        mIsFirstVisible = true;
-        mFixStatePagerAdapter = false;
         dispatchFragmentLifecycle(LifecycleHelper.LIFECYLCE_ONDESTROYVIEW, null, false);
     }
 
