@@ -366,7 +366,7 @@ class FragmentationDelegate {
         Fragment fragment = null;
 
         if (toFragmentTag == null) {
-            // 如果是 查找Fragment时,则有可能是在FragmentPagerAdapter/FragmentStatePagerAdapter中,这种情况下,
+            // 如果是 查找Fragment时,则有可能是在FragmentPagerAdapter,这种情况下,
             // 它们的Tag是以android:switcher开头,所以这里我们使用下面的方式
             List<Fragment> fragmentList = fragmentManager.getFragments();
             if (fragmentList == null) return null;

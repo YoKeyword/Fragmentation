@@ -628,7 +628,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable);
+        popToChild(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable);
     }
 
     @Override
