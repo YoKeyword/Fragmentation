@@ -59,7 +59,7 @@ A powerful library that manage Fragment for Android!
 
 * 根据是否是Debug环境，方便区别处理异常（"Can not perform this action after onSaveInstanceState!"）
 
-2、兼容v4-25.1.1
+2、Fix popToChild(fg,boolean,Runnable)层级错误问题.
 
 ### 0.9.X
 
@@ -79,7 +79,7 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.10.2'
+compile 'me.yokeyword:fragmentation:0.10.3'
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
 // compile 'me.yokeyword:fragmentation-swipeback:0.7.9'
 ````
