@@ -27,7 +27,6 @@ public class SwipeBackActivity extends SupportActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
         mSwipeBackLayout.attachToActivity(this);
     }
 
@@ -52,10 +51,14 @@ public class SwipeBackActivity extends SupportActivity {
         return mSwipeBackLayout;
     }
 
+    public void setSwipeBackEnable(boolean enable) {
+        mSwipeBackLayout.setEnableGesture(enable);
+    }
+
     /**
      * 限制SwipeBack的条件,默认栈内Fragment数 <= 1时 , 优先滑动退出Activity , 而不是Fragment
      *
-     * @return true: Activity可以滑动退出, 并且总是优先;  false: Activity不允许滑动退出
+     * @return true: Activity可以滑动退出, 并且总是优先;  false: Fragment优先滑动退出
      */
     public boolean swipeBackPriority() {
         return getSupportFragmentManager().getBackStackEntryCount() <= 1;
