@@ -265,6 +265,11 @@ public class SwipeBackLayout extends FrameLayout {
                 ViewCompat.postInvalidateOnAnimation(this);
             }
         }
+
+        // 简单实现视差滑动 = = 业余安卓开发,不完美请见谅...
+        if (mPreFragment != null && mPreFragment.getView() != null) {
+            mPreFragment.getView().setLeft((int) (0 - getWidth() * 2 / 3 * mScrimOpacity));
+        }
     }
 
     public void setFragment(SupportFragment fragment, View view) {
