@@ -2,6 +2,7 @@ package me.yokeyword.fragmentation_swipeback;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ public class SwipeBackFragment extends SupportFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         onFragmentCreate();
     }
 
@@ -59,5 +59,12 @@ public class SwipeBackFragment extends SupportFragment {
 
     public void setSwipeBackEnable(boolean enable) {
         mSwipeBackLayout.setEnableGesture(enable);
+    }
+
+    /**
+     * Set the offset of the parallax slip.
+     */
+    public void setParallaxOffset(@FloatRange(from = 0.0f, to = 1.0f) float offset) {
+        mSwipeBackLayout.setParallaxOffset(offset);
     }
 }
