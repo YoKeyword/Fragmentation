@@ -117,12 +117,12 @@ public class VisibleDelegate {
         }
 
         if (visible) {
+            mSupportFragment.onSupportVisible();
+
             if (mIsFirstVisible) {
                 mIsFirstVisible = false;
                 mSupportFragment.onLazyInitView(mSaveInstanceState);
             }
-
-            mSupportFragment.onSupportVisible();
         } else {
             mSupportFragment.onSupportInvisible();
         }
