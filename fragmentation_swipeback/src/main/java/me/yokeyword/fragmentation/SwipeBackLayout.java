@@ -264,11 +264,10 @@ public class SwipeBackLayout extends FrameLayout {
             if (mHelper.continueSettling(true)) {
                 ViewCompat.postInvalidateOnAnimation(this);
             }
-        }
-
-        // 简单实现视差滑动 = = 业余安卓开发,不完美请见谅...
-        if (mPreFragment != null && mPreFragment.getView() != null) {
-            mPreFragment.getView().setLeft((int) (0 - getWidth() * 2 / 3 * mScrimOpacity));
+            if (mPreFragment != null && mPreFragment.getView() != null && mHelper.getCapturedView() != null) {
+                int leftOffset = mHelper.getCapturedView().getLeft() - getWidth();
+                mPreFragment.getView().setLeft(leftOffset > 0 ? 0 : leftOffset);
+            }
         }
     }
 
@@ -411,7 +410,7 @@ public class SwipeBackLayout extends FrameLayout {
                 return 1;
             }
             // SwipeBackActivity
-            if (mActivity != null && ((SwipeBackActivity)mActivity).swipeBackPriority()) {
+            if (mActivity != null && ((SwipeBackActivity) mActivity).swipeBackPriority()) {
                 return 1;
             }
             return 0;
