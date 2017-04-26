@@ -211,10 +211,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
         View view = getView();
         initFragmentBackground(view);
-        // 防止某种情况 上一个Fragment仍可点击问题
-        if (view != null) {
-            view.setClickable(true);
-        }
 
         if (savedInstanceState != null || mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
             notifyNoAnim();
