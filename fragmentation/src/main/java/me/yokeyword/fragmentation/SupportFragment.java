@@ -179,6 +179,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
             return enter ? mAnimHelper.popEnterAnim : mAnimHelper.exitAnim;
         } else {
             if (mIsSharedElement && enter) notifyNoAnim();
+
+            Animation fixedAnim = mAnimHelper.getViewPagerChildFragmentAnimFixed(this, enter);
+            if (fixedAnim != null) return fixedAnim;
+
             return super.onCreateAnimation(transit, enter, nextAnim);
         }
     }
