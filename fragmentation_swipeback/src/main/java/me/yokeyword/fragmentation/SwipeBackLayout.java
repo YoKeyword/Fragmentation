@@ -6,8 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
+import android.support.annotation.RestrictTo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -23,6 +25,9 @@ import java.util.List;
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
+
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 /**
  * Thx https://github.com/ikew0ng/SwipeBackLayout
@@ -88,6 +93,8 @@ public class SwipeBackLayout extends FrameLayout {
     private int mCurrentSwipeOrientation;
     private float mParallaxOffset = DEFAULT_PARALLAX;
 
+    private boolean mCallOnDestroyView;
+
     /**
      * The set of listeners to be sent events through.
      */
@@ -139,7 +146,7 @@ public class SwipeBackLayout extends FrameLayout {
      * @see #EDGE_LEFT
      * @see #EDGE_RIGHT
      */
-    public void setEdgeOrientation(int orientation) {
+    public void setEdgeOrientation(@EdgeOrientation int orientation) {
         mEdgeFlag = orientation;
         mHelper.setEdgeTrackingEnabled(orientation);
 
@@ -271,13 +278,25 @@ public class SwipeBackLayout extends FrameLayout {
                 ViewCompat.postInvalidateOnAnimation(this);
             }
             if (mPreFragment != null && mPreFragment.getView() != null && mHelper.getCapturedView() != null) {
+                if (mCallOnDestroyView) {
+                    mPreFragment.getView().setLeft(0);
+                    return;
+                }
+
                 int leftOffset = (int) ((mHelper.getCapturedView().getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
                 mPreFragment.getView().setLeft(leftOffset > 0 ? 0 : leftOffset);
             }
         }
     }
 
-    public void setFragment(SupportFragment fragment, View view) {
+    /**
+     * hide
+     */
+    public void internalCallOnDestroyView() {
+        mCallOnDestroyView = true;
+    }
+
+    public void setFragment(final SupportFragment fragment, View view) {
         this.mFragment = fragment;
         mContentView = view;
     }
@@ -375,6 +394,7 @@ public class SwipeBackLayout extends FrameLayout {
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
+
             if ((mCurrentSwipeOrientation & EDGE_LEFT) != 0) {
                 mScrollPercent = Math.abs((float) left / (getWidth() + mShadowLeft.getIntrinsicWidth()));
             } else if ((mCurrentSwipeOrientation & EDGE_RIGHT) != 0) {
@@ -391,6 +411,8 @@ public class SwipeBackLayout extends FrameLayout {
 
             if (mScrollPercent > 1) {
                 if (mFragment != null) {
+                    if (mCallOnDestroyView) return;
+
                     if (mPreFragment instanceof SupportFragment) {
                         ((SupportFragment) mPreFragment).mLocking = true;
                     }

@@ -67,4 +67,10 @@ public class SwipeBackFragment extends SupportFragment {
     public void setParallaxOffset(@FloatRange(from = 0.0f, to = 1.0f) float offset) {
         mSwipeBackLayout.setParallaxOffset(offset);
     }
+
+    @Override
+    public void onDestroyView() {
+        mSwipeBackLayout.internalCallOnDestroyView();
+        super.onDestroyView();
+    }
 }
