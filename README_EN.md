@@ -66,7 +66,7 @@ New: **v0.9.2: Fix `initLazyView()` callback timing in the ViewPager scene.**
 // appcompat v7 library is needed
 compile 'me.yokeyword:fragmentation:0.10.4'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
-// compile 'me.yokeyword:fragmentation-swipeback:0.7.10'
+// compile 'me.yokeyword:fragmentation-swipeback:0.10.4'
 ````
 **2. Your Activity should extend SupportActivity：**
 ````java
