@@ -85,7 +85,7 @@ public class VisibleDelegate {
     }
 
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (mSupportFragment.isResumed()) {
+        if (mSupportFragment.isResumed() || (mSupportFragment.isDetached() && isVisibleToUser)) {
             if (!mIsSupportVisible && isVisibleToUser) {
                 dispatchSupportVisible(true);
             } else if (mIsSupportVisible && !isVisibleToUser) {
@@ -99,6 +99,17 @@ public class VisibleDelegate {
 
     private void dispatchSupportVisible(boolean visible) {
         mIsSupportVisible = visible;
+
+        if (visible) {
+            mSupportFragment.onSupportVisible();
+
+            if (mIsFirstVisible) {
+                mIsFirstVisible = false;
+                mSupportFragment.onLazyInitView(mSaveInstanceState);
+            }
+        } else {
+            mSupportFragment.onSupportInvisible();
+        }
 
         if (!mNeedDispatch) {
             mNeedDispatch = true;
@@ -114,17 +125,6 @@ public class VisibleDelegate {
                     }
                 }
             }
-        }
-
-        if (visible) {
-            mSupportFragment.onSupportVisible();
-
-            if (mIsFirstVisible) {
-                mIsFirstVisible = false;
-                mSupportFragment.onLazyInitView(mSaveInstanceState);
-            }
-        } else {
-            mSupportFragment.onSupportInvisible();
         }
     }
 
