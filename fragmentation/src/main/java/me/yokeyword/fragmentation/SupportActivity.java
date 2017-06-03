@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -328,17 +327,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport, Sens
         if (mSensorManager != null) {
             mSensorManager.unregisterListener(this);
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            // 这里是防止动画过程中，按返回键取消加载Fragment
-            if (!mFragmentClickable) {
-                setFragmentClickable(true);
-            }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override

@@ -210,7 +210,10 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         getVisibleDelegate().onActivityCreated(savedInstanceState);
 
         View view = getView();
-        initFragmentBackground(view);
+        if (view != null) {
+            view.setClickable(true);
+            initFragmentBackground(view);
+        }
 
         if (savedInstanceState != null || mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
             notifyNoAnim();
