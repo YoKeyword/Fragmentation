@@ -280,7 +280,7 @@ class FragmentationDelegate {
 
         FragmentTransaction removeFt = fragmentManager.beginTransaction().remove(from);
         supportCommit(fragmentManager, removeFt);
-        debouncePop(from, fragmentManager);
+        debouncePop(fragmentManager);
 
         FragmentTransaction ft = fragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -485,7 +485,7 @@ class FragmentationDelegate {
     /**
      * save requestCode
      */
-    private void saveRequestCode(Fragment to,  int requestCode) {
+    private void saveRequestCode(Fragment to, int requestCode) {
         Bundle bundle = to.getArguments();
         if (bundle == null) {
             bundle = new Bundle();
@@ -502,20 +502,25 @@ class FragmentationDelegate {
 
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
-            debouncePop(null, fragmentManager);
+            debouncePop(fragmentManager);
         }
     }
 
-    private void debouncePop(SupportFragment from, FragmentManager fragmentManager) {
-        // Debounce
-        if (from == null) {
-            from = getTopFragment(fragmentManager);
+    private void debouncePop(FragmentManager fm) {
+        Fragment popF = fm.findFragmentByTag(fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 1).getName());
+        if (popF instanceof SupportFragment) {
+            SupportFragment supportF = (SupportFragment) popF;
+            if (supportF.mIsSharedElement) {
+                long now = System.currentTimeMillis();
+                if (now < mShareElementDebounceTime) {
+                    mShareElementDebounceTime = System.currentTimeMillis() + supportF.getExitAnimDuration();
+                    return;
+                }
+            }
+            mShareElementDebounceTime = System.currentTimeMillis() + supportF.getExitAnimDuration();
         }
-        long now = System.currentTimeMillis();
-        if (now < mShareElementDebounceTime) return;
-        mShareElementDebounceTime = System.currentTimeMillis() + from.getExitAnimDuration();
 
-        fragmentManager.popBackStackImmediate();
+        fm.popBackStackImmediate();
     }
 
     void handleResultRecord(Fragment from) {
