@@ -6,10 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
-import android.support.annotation.RestrictTo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -25,9 +23,6 @@ import java.util.List;
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
-
-import static android.support.annotation.RestrictTo.Scope.LIBRARY;
-import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 /**
  * Thx https://github.com/ikew0ng/SwipeBackLayout
@@ -414,13 +409,16 @@ public class SwipeBackLayout extends FrameLayout {
                     if (mCallOnDestroyView) return;
 
                     if (mPreFragment instanceof SupportFragment) {
-                        ((SupportFragment) mPreFragment).mLocking = true;
+                        ((SupportFragment) mPreFragment).mLockAnim = true;
                     }
                     if (!mFragment.isDetached()) {
-                        mFragment.popForSwipeBack();
+                        mFragment.mLockAnim = true;
+                        mFragment.pop();
+                        mFragment.getFragmentManager().executePendingTransactions();
+                        mFragment.mLockAnim = false;
                     }
                     if (mPreFragment instanceof SupportFragment) {
-                        ((SupportFragment) mPreFragment).mLocking = false;
+                        ((SupportFragment) mPreFragment).mLockAnim = false;
                     }
                 } else {
                     if (!mActivity.isFinishing()) {
