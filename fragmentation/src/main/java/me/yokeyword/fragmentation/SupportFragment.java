@@ -58,7 +58,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     private FragmentAnimator mFragmentAnimator;
     private AnimatorHelper mAnimHelper;
 
-    protected boolean mLocking; // 是否加锁 用于Fragmentation-SwipeBack库
+    boolean mLockAnim;
 
     private OnFragmentDestoryViewListener mOnDestoryViewListener;
 
@@ -162,7 +162,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (_mActivity.mPopMultipleNoAnim || mLocking) {
+        if (_mActivity.mPopMultipleNoAnim || mLockAnim) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
                 return mAnimHelper.getNoneAnimFixed();
             }
@@ -353,12 +353,14 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         return mAnimHelper.exitAnim.getDuration();
     }
 
-    long getPopExitAnimDuration() {
-        if (mAnimHelper == null) {
-            return DEFAULT_ANIM_DURATION;
-        }
-        return mAnimHelper.popExitAnim.getDuration();
+    Animation getPopExitAnim() {
+        return mAnimHelper.popExitAnim;
     }
+
+    Animation getExitAnim() {
+        return mAnimHelper.exitAnim;
+    }
+
 
     private void notifyEnterAnimationEnd(final Bundle savedInstanceState) {
         _mActivity.getHandler().post(new Runnable() {
@@ -608,12 +610,20 @@ public class SupportFragment extends Fragment implements ISupportFragment {
      */
     @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable);
+        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
     @Override
     public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getFragmentManager());
+        popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, 0);
+    }
+
+    public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
+        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, popAnim);
+    }
+
+    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
+        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getFragmentManager(), popAnim);
     }
 
     /**
@@ -631,18 +641,20 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     @Override
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popToChild(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable);
+        popToChild(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
     @Override
     public void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager());
+        popToChild(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
-    void popForSwipeBack() {
-        mLocking = true;
-        mFragmentationDelegate.back(getFragmentManager());
-        mLocking = false;
+    public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
+        popToChild(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, popAnim);
+    }
+
+    public void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
+        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager(), popAnim);
     }
 
     /**

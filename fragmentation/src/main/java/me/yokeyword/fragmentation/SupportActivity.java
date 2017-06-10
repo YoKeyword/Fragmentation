@@ -148,7 +148,6 @@ public class SupportActivity extends AppCompatActivity implements ISupport, Sens
      */
     @Override
     final public void onBackPressed() {
-        // 这里是防止动画过程中，按返回键取消加载Fragment
         if (!mFragmentClickable) {
             setFragmentClickable(true);
         }
@@ -289,7 +288,7 @@ public class SupportActivity extends AppCompatActivity implements ISupport, Sens
      */
     @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment);
+        popTo(targetFragmentClass.getName(), includeTargetFragment, null);
     }
 
     @Override
@@ -302,12 +301,20 @@ public class SupportActivity extends AppCompatActivity implements ISupport, Sens
      */
     @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable);
+        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
     @Override
     public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getSupportFragmentManager());
+        popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, 0);
+    }
+
+    public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
+        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, popAnim);
+    }
+
+    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
+        mFragmentationDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getSupportFragmentManager(), popAnim);
     }
 
     void preparePopMultiple() {
