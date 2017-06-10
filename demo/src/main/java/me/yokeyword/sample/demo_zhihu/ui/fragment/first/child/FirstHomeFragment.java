@@ -181,7 +181,6 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mRecy.setAdapter(null);
         EventBus.getDefault().unregister(this);
     }
 }

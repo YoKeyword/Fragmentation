@@ -91,10 +91,4 @@ public class PagerChildFragment extends BaseFragment {
             }
         });
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mRecy.setAdapter(null);
-    }
 }
