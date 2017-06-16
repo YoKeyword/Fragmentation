@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 
 
@@ -29,15 +28,6 @@ public class BaseMainFragment extends BaseFragment {
                 }
             }
         });
-    }
-
-
-    @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
-        FragmentAnimator fragmentAnimator = _mActivity.getFragmentAnimator();
-        fragmentAnimator.setEnter(0);
-        fragmentAnimator.setExit(0);
-        return fragmentAnimator;
     }
 
     @Override

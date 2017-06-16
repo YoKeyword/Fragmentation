@@ -108,9 +108,10 @@ public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayou
                     fragment.transaction()
                             .addSharedElement(((FirstHomeAdapter.VH) vh).img, getString(R.string.image_transition))
                             .addSharedElement(((FirstHomeAdapter.VH) vh).tvTitle, "tv")
-                            .commit();
+                            .start(fragment);
+                } else {
+                    start(fragment);
                 }
-                start(fragment);
             }
         });
 

@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import me.yokeyword.fragmentation.SupportFragment;
+import me.yokeyword.fragmentation.SupportManager;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.base.BaseFragment;
 import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
@@ -62,9 +63,9 @@ public class MainFragment extends BaseFragment {
             // 这里库已经做了Fragment恢复,所有不需要额外的处理了, 不会出现重叠问题
 
             // 这里我们需要拿到mFragments的引用,也可以通过getChildFragmentManager.getFragments()自行进行判断查找(效率更高些),用下面的方法查找更方便些
-            mFragments[FIRST] = findChildFragment(WechatFirstTabFragment.class);
-            mFragments[SECOND] = findChildFragment(WechatSecondTabFragment.class);
-            mFragments[THIRD] = findChildFragment(WechatThirdTabFragment.class);
+            mFragments[FIRST] = SupportManager.getInstance().findFragment(getChildFragmentManager(), WechatFirstTabFragment.class);
+            mFragments[SECOND] = SupportManager.getInstance().findFragment(getChildFragmentManager(), WechatSecondTabFragment.class);
+            mFragments[THIRD] = SupportManager.getInstance().findFragment(getChildFragmentManager(), WechatThirdTabFragment.class);
         }
 
         initView(view);

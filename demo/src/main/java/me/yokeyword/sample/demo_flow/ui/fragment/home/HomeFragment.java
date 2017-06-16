@@ -17,15 +17,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.fragmentation.ISupportActivity;
 import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.adapter.HomeAdapter;
-import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_flow.entity.Article;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
+import me.yokeyword.sample.demo_flow.entity.Article;
+import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
 
 
 public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItemClickListener {
@@ -144,15 +145,15 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_anim_veritical:
-                                _mActivity.setFragmentAnimator(new DefaultVerticalAnimator());
+                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultVerticalAnimator());
                                 Toast.makeText(_mActivity, "设置全局动画成功! 竖向", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.action_anim_horizontal:
-                                _mActivity.setFragmentAnimator(new DefaultHorizontalAnimator());
+                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultHorizontalAnimator());
                                 Toast.makeText(_mActivity, "设置全局动画成功! 横向", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.action_anim_none:
-                                _mActivity.setFragmentAnimator(new DefaultNoAnimator());
+                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultNoAnimator());
                                 Toast.makeText(_mActivity, "设置全局动画成功! 无", Toast.LENGTH_SHORT).show();
                                 break;
                         }

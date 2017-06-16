@@ -49,6 +49,7 @@ public class CycleFragment extends BaseBackFragment {
         return view;
     }
 
+
     private void initView(View view) {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mTvName = (TextView) view.findViewById(R.id.tv_name);

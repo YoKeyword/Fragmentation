@@ -2,14 +2,13 @@ package me.yokeyword.sample.demo_zhihu;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v4.app.ActivityCompat;
 
 import org.greenrobot.eventbus.EventBus;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.anim.FragmentAnimator;
-import me.yokeyword.fragmentation.helper.FragmentLifecycleCallbacks;
+import me.yokeyword.fragmentation.SupportManager;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
@@ -59,28 +58,13 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
             // 这里库已经做了Fragment恢复,所有不需要额外的处理了, 不会出现重叠问题
 
             // 这里我们需要拿到mFragments的引用,也可以通过getSupportFragmentManager.getFragments()自行进行判断查找(效率更高些),用下面的方法查找更方便些
-            mFragments[FIRST] = findFragment(ZhihuFirstFragment.class);
-            mFragments[SECOND] = findFragment(ZhihuSecondFragment.class);
-            mFragments[THIRD] = findFragment(ZhihuThirdFragment.class);
-            mFragments[FOURTH] = findFragment(ZhihuFourthFragment.class);
+            mFragments[FIRST] = SupportManager.getInstance().findFragment(getSupportFragmentManager(), ZhihuFirstFragment.class);
+            mFragments[SECOND] = SupportManager.getInstance().findFragment(getSupportFragmentManager(), ZhihuSecondFragment.class);
+            mFragments[THIRD] = SupportManager.getInstance().findFragment(getSupportFragmentManager(), ZhihuThirdFragment.class);
+            mFragments[FOURTH] = SupportManager.getInstance().findFragment(getSupportFragmentManager(), ZhihuFourthFragment.class);
         }
 
         initView();
-
-
-        // 可以监听该Activity下的所有Fragment的18个 生命周期方法
-        registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks() {
-
-            @Override
-            public void onFragmentSupportVisible(SupportFragment fragment) {
-                Log.i("MainActivity", "onFragmentSupportVisible--->" + fragment.getClass().getSimpleName());
-            }
-        });
-    }
-
-    @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
-        return super.onCreateFragmentAnimator();
     }
 
     private void initView() {
@@ -134,8 +118,11 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
 
     @Override
     public void onBackPressedSupport() {
-        // 对于 4个类别的主Fragment内的回退back逻辑,已经在其onBackPressedSupport里各自处理了
-        super.onBackPressedSupport();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            pop();
+        } else {
+            ActivityCompat.finishAfterTransition(this);
+        }
     }
 
     @Override

@@ -25,15 +25,8 @@ public class NewFeatureFragment extends SupportFragment {
         HomeFragment homeFragment = HomeFragment.newInstance();
         homeFragment.transaction()
                 .setTag("我是自定义Tag")
-//                .setLaunchMode(SINGLETASK) // 以SingleTask启动HomeFragment
-                .withPop(true) // 立即关闭自己
 //                .addSharedElement() // 等同：startWithSharedElement
-//                .forResult(1)   // 类似 startForResult()
-                .commit();
-        start(homeFragment);
-
-        // or
-        // start(HomeFragment.newInstance().transaction().setTag("tag").commitAllowingStateLoss());
+                .start(homeFragment);
     }
 
     // 模拟执行一次 出栈

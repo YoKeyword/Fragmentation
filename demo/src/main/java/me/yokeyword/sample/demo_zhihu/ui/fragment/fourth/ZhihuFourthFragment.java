@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.SupportManager;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.child.AvatarFragment;
@@ -41,7 +42,7 @@ public class ZhihuFourthFragment extends BaseMainFragment {
         if (savedInstanceState == null) {
             loadFragment();
         } else {  // 这里可能会出现该Fragment没被初始化时,就被强杀导致的没有load子Fragment
-            if (findChildFragment(AvatarFragment.class) == null) {
+            if (SupportManager.getInstance().findFragment(getChildFragmentManager(), AvatarFragment.class) == null) {
                 loadFragment();
             }
         }

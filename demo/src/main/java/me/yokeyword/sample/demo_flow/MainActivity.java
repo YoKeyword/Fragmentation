@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,8 +16,8 @@ import android.widget.Toast;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
+import me.yokeyword.fragmentation.SupportManager;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
-import me.yokeyword.fragmentation.helper.FragmentLifecycleCallbacks;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.account.LoginFragment;
@@ -55,15 +54,6 @@ public class MainActivity extends SupportActivity
         }
 
         initView();
-
-        registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks() {
-            // 可以监听该Activity下的所有Fragment的18个 生命周期方法
-
-            @Override
-            public void onFragmentCreated(SupportFragment fragment, Bundle savedInstanceState) {
-                Log.i("MainActivity", "onFragmentCreated--->" + fragment.getClass().getSimpleName());
-            }
-        });
     }
 
     @Override
@@ -110,7 +100,7 @@ public class MainActivity extends SupportActivity
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            Fragment topFragment = getTopFragment();
+            Fragment topFragment = SupportManager.getInstance().getTopFragment(getSupportFragmentManager());
 
             // 主页的Fragment
             if (topFragment instanceof BaseMainFragment) {
@@ -149,31 +139,31 @@ public class MainActivity extends SupportActivity
             public void run() {
                 int id = item.getItemId();
 
-                final SupportFragment topFragment = getTopFragment();
+                final SupportFragment topFragment = SupportManager.getInstance().getTopFragment(getSupportFragmentManager());
 
                 if (id == R.id.nav_home) {
 
-                    HomeFragment fragment = findFragment(HomeFragment.class);
+                    HomeFragment fragment = SupportManager.getInstance().findFragment(getSupportFragmentManager(), HomeFragment.class);
                     Bundle newBundle = new Bundle();
                     newBundle.putString("from", "主页-->来自:" + topFragment.getClass().getSimpleName());
                     fragment.putNewBundle(newBundle);
 
                     start(fragment, SupportFragment.SINGLETASK);
                 } else if (id == R.id.nav_discover) {
-                    DiscoverFragment fragment = findFragment(DiscoverFragment.class);
+                    DiscoverFragment fragment = SupportManager.getInstance().findFragment(getSupportFragmentManager(), DiscoverFragment.class);
                     if (fragment == null) {
                         popTo(HomeFragment.class, false, new Runnable() {
                             @Override
                             public void run() {
                                 start(DiscoverFragment.newInstance());
                             }
-                        });
+                        }, getFragmentAnimator().getPopExit()); // 设置pop动画为： popExit， 配合start()，视觉上动画会很合理（类似startWithPop()的动画）
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start
                         start(fragment, SupportFragment.SINGLETASK);
                     }
                 } else if (id == R.id.nav_msg) {
-                    ShopFragment fragment = findFragment(ShopFragment.class);
+                    ShopFragment fragment = SupportManager.getInstance().findFragment(getSupportFragmentManager(), ShopFragment.class);
                     if (fragment == null) {
                         popTo(HomeFragment.class, false, new Runnable() {
                             @Override
