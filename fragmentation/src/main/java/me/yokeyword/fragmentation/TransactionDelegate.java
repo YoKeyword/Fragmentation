@@ -3,7 +3,9 @@ package me.yokeyword.fragmentation;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentTransactionBugFixHack;
@@ -17,8 +19,6 @@ import android.view.animation.AnimationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.yokeyword.fragmentation.debug.DebugFragmentRecord;
-import me.yokeyword.fragmentation.debug.DebugHierarchyViewContainer;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 
@@ -27,7 +27,7 @@ import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
  * Controller
  * Created by YoKeyword on 16/1/22.
  */
-class FragmentationDelegate {
+class TransactionDelegate {
     static final String TAG = "Fragmentation";
 
     static final String FRAGMENTATION_ARG_RESULT_RECORD = "fragment_arg_result_record";
@@ -42,16 +42,19 @@ class FragmentationDelegate {
     static final int TYPE_ADD = 0;
     static final int TYPE_ADD_WITH_POP = 1;
     static final int TYPE_ADD_RESULT = 2;
+    static final int TYPE_REPLACE = 10;
+    static final int TYPE_REPLACE_RESULT = 12;
 
-    private SupportActivity mActivity;
+    private ISupportActivity mSupport;
+    private FragmentActivity mActivity;
 
     private Handler mHandler;
     private FragmentManager mPopToTempFragmentManager;
-    private AlertDialog mStackDialog;
 
-    FragmentationDelegate(SupportActivity activity) {
-        this.mActivity = activity;
-        mHandler = mActivity.getHandler();
+    TransactionDelegate(ISupportActivity support) {
+        this.mSupport = support;
+        this.mActivity = (FragmentActivity) support;
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -61,10 +64,6 @@ class FragmentationDelegate {
      * @param to          目标Fragment
      */
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to) {
-        SupportFragment fragment = findFragmentByRoot(fragmentManager, to.getClass().getName());
-        if (fragment != null && containerId == fragment.getContainerId()) {
-            return;
-        }
         bindContainerId(containerId, to);
         dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_ADD);
     }
@@ -75,8 +74,9 @@ class FragmentationDelegate {
      * @param containerId 容器id
      * @param to          目标Fragment
      */
-    void replaceLoadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
-        replaceTransaction(fragmentManager, containerId, to, addToBack);
+    void replaceLoadRootTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to) {
+        bindContainerId(containerId, to);
+        dispatchStartTransaction(fragmentManager, null, to, 0, SupportFragment.STANDARD, TYPE_REPLACE);
     }
 
     /**
@@ -115,11 +115,6 @@ class FragmentationDelegate {
         fragmentManager = checkFragmentManager(fragmentManager, from);
         if (fragmentManager == null) return;
 
-        if ((from != null && from.isRemoving())) {
-            Log.e(TAG, from.getClass().getSimpleName() + " is poped, maybe you want to call startWithPop()!");
-            return;
-        }
-
         checkNotNull(to, "toFragment == null");
 
         if (from != null) {
@@ -128,32 +123,22 @@ class FragmentationDelegate {
 
         // process SupportTransaction
         String toFragmentTag = to.getClass().getName();
+        boolean addToBackStack = true;
+        ArrayList<TransactionRecord.SharedElement> sharedElementList = null;
         TransactionRecord transactionRecord = to.getTransactionRecord();
         if (transactionRecord != null) {
             if (transactionRecord.tag != null) {
                 toFragmentTag = transactionRecord.tag;
             }
-
-            if (transactionRecord.requestCode != null && transactionRecord.requestCode != 0) {
-                requestCode = transactionRecord.requestCode;
-                type = TYPE_ADD_RESULT;
-            }
-
-            if (transactionRecord.launchMode != null) {
-                launchMode = transactionRecord.launchMode;
-            }
-
-            if (transactionRecord.withPop != null && transactionRecord.withPop) {
-                type = TYPE_ADD_WITH_POP;
-            }
-
-            // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
+            addToBackStack = transactionRecord.addToBackStack;
             if (transactionRecord.sharedElementList != null) {
+                sharedElementList = transactionRecord.sharedElementList;
+                // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
                 FragmentTransactionBugFixHack.reorderIndices(fragmentManager);
             }
         }
 
-        if (type == TYPE_ADD_RESULT) {
+        if (type == TYPE_ADD_RESULT || type == TYPE_REPLACE_RESULT) {
             saveRequestCode(to, requestCode);
         }
 
@@ -162,7 +147,9 @@ class FragmentationDelegate {
         switch (type) {
             case TYPE_ADD:
             case TYPE_ADD_RESULT:
-                start(fragmentManager, from, to, toFragmentTag, transactionRecord == null ? null : transactionRecord.sharedElementList);
+            case TYPE_REPLACE:
+            case TYPE_REPLACE_RESULT:
+                start(fragmentManager, from, to, toFragmentTag, addToBackStack, sharedElementList, type == TYPE_ADD || type == TYPE_ADD_RESULT);
                 break;
             case TYPE_ADD_WITH_POP:
                 if (from != null) {
@@ -179,36 +166,6 @@ class FragmentationDelegate {
             to.setArguments(args);
         }
         args.putInt(FRAGMENTATION_ARG_CONTAINER, containerId);
-    }
-
-    /**
-     * replace事务, 主要用于子Fragment之间的replace
-     *
-     * @param from      当前Fragment
-     * @param to        目标Fragment
-     * @param addToBack 是否添加到回退栈
-     */
-    void replaceTransaction(SupportFragment from, SupportFragment to, boolean addToBack) {
-        replaceTransaction(from.getFragmentManager(), from.getContainerId(), to, addToBack);
-    }
-
-    /**
-     * replace事务, 主要用于子Fragment之间的replace
-     */
-    private void replaceTransaction(FragmentManager fragmentManager, int containerId, SupportFragment to, boolean addToBack) {
-        fragmentManager = checkFragmentManager(fragmentManager, null);
-        if (fragmentManager == null) return;
-
-        checkNotNull(to, "toFragment == null");
-        bindContainerId(containerId, to);
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(containerId, to, to.getClass().getName());
-        if (addToBack) {
-            ft.addToBackStack(to.getClass().getName());
-        }
-        Bundle bundle = to.getArguments();
-        bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
-        supportCommit(fragmentManager, ft);
     }
 
     /**
@@ -240,7 +197,8 @@ class FragmentationDelegate {
         supportCommit(fragmentManager, ft);
     }
 
-    private void start(FragmentManager fragmentManager, final SupportFragment from, SupportFragment to, String toFragmentTag, ArrayList<TransactionRecord.SharedElement> sharedElementList) {
+    private void start(FragmentManager fragmentManager, final SupportFragment from, SupportFragment to, String toFragmentTag,
+                       boolean addToBackStack, ArrayList<TransactionRecord.SharedElement> sharedElementList, boolean addMode) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
         Bundle bundle = to.getArguments();
@@ -254,16 +212,26 @@ class FragmentationDelegate {
             }
         }
         if (from == null) {
-            ft.add(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);
+            if (addMode) {
+                ft.add(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);
+            } else {
+                ft.replace(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), to, toFragmentTag);
+            }
             bundle.putBoolean(FRAGMENTATION_ARG_IS_ROOT, true);
         } else {
-            ft.add(from.getContainerId(), to, toFragmentTag);
-            if (from.getTag() != null) {
-                ft.hide(from);
+            if (addMode) {
+                ft.add(from.getContainerId(), to, toFragmentTag);
+                if (from.getTag() != null) {
+                    ft.hide(from);
+                }
+            } else {
+                ft.replace(from.getContainerId(), to, toFragmentTag);
             }
         }
 
-        ft.addToBackStack(toFragmentTag);
+        if (addToBackStack) {
+            ft.addToBackStack(toFragmentTag);
+        }
         supportCommit(fragmentManager, ft);
     }
 
@@ -318,80 +286,12 @@ class FragmentationDelegate {
         }
     }
 
-    /**
-     * 获得栈顶SupportFragment
-     */
-    SupportFragment getTopFragment(FragmentManager fragmentManager) {
-        fragmentManager = checkFragmentManager(fragmentManager, null);
-        if (fragmentManager == null) return null;
-        List<Fragment> fragmentList = fragmentManager.getFragments();
-        if (fragmentList == null) return null;
-
-        for (int i = fragmentList.size() - 1; i >= 0; i--) {
-            Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
-                return (SupportFragment) fragment;
-            }
-        }
-        return null;
+    private SupportFragment getTopFragment(FragmentManager fragmentManager) {
+        return SupportManager.getInstance().getTopFragment(fragmentManager);
     }
 
-    /**
-     * 获取目标Fragment的前一个SupportFragment
-     *
-     * @param fragment 目标Fragment
-     */
-    SupportFragment getPreFragment(Fragment fragment) {
-        FragmentManager fragmentManager = fragment.getFragmentManager();
-        fragmentManager = checkFragmentManager(fragmentManager, null);
-        if (fragmentManager == null) return null;
-
-        List<Fragment> fragmentList = fragmentManager.getFragments();
-        if (fragmentList == null) return null;
-
-        int index = fragmentList.indexOf(fragment);
-        for (int i = index - 1; i >= 0; i--) {
-            Fragment preFragment = fragmentList.get(i);
-            if (preFragment instanceof SupportFragment) {
-                return (SupportFragment) preFragment;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * find Fragment from FragmentStack
-     */
-    @SuppressWarnings("unchecked")
-    <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
-        fragmentManager = checkFragmentManager(fragmentManager, null);
-        if (fragmentManager == null) return null;
-
-        Fragment fragment = null;
-
-        if (toFragmentTag == null) {
-            // 如果是 查找Fragment时,则有可能是在FragmentPagerAdapter,这种情况下,
-            // 它们的Tag是以android:switcher开头,所以这里我们使用下面的方式
-            List<Fragment> fragmentList = fragmentManager.getFragments();
-            if (fragmentList == null) return null;
-
-            int sizeChildFrgList = fragmentList.size();
-
-            for (int i = sizeChildFrgList - 1; i >= 0; i--) {
-                Fragment brotherFragment = fragmentList.get(i);
-                if (brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
-                    fragment = brotherFragment;
-                    break;
-                }
-            }
-        } else {
-            fragment = fragmentManager.findFragmentByTag(toFragmentTag);
-        }
-
-        if (fragment == null) {
-            return null;
-        }
-        return (T) fragment;
+    private SupportFragment getPreFragment(Fragment fragment) {
+        return SupportManager.getInstance().getPreFragment(fragment);
     }
 
     /**
@@ -407,26 +307,6 @@ class FragmentationDelegate {
             }
         }
         return null;
-    }
-
-    /**
-     * 从栈顶开始查找,状态为show & userVisible的Fragment
-     */
-    SupportFragment getActiveFragment(SupportFragment parentFragment, FragmentManager fragmentManager) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
-        if (fragmentList == null) {
-            return parentFragment;
-        }
-        for (int i = fragmentList.size() - 1; i >= 0; i--) {
-            Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
-                SupportFragment supportFragment = (SupportFragment) fragment;
-                if (supportFragment.isResumed() && !supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
-                    return getActiveFragment(supportFragment, supportFragment.getChildFragmentManager());
-                }
-            }
-        }
-        return parentFragment;
     }
 
     /**
@@ -454,7 +334,7 @@ class FragmentationDelegate {
     private boolean handleLaunchMode(FragmentManager fragmentManager, final SupportFragment toFragment, String toFragmentTag, int launchMode) {
         SupportFragment topFragment = getTopFragment(fragmentManager);
         if (topFragment == null) return false;
-        final Fragment stackToFragment = findStackFragment(toFragment.getClass(), toFragmentTag, fragmentManager);
+        final Fragment stackToFragment = SupportManager.getInstance().findStackFragment(toFragment.getClass(), toFragmentTag, fragmentManager);
         if (stackToFragment == null) return false;
 
         if (launchMode == SupportFragment.SINGLETOP) {
@@ -621,10 +501,10 @@ class FragmentationDelegate {
     private void popToFix(String fragmentTag, int flag, final FragmentManager fragmentManager) {
         if (fragmentManager.getFragments() == null) return;
 
-        mActivity.preparePopMultiple();
+        mSupport.getSupportDelegate().mPopMultipleNoAnim = true;
         fragmentManager.popBackStack(fragmentTag, flag);
         fragmentManager.executePendingTransactions();
-        mActivity.popFinish();
+        mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
 
         mHandler.post(new Runnable() {
             @Override
@@ -736,110 +616,6 @@ class FragmentationDelegate {
             return mPopToTempFragmentManager;
         }
         return fragmentManager;
-    }
-
-    /**
-     * 调试相关:以dialog形式 显示 栈视图
-     */
-    void showFragmentStackHierarchyView() {
-        if (mStackDialog != null && mStackDialog.isShowing()) return;
-        DebugHierarchyViewContainer container = new DebugHierarchyViewContainer(mActivity);
-        container.bindFragmentRecords(getFragmentRecords());
-        container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        mStackDialog = new AlertDialog.Builder(mActivity)
-                .setTitle("栈视图")
-                .setView(container)
-                .setPositiveButton("关闭", null)
-                .setCancelable(true)
-                .create();
-        mStackDialog.show();
-    }
-
-    /**
-     * 调试相关:以log形式 打印 栈视图
-     */
-    void logFragmentRecords(String tag) {
-        List<DebugFragmentRecord> fragmentRecordList = getFragmentRecords();
-        if (fragmentRecordList == null) return;
-
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = fragmentRecordList.size() - 1; i >= 0; i--) {
-            DebugFragmentRecord fragmentRecord = fragmentRecordList.get(i);
-
-            if (i == fragmentRecordList.size() - 1) {
-                sb.append("═══════════════════════════════════════════════════════════════════════════════════\n");
-                if (i == 0) {
-                    sb.append("\t栈顶\t\t\t").append(fragmentRecord.fragmentName).append("\n");
-                    sb.append("═══════════════════════════════════════════════════════════════════════════════════");
-                } else {
-                    sb.append("\t栈顶\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
-                }
-            } else if (i == 0) {
-                sb.append("\t栈底\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
-                processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
-                sb.append("═══════════════════════════════════════════════════════════════════════════════════");
-                Log.i(tag, sb.toString());
-                return;
-            } else {
-                sb.append("\t↓\t\t\t").append(fragmentRecord.fragmentName).append("\n\n");
-            }
-
-            processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
-        }
-    }
-
-    private List<DebugFragmentRecord> getFragmentRecords() {
-        List<DebugFragmentRecord> fragmentRecordList = new ArrayList<>();
-
-        List<Fragment> fragmentList = mActivity.getSupportFragmentManager().getFragments();
-
-        if (fragmentList == null || fragmentList.size() < 1) return null;
-
-        for (Fragment fragment : fragmentList) {
-            if (fragment == null) continue;
-            fragmentRecordList.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
-        }
-        return fragmentRecordList;
-    }
-
-    private void processChildLog
-            (List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
-        if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
-
-        for (int j = 0; j < fragmentRecordList.size(); j++) {
-            DebugFragmentRecord childFragmentRecord = fragmentRecordList.get(j);
-            for (int k = 0; k < childHierarchy; k++) {
-                sb.append("\t\t\t");
-            }
-            if (j == 0) {
-                sb.append("\t子栈顶\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
-            } else if (j == fragmentRecordList.size() - 1) {
-                sb.append("\t子栈底\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
-                processChildLog(childFragmentRecord.childFragmentRecord, sb, ++childHierarchy);
-                return;
-            } else {
-                sb.append("\t↓\t\t\t").append(childFragmentRecord.fragmentName).append("\n\n");
-            }
-
-            processChildLog(childFragmentRecord.childFragmentRecord, sb, childHierarchy);
-        }
-    }
-
-    private List<DebugFragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
-        List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
-
-        List<Fragment> fragmentList = parentFragment.getChildFragmentManager().getFragments();
-        if (fragmentList == null || fragmentList.size() < 1) return null;
-
-
-        for (int i = fragmentList.size() - 1; i >= 0; i--) {
-            Fragment fragment = fragmentList.get(i);
-            if (fragment != null) {
-                fragmentRecords.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
-            }
-        }
-        return fragmentRecords;
     }
 
     private interface Callback {

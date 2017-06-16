@@ -5,14 +5,11 @@ import android.view.View;
 import java.util.ArrayList;
 
 /**
- * @Hide
- * Created by YoKey on 16/11/25.
+ * @Hide Created by YoKey on 16/11/25.
  */
 public final class TransactionRecord {
     public String tag;
-    public Integer requestCode;
-    public Integer launchMode;
-    public Boolean withPop;
+    public boolean addToBackStack = true;
     public ArrayList<SharedElement> sharedElementList;
 
     public static class SharedElement {
