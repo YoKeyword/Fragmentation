@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import me.yokeyword.fragmentation.SupportActivity;
+import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
@@ -20,7 +21,7 @@ public class MainActivity extends SupportActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wechat_activity_main);
 
-        if (savedInstanceState == null) {
+        if (SupportHelper.findFragment(getSupportFragmentManager(),MainFragment.class) == null) {
             loadRootFragment(R.id.fl_container, MainFragment.newInstance());
         }
     }

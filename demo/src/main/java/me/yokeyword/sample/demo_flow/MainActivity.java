@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.SupportManager;
+import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
@@ -49,7 +49,8 @@ public class MainActivity extends SupportActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
+        SupportFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), HomeFragment.class);
+        if (fragment == null) {
             loadRootFragment(R.id.fl_container, HomeFragment.newInstance());
         }
 
@@ -84,7 +85,6 @@ public class MainActivity extends SupportActivity
             @Override
             public void onClick(View v) {
                 mDrawer.closeDrawer(GravityCompat.START);
-
                 mDrawer.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -100,7 +100,7 @@ public class MainActivity extends SupportActivity
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            Fragment topFragment = SupportManager.getInstance().getTopFragment(getSupportFragmentManager());
+            Fragment topFragment = SupportHelper.getTopFragment(getSupportFragmentManager());
 
             // 主页的Fragment
             if (topFragment instanceof BaseMainFragment) {
@@ -139,18 +139,18 @@ public class MainActivity extends SupportActivity
             public void run() {
                 int id = item.getItemId();
 
-                final SupportFragment topFragment = SupportManager.getInstance().getTopFragment(getSupportFragmentManager());
+                final SupportFragment topFragment = SupportHelper.getTopFragment(getSupportFragmentManager());
 
                 if (id == R.id.nav_home) {
 
-                    HomeFragment fragment = SupportManager.getInstance().findFragment(getSupportFragmentManager(), HomeFragment.class);
+                    HomeFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), HomeFragment.class);
                     Bundle newBundle = new Bundle();
                     newBundle.putString("from", "主页-->来自:" + topFragment.getClass().getSimpleName());
                     fragment.putNewBundle(newBundle);
 
                     start(fragment, SupportFragment.SINGLETASK);
                 } else if (id == R.id.nav_discover) {
-                    DiscoverFragment fragment = SupportManager.getInstance().findFragment(getSupportFragmentManager(), DiscoverFragment.class);
+                    DiscoverFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), DiscoverFragment.class);
                     if (fragment == null) {
                         popTo(HomeFragment.class, false, new Runnable() {
                             @Override
@@ -163,7 +163,7 @@ public class MainActivity extends SupportActivity
                         start(fragment, SupportFragment.SINGLETASK);
                     }
                 } else if (id == R.id.nav_msg) {
-                    ShopFragment fragment = SupportManager.getInstance().findFragment(getSupportFragmentManager(), ShopFragment.class);
+                    ShopFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), ShopFragment.class);
                     if (fragment == null) {
                         popTo(HomeFragment.class, false, new Runnable() {
                             @Override

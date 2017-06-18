@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import me.yokeyword.fragmentation.SupportManager;
+import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.ShopFragment;
@@ -35,13 +35,10 @@ public class ZhihuThirdFragment extends BaseMainFragment {
     @Override
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         super.onLazyInitView(savedInstanceState);
-        if (savedInstanceState == null) {
+
+        if (SupportHelper.findFragment(getChildFragmentManager(), ShopFragment.class) == null) {
             // ShopFragment是flow包里的
             loadRootFragment(R.id.fl_third_container, ShopFragment.newInstance());
-        } else { // 这里可能会出现该Fragment没被初始化时,就被强杀导致的没有load子Fragment
-            if (SupportManager.getInstance().findFragment(getChildFragmentManager(), ShopFragment.class) == null) {
-                loadRootFragment(R.id.fl_third_container, ShopFragment.newInstance());
-            }
         }
     }
 }

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.second.child.ViewPagerFragment;
@@ -33,7 +34,7 @@ public class ZhihuSecondFragment extends BaseMainFragment {
     }
 
     private void initView(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
+        if (SupportHelper.findFragment(getChildFragmentManager(),ViewPagerFragment.class) == null) {
             loadRootFragment(R.id.fl_second_container, ViewPagerFragment.newInstance());
         }
     }

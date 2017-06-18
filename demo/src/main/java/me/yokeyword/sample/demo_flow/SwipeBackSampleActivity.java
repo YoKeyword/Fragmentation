@@ -2,6 +2,7 @@ package me.yokeyword.sample.demo_flow;
 
 import android.os.Bundle;
 
+import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.fragmentation.SwipeBackLayout;
 import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
@@ -19,7 +20,7 @@ public class SwipeBackSampleActivity extends SwipeBackActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe_back);
 
-        if (savedInstanceState == null) {
+        if (SupportHelper.findFragment(getSupportFragmentManager(),FirstSwipeBackFragment.class) == null) {
             loadRootFragment(R.id.fl_container, FirstSwipeBackFragment.newInstance());
         }
 

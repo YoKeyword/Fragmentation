@@ -74,6 +74,7 @@ public class DetailFragment extends BaseBackFragment {
      */
     @Override
     protected void onEnterAnimationEnd(Bundle savedInstanceState) {
+        super.onEnterAnimationEnd(savedInstanceState);
         initDelayView();
     }
 

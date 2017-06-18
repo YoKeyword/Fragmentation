@@ -23,7 +23,7 @@ public class NewFeatureFragment extends SupportFragment {
     // 模拟执行一次 start Fragment
     private void onClickStartButton() {
         HomeFragment homeFragment = HomeFragment.newInstance();
-        homeFragment.transaction()
+        homeFragment.extraTransaction()
                 .setTag("我是自定义Tag")
 //                .addSharedElement() // 等同：startWithSharedElement
                 .start(homeFragment);
@@ -32,7 +32,7 @@ public class NewFeatureFragment extends SupportFragment {
     // 模拟执行一次 出栈
     private void onClickPopButton() {
 //       SupportFragment fragment =  findFragment("我是自定义Tag");
-        popTo("我是自定义Tag", false);
+        extraTransaction().popTo("我是自定义Tag", false);
     }
 
     @Override

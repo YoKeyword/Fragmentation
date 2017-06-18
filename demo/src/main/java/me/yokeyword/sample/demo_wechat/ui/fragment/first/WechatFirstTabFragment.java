@@ -105,7 +105,7 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
                 // 这里我使用EventBus通知父MainFragment处理跳转(接耦),
                 EventBus.getDefault().post(new StartBrotherEvent(MsgFragment.newInstance(mAdapter.getMsg(position))));
 
-                // 也可以像使用getParentFragment()的方式,拿到父Fragment的引用来操作 (不建议)
+                // 也可以像使用getParentFragment()的方式,拿到父Fragment的引用来操作
 //              ((MainFragment) getParentFragment()).startMsgBrother(MsgFragment.newInstance());
             }
         });
@@ -163,7 +163,6 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mRecy.setAdapter(null);
         EventBus.getDefault().unregister(this);
     }
 }

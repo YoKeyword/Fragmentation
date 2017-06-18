@@ -11,7 +11,7 @@ import me.yokeyword.sample.demo_zhihu.ui.fragment.second.child.childpager.OtherP
  * Created by YoKeyword on 16/6/5.
  */
 public class ZhihuPagerFragmentAdapter extends FragmentPagerAdapter {
-    private String[] mTab = new String[]{"推荐", "热门", "收藏"};
+    private String[] mTab = new String[]{"推荐", "热门", "收藏", "更多"};
 
     public ZhihuPagerFragmentAdapter(FragmentManager fm) {
         super(fm);

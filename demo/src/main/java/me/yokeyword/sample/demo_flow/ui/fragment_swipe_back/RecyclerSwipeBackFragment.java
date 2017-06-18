@@ -66,10 +66,4 @@ public class RecyclerSwipeBackFragment extends BaseSwipeBackFragment {
         }
         mAdapter.setDatas(items);
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mRecy.setAdapter(null);
-    }
 }

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.SupportManager;
+import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
 
@@ -45,7 +45,7 @@ public class ShopFragment extends BaseMainFragment {
         mToolbar.setTitle("商店");
         initToolbarNav(mToolbar);
 
-        if (savedInstanceState == null) {
+        if (SupportHelper.findFragment(getChildFragmentManager(), MenuListFragment.class) == null) {
             ArrayList<String> listMenus = new ArrayList<>();
             listMenus.add("销量排行");
             listMenus.add("当季特选");
@@ -66,9 +66,8 @@ public class ShopFragment extends BaseMainFragment {
 
             MenuListFragment menuListFragment = MenuListFragment.newInstance(listMenus);
             loadRootFragment(R.id.fl_list_container, menuListFragment);
-
-            transaction().addToBackStack(false)
-                    .replaceLoadRootFragment(R.id.fl_content_container, ContentFragment.newInstance("销量排行"));
+            // false:  不加入回退栈;  false: 不显示动画
+            loadRootFragment(R.id.fl_content_container, ContentFragment.newInstance("销量排行"), false, false);
         }
     }
 
@@ -85,9 +84,9 @@ public class ShopFragment extends BaseMainFragment {
      * @param fragment
      */
     public void switchContentFragment(ContentFragment fragment) {
-        SupportFragment contentFragment = SupportManager.getInstance().findFragment(getChildFragmentManager(), ContentFragment.class);
+        SupportFragment contentFragment = SupportHelper.findFragment(getChildFragmentManager(), ContentFragment.class);
         if (contentFragment != null) {
-            contentFragment.replaceFragment(fragment, false);
+            contentFragment.replaceFragment(contentFragment, false);
         }
     }
 }

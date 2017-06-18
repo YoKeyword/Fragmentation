@@ -21,7 +21,6 @@ import me.yokeyword.fragmentation.ISupportActivity;
 import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
-import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.adapter.HomeAdapter;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
@@ -62,14 +61,6 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
         initView(view);
 
         return view;
-    }
-
-    @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
-        // 默认不改变
-//         return super.onCreateFragmentAnimation();
-        // 在进入和离开时 设定无动画
-        return new DefaultNoAnimator();
     }
 
     private void initView(View view) {
@@ -165,11 +156,5 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
                 break;
         }
         return true;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mRecy.setAdapter(null);
     }
 }
