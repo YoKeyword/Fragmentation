@@ -11,6 +11,6 @@ android {
 }
 
 dependencies {
-    provided 'com.android.support:appcompat-v7:25.1.0'
+    provided 'com.android.support:appcompat-v7:25.4.0'
     provided project(':fragmentation')
 }
