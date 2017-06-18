@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
@@ -21,7 +20,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
-import me.yokeyword.fragmentation.helper.internal.OnFragmentDestoryViewListener;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
 import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 import me.yokeyword.fragmentation.helper.internal.VisibleDelegate;
@@ -44,7 +42,7 @@ public class SupportFragment extends Fragment {
 
     private Bundle mNewBundle;
 
-    boolean mIsRoot, mIsSharedElement;
+    boolean mEnterAnimDisable, mIsSharedElement;
     private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
 
     // SupportVisible
@@ -60,18 +58,20 @@ public class SupportFragment extends Fragment {
     private int mContainerId;   // 该Fragment所处的Container的id
 
     private FragmentAnimator mFragmentAnimator;
-    private AnimatorHelper mAnimHelper;
+    AnimatorHelper mAnimHelper;
 
+    private boolean mFirstCreateView = true;
     boolean mLockAnim;
-
-    private OnFragmentDestoryViewListener mOnDestoryViewListener;
 
     private TransactionRecord mTransactionRecord;
     private Handler mHandler;
 
+    // start() or replace()
+    private boolean mReplaceMode;
+
     @IntDef({STANDARD, SINGLETOP, SINGLETASK})
     @Retention(RetentionPolicy.SOURCE)
-    @interface LaunchMode {
+    public @interface LaunchMode {
     }
 
     @Override
@@ -94,25 +94,18 @@ public class SupportFragment extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mIsRoot = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_ROOT, false);
+            mEnterAnimDisable = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_ANIM_DISABLE, false);
             mIsSharedElement = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
+            mReplaceMode = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_REPLACE, false);
         }
 
         if (savedInstanceState == null) {
-            mFragmentAnimator = onCreateFragmentAnimator();
-            if (mFragmentAnimator == null) {
-                mFragmentAnimator = mSupport.getFragmentAnimator();
-            }
+            getFragmentAnimator();
         } else {
             mSaveInstanceState = savedInstanceState;
             mFragmentAnimator = savedInstanceState.getParcelable(TransactionDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
-            if (mContainerId == 0) { // After strong kill, mContianerId may not be correct restored.
-                mIsRoot = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_ROOT, false);
-                mIsSharedElement = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
-                mContainerId = savedInstanceState.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
-            }
         }
 
         if (restoreInstanceState()) {
@@ -146,27 +139,14 @@ public class SupportFragment extends Fragment {
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
         // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
         mAnimHelper.enterAnim.setAnimationListener(new Animation.AnimationListener() {
-            private float oldTranslationZ;
 
             @Override
             public void onAnimationStart(Animation animation) {
-                if (getView() != null) {
-                    oldTranslationZ = ViewCompat.getTranslationZ(getView());
-                    ViewCompat.setTranslationZ(getView(), oldTranslationZ + 1);
-                }
                 mSupport.getSupportDelegate().mFragmentClickable = false;  // 开启防抖动
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                if (getView() != null) {
-                    getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            ViewCompat.setTranslationZ(getView(), oldTranslationZ);
-                        }
-                    });
-                }
                 notifyEnterAnimEnd();
             }
 
@@ -178,7 +158,7 @@ public class SupportFragment extends Fragment {
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (mSupport.getSupportDelegate().mPopMultipleNoAnim || mLockAnim) {
+        if ((mSupport.getSupportDelegate().mPopMultipleNoAnim || mLockAnim)) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
                 return mAnimHelper.getNoneAnimFixed();
             }
@@ -186,7 +166,7 @@ public class SupportFragment extends Fragment {
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                if (mIsRoot) return mAnimHelper.getNoneAnim();
+                if (mEnterAnimDisable) return mAnimHelper.getNoneAnim();
                 return mAnimHelper.enterAnim;
             } else {
                 return mAnimHelper.popExitAnim;
@@ -207,13 +187,6 @@ public class SupportFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         getVisibleDelegate().onSaveInstanceState(outState);
-        if (mIsRoot) {
-            outState.putBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_ROOT, true);
-        }
-        if (mIsSharedElement) {
-            outState.putBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
-        }
-        outState.putInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER, mContainerId);
         outState.putParcelable(TransactionDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, isHidden());
     }
@@ -229,10 +202,15 @@ public class SupportFragment extends Fragment {
             initFragmentBackground(view);
         }
 
-        if (savedInstanceState != null || mIsRoot || (getTag() != null && getTag().startsWith("android:switcher:"))) {
+        if (savedInstanceState != null || mEnterAnimDisable || (getTag() != null && getTag().startsWith("android:switcher:")) || (mReplaceMode && !mFirstCreateView)) {
             notifyNoAnim();
         }
+
+        if (mFirstCreateView) {
+            mFirstCreateView = false;
+        }
     }
+
 
     private void notifyNoAnim() {
         notifyEnterAnimationEnd(mSaveInstanceState);
@@ -244,7 +222,7 @@ public class SupportFragment extends Fragment {
     }
 
     protected void setBackground(View view) {
-        if (view != null && view.getBackground() == null) {
+        if (view.getBackground() == null) {
             int defaultBg = mSupport.getSupportDelegate().getDefaultFragmentBackground();
             if (defaultBg == 0) {
                 int background = getWindowBackground();
@@ -342,31 +320,12 @@ public class SupportFragment extends Fragment {
         return mContainerId;
     }
 
-    long getEnterAnimDuration() {
-        if (mIsRoot) {
-            return 0;
-        }
-        if (mAnimHelper == null) {
-            return DEFAULT_ANIM_DURATION;
-        }
-        return mAnimHelper.enterAnim.getDuration();
-    }
-
     long getExitAnimDuration() {
         if (mAnimHelper == null) {
             return DEFAULT_ANIM_DURATION;
         }
         return mAnimHelper.exitAnim.getDuration();
     }
-
-    Animation getPopExitAnim() {
-        return mAnimHelper.popExitAnim;
-    }
-
-    Animation getExitAnim() {
-        return mAnimHelper.exitAnim;
-    }
-
 
     private void notifyEnterAnimationEnd(final Bundle savedInstanceState) {
         getHandler().post(new Runnable() {
@@ -377,7 +336,7 @@ public class SupportFragment extends Fragment {
         });
     }
 
-    public Handler getHandler() {
+    private Handler getHandler() {
         if (mHandler == null) {
             mHandler = new Handler(Looper.getMainLooper());
         }
@@ -389,6 +348,31 @@ public class SupportFragment extends Fragment {
      */
     protected FragmentAnimator onCreateFragmentAnimator() {
         return mSupport.getFragmentAnimator();
+    }
+
+    /**
+     * 获取设置的全局动画 copy
+     *
+     * @return FragmentAnimator
+     */
+    public FragmentAnimator getFragmentAnimator() {
+        if(mSupport == null) throw new RuntimeException("Fragment has not been attached to Activity!");
+
+        if (mFragmentAnimator == null) {
+            mFragmentAnimator = onCreateFragmentAnimator();
+            if (mFragmentAnimator == null) {
+                mFragmentAnimator = mSupport.getFragmentAnimator();
+            }
+        }
+        return mFragmentAnimator;
+    }
+
+    /**
+     * 设置Fragment内的全局动画
+     */
+    public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
+        this.mFragmentAnimator = fragmentAnimator;
+        mAnimHelper.notifyChanged(fragmentAnimator);
     }
 
     /**
@@ -435,8 +419,11 @@ public class SupportFragment extends Fragment {
     /**
      * Add some action when calling start()/startXX()
      */
-    public SupportTransaction transaction() {
-        return new SupportTransaction.SupportTransactionImpl<>(this);
+    public ExtraTransaction extraTransaction() {
+        if (mTransactionDelegate == null)
+            throw new RuntimeException(this.getClass().getSimpleName() + " not attach!");
+
+        return new ExtraTransaction.ExtraTransactionImpl<>(this, mTransactionDelegate, false);
     }
 
     /**
@@ -446,14 +433,11 @@ public class SupportFragment extends Fragment {
      * @param toFragment  目标Fragment
      */
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        mTransactionDelegate.loadRootTransaction(getChildFragmentManager(), containerId, toFragment);
+        loadRootFragment(containerId, toFragment, true, false);
     }
 
-    /**
-     * 以replace方式加载根Fragment
-     */
-    public void replaceLoadRootFragment(int containerId, SupportFragment toFragment) {
-        mTransactionDelegate.replaceLoadRootTransaction(getChildFragmentManager(), containerId, toFragment);
+    public void loadRootFragment(int containerId, SupportFragment toFragment, boolean addToBackStack, boolean allowAnim) {
+        mTransactionDelegate.loadRootTransaction(getChildFragmentManager(), containerId, toFragment, addToBackStack, allowAnim);
     }
 
     /**
@@ -510,16 +494,8 @@ public class SupportFragment extends Fragment {
         mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
     }
 
-    public void replace(SupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, TransactionDelegate.TYPE_REPLACE);
-    }
-
-    public void replace(SupportFragment toFragment, @LaunchMode int launchMode) {
-        mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, launchMode, TransactionDelegate.TYPE_REPLACE);
-    }
-
-    public void replaceForResult(SupportFragment toFragment, int requestCode) {
-        mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, requestCode, STANDARD, TransactionDelegate.TYPE_REPLACE_RESULT);
+    public void replaceFragment(SupportFragment toFragment, boolean addToBackStack) {
+        mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), this, toFragment, 0, STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
     }
 
     /**
@@ -543,57 +519,33 @@ public class SupportFragment extends Fragment {
      * @param includeTargetFragment 是否包含该fragment
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment);
-    }
-
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment) {
-        popTo(targetFragmentTag, includeTargetFragment, null);
+        popTo(targetFragmentClass, includeTargetFragment, null);
     }
 
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, 0);
-    }
-
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, 0);
+        popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, popAnim);
-    }
-
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        mTransactionDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getFragmentManager(), popAnim);
+        mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, getFragmentManager(), popAnim);
     }
 
     /**
      * 子栈内
      */
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment) {
-        popToChild(targetFragmentClass.getName(), includeTargetFragment);
-    }
-
-    public void popToChild(String targetFragmentTag, boolean includeTargetFragment) {
-        popToChild(targetFragmentTag, includeTargetFragment, null);
+        popToChild(targetFragmentClass, includeTargetFragment, null);
     }
 
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popToChild(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, 0);
-    }
-
-    public void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popToChild(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, 0);
+        popToChild(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        popToChild(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, popAnim);
-    }
-
-    public void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        mTransactionDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager(), popAnim);
+        mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager(), popAnim);
     }
 
     /**
@@ -664,22 +616,11 @@ public class SupportFragment extends Fragment {
         return mVisibleDelegate;
     }
 
-    /**
-     * @see OnFragmentDestoryViewListener
-     */
-    void setOnFragmentDestoryViewListener(OnFragmentDestoryViewListener listener) {
-        this.mOnDestoryViewListener = listener;
-    }
-
     @Override
     public void onDestroyView() {
         mSupport.getSupportDelegate().mFragmentClickable = true;
         super.onDestroyView();
         getVisibleDelegate().onDestroyView();
-        if (mOnDestoryViewListener != null) {
-            mOnDestoryViewListener.onDestoryView();
-            mOnDestoryViewListener = null;
-        }
     }
 
     @Override

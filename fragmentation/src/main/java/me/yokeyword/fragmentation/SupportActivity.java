@@ -1,6 +1,7 @@
 package me.yokeyword.fragmentation;
 
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -12,6 +13,16 @@ import me.yokeyword.fragmentation.anim.FragmentAnimator;
  */
 public class SupportActivity extends AppCompatActivity implements ISupportActivity {
     final SupportActivityDelegate mDelegate = new SupportActivityDelegate(this);
+
+    @Override
+    public SupportActivityDelegate getSupportDelegate() {
+        return mDelegate;
+    }
+
+    @Override
+    public ExtraTransaction extraTransaction() {
+        return mDelegate.extraTransaction();
+    }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -84,23 +95,20 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
         return mDelegate.onCreateFragmentAnimator();
     }
 
+    /**********************************************************************************************/
+
     /**
      * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
      *
      * @param containerId 容器id
      * @param toFragment  目标Fragment
      */
-    @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
         mDelegate.loadRootFragment(containerId, toFragment);
     }
 
-    /**
-     * 以replace方式加载根Fragment
-     */
-    @Override
-    public void replaceLoadRootFragment(int containerId, SupportFragment toFragment) {
-        mDelegate.replaceLoadRootFragment(containerId, toFragment);
+    public void loadRootFragment(int containerId, SupportFragment toFragment, boolean addToBackStack, boolean allowAnimation) {
+        mDelegate.loadRootFragment(containerId, toFragment, addToBackStack, allowAnimation);
     }
 
     /**
@@ -109,7 +117,6 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * @param containerId 容器id
      * @param toFragments 目标Fragments
      */
-    @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
         mDelegate.loadMultipleRootFragment(containerId, showPosition, toFragments);
     }
@@ -122,8 +129,6 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      *
      * @param showFragment 需要show的Fragment
      */
-    @Override
-    @Deprecated
     public void showHideFragment(SupportFragment showFragment) {
         mDelegate.showHideFragment(showFragment);
     }
@@ -134,7 +139,6 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * @param showFragment 需要show的Fragment
      * @param hideFragment 需要hide的Fragment
      */
-    @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
         mDelegate.showHideFragment(showFragment, hideFragment);
     }
@@ -144,30 +148,29 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      *
      * @param toFragment 目标Fragment
      */
-    @Override
     public void start(SupportFragment toFragment) {
         mDelegate.start(toFragment);
     }
 
-    @Override
     public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
         mDelegate.start(toFragment, launchMode);
     }
 
-    @Override
     public void startForResult(SupportFragment toFragment, int requestCode) {
         mDelegate.startForResult(toFragment, requestCode);
     }
 
-    @Override
     public void startWithPop(SupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);
+    }
+
+    public void replaceFragment(SupportFragment toFragment, boolean addToBackStack) {
+        mDelegate.replaceFragment(toFragment, addToBackStack);
     }
 
     /**
      * 出栈
      */
-    @Override
     public void pop() {
         mDelegate.pop();
     }
@@ -178,41 +181,27 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * @param targetFragmentClass   目标fragment
      * @param includeTargetFragment 是否包含该fragment
      */
-    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
         mDelegate.popTo(targetFragmentClass, includeTargetFragment);
-    }
-
-    @Override
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment) {
-        mDelegate.popTo(targetFragmentTag, includeTargetFragment);
     }
 
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
-    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
         mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable);
     }
 
-    @Override
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        mDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable);
-    }
-
-    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
         mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, popAnim);
     }
 
-    @Override
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        mDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, popAnim);
-    }
-
-    @Override
-    public SupportActivityDelegate getSupportDelegate() {
-        return mDelegate;
+    /**
+     * 当Fragment根布局 没有 设定background属性时,
+     * Fragmentation默认使用Theme的android:windowbackground作为Fragment的背景,
+     * 可以通过该方法改变Fragment背景。
+     */
+    public void setDefaultFragmentBackground(@DrawableRes int backgroundRes) {
+        mDelegate.setDefaultFragmentBackground(backgroundRes);
     }
 }

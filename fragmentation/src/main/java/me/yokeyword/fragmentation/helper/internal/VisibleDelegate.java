@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentationHack;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ public class VisibleDelegate {
     private boolean mIsFirstVisible = true;
     private boolean mFixStatePagerAdapter;
     private Bundle mSaveInstanceState;
+    private boolean mFirstCreateViewCompatReplace = true;
+    private boolean mLazyInitCompatReplace = true;
 
     private SupportFragment mSupportFragment;
 
@@ -44,6 +47,14 @@ public class VisibleDelegate {
     }
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        if (!mFirstCreateViewCompatReplace && mSupportFragment.getTag() != null && mSupportFragment.getTag().startsWith("android:switcher:")) {
+            return;
+        }
+
+        if (mFirstCreateViewCompatReplace) {
+            mFirstCreateViewCompatReplace = false;
+        }
+
         if (!mInvisibleWhenLeave && !mSupportFragment.isHidden() &&
                 (mSupportFragment.getUserVisibleHint() || mFixStatePagerAdapter)) {
             if ((mSupportFragment.getParentFragment() != null && isFragmentVisible(mSupportFragment.getParentFragment()))
@@ -103,8 +114,9 @@ public class VisibleDelegate {
         if (visible) {
             mSupportFragment.onSupportVisible();
 
-            if (mIsFirstVisible) {
+            if (mIsFirstVisible && mLazyInitCompatReplace) {
                 mIsFirstVisible = false;
+                mLazyInitCompatReplace = false;
                 mSupportFragment.onLazyInitView(mSaveInstanceState);
             }
         } else {
@@ -116,7 +128,7 @@ public class VisibleDelegate {
         } else {
             FragmentManager fragmentManager = mSupportFragment.getChildFragmentManager();
             if (fragmentManager != null) {
-                List<Fragment> childFragments = fragmentManager.getFragments();
+                List<Fragment> childFragments = FragmentationHack.getActiveFragments(fragmentManager);
                 if (childFragments != null) {
                     for (Fragment child : childFragments) {
                         if (child instanceof SupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
@@ -135,4 +147,5 @@ public class VisibleDelegate {
     public boolean isSupportVisible() {
         return mIsSupportVisible;
     }
+
 }

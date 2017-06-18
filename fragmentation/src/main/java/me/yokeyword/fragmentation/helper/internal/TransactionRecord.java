@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public final class TransactionRecord {
     public String tag;
-    public boolean addToBackStack = true;
+    public boolean dontAddToBackStack = false;
     public ArrayList<SharedElement> sharedElementList;
 
     public static class SharedElement {

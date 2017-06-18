@@ -3,6 +3,7 @@ package me.yokeyword.fragmentation;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentationHack;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -12,29 +13,16 @@ import java.util.List;
  * Created by YoKey on 17/6/13.
  */
 
-public class SupportManager {
+public class SupportHelper {
     private static final long SHOW_SPACE = 200L;
 
-    private static volatile SupportManager INSTANCE;
-
-    private SupportManager() {
-    }
-
-    public static SupportManager getInstance() {
-        if (INSTANCE == null) {
-            synchronized (SupportManager.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new SupportManager();
-                }
-            }
-        }
-        return INSTANCE;
+    private SupportHelper() {
     }
 
     /**
      * 显示软键盘
      */
-    public void showSoftInput(final View view) {
+    public static void showSoftInput(final View view) {
         if (view == null || view.getContext() == null) return;
         final InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         view.requestFocus();
@@ -49,31 +37,31 @@ public class SupportManager {
     /**
      * 隐藏软键盘
      */
-    public void hideSoftInput(Fragment fragment) {
-        if (fragment.getView() == null || fragment.getActivity() == null) return;
-        InputMethodManager imm = (InputMethodManager) fragment.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(fragment.getView().getWindowToken(), 0);
+    public static void hideSoftInput(View view) {
+        if (view == null || view.getContext() == null) return;
+        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**
      * 显示栈视图dialog,调试时使用
      */
-    public void showFragmentStackHierarchyView(ISupportActivity support) {
+    public static void showFragmentStackHierarchyView(ISupportActivity support) {
         support.getSupportDelegate().showFragmentStackHierarchyView();
     }
 
     /**
      * 显示栈视图日志,调试时使用
      */
-    public void logFragmentStackHierarchy(ISupportActivity support, String TAG) {
+    public static void logFragmentStackHierarchy(ISupportActivity support, String TAG) {
         support.getSupportDelegate().logFragmentStackHierarchy(TAG);
     }
 
     /**
      * 获得栈顶SupportFragment
      */
-    public SupportFragment getTopFragment(FragmentManager fragmentManager) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
+    public static SupportFragment getTopFragment(FragmentManager fragmentManager) {
+        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
         if (fragmentList == null) return null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
@@ -90,11 +78,11 @@ public class SupportManager {
      *
      * @param fragment 目标Fragment
      */
-    public SupportFragment getPreFragment(Fragment fragment) {
+    public static SupportFragment getPreFragment(Fragment fragment) {
         FragmentManager fragmentManager = fragment.getFragmentManager();
         if (fragmentManager == null) return null;
 
-        List<Fragment> fragmentList = fragmentManager.getFragments();
+        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
         if (fragmentList == null) return null;
 
         int index = fragmentList.indexOf(fragment);
@@ -108,34 +96,37 @@ public class SupportManager {
     }
 
     /**
+     * Same as fragmentManager.findFragmentByTag(fragmentClass.getName());
      * find Fragment from FragmentStack
      */
     @SuppressWarnings("unchecked")
-    public <T extends SupportFragment> T findFragment(FragmentManager fragmentManager, Class<T> fragmentClass) {
+    public static <T extends SupportFragment> T findFragment(FragmentManager fragmentManager, Class<T> fragmentClass) {
         return findStackFragment(fragmentClass, null, fragmentManager);
     }
 
     /**
+     * Same as fragmentManager.findFragmentByTag(fragmentTag);
+     *
      * find Fragment from FragmentStack
      */
     @SuppressWarnings("unchecked")
-    public <T extends SupportFragment> T findFragment(FragmentManager fragmentManager, String fragmentTag) {
+    public static <T extends SupportFragment> T findFragment(FragmentManager fragmentManager, String fragmentTag) {
         return findStackFragment(null, fragmentTag, fragmentManager);
     }
 
     /**
      * 从栈顶开始，寻找FragmentManager以及其所有子栈, 直到找到状态为show & userVisible的Fragment
      */
-    public SupportFragment getActiveFragment(FragmentManager fragmentManager) {
+    public static SupportFragment getActiveFragment(FragmentManager fragmentManager) {
         return getActiveFragment(fragmentManager, null);
     }
 
     @SuppressWarnings("unchecked")
-    <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
+    static <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
         Fragment fragment = null;
 
         if (toFragmentTag == null) {
-            List<Fragment> fragmentList = fragmentManager.getFragments();
+            List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
             if (fragmentList == null) return null;
 
             int sizeChildFrgList = fragmentList.size();
@@ -154,8 +145,8 @@ public class SupportManager {
         return (T) fragment;
     }
 
-    private SupportFragment getActiveFragment(FragmentManager fragmentManager, SupportFragment parentFragment) {
-        List<Fragment> fragmentList = fragmentManager.getFragments();
+    private static SupportFragment getActiveFragment(FragmentManager fragmentManager, SupportFragment parentFragment) {
+        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
         if (fragmentList == null) {
             return parentFragment;
         }

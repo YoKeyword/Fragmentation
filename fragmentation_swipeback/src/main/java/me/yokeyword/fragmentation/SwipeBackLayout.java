@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentationHack;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -352,7 +353,7 @@ public class SwipeBackLayout extends FrameLayout {
 
                 if (mPreFragment == null) {
                     if (mFragment != null) {
-                        List<Fragment> fragmentList = mFragment.getFragmentManager().getFragments();
+                        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(mFragment.getFragmentManager());
                         if (fragmentList != null && fragmentList.size() > 1) {
                             int index = fragmentList.indexOf(mFragment);
                             for (int i = index - 1; i >= 0; i--) {

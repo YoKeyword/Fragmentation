@@ -21,6 +21,10 @@ public final class AnimatorHelper {
 
     public AnimatorHelper(Context context, FragmentAnimator fragmentAnimator) {
         this.context = context;
+        notifyChanged(fragmentAnimator);
+    }
+
+    public void notifyChanged(FragmentAnimator fragmentAnimator) {
         this.fragmentAnimator = fragmentAnimator;
         initEnterAnim();
         initExitAnim();
@@ -37,7 +41,8 @@ public final class AnimatorHelper {
 
     public Animation getNoneAnimFixed() {
         if (noneAnimFixed == null) {
-            noneAnimFixed = new Animation() {};
+            noneAnimFixed = new Animation() {
+            };
         }
         return noneAnimFixed;
     }

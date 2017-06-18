@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentationHack;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
@@ -137,13 +138,14 @@ public class DebugStackDelegate implements SensorEventListener {
             }
 
             processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
+            Log.i(tag, sb.toString());
         }
     }
 
     private List<DebugFragmentRecord> getFragmentRecords() {
         List<DebugFragmentRecord> fragmentRecordList = new ArrayList<>();
 
-        List<Fragment> fragmentList = mActivity.getSupportFragmentManager().getFragments();
+        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(mActivity.getSupportFragmentManager());
 
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
@@ -154,8 +156,7 @@ public class DebugStackDelegate implements SensorEventListener {
         return fragmentRecordList;
     }
 
-    private void processChildLog
-            (List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
+    private void processChildLog(List<DebugFragmentRecord> fragmentRecordList, StringBuilder sb, int childHierarchy) {
         if (fragmentRecordList == null || fragmentRecordList.size() == 0) return;
 
         for (int j = 0; j < fragmentRecordList.size(); j++) {
@@ -180,7 +181,7 @@ public class DebugStackDelegate implements SensorEventListener {
     private List<DebugFragmentRecord> getChildFragmentRecords(Fragment parentFragment) {
         List<DebugFragmentRecord> fragmentRecords = new ArrayList<>();
 
-        List<Fragment> fragmentList = parentFragment.getChildFragmentManager().getFragments();
+        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(parentFragment.getChildFragmentManager());
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
 

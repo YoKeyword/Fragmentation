@@ -6,13 +6,15 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.MotionEvent;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.debug.DebugStackDelegate;
+import me.yokeyword.fragmentation.helper.internal.ITransanction;
 
-public class SupportActivityDelegate {
+public class SupportActivityDelegate implements ITransanction {
     private ISupportActivity mSupport;
     private FragmentActivity mActivity;
 
@@ -23,7 +25,6 @@ public class SupportActivityDelegate {
     private FragmentAnimator mFragmentAnimator;
     private int mDefaultFragmentBackground = 0;
     private DebugStackDelegate mDebugStackDelegate;
-    private SupportManager mSupportManager = SupportManager.getInstance();
 
     public SupportActivityDelegate(ISupportActivity support) {
         if (!(support instanceof Activity))
@@ -33,7 +34,7 @@ public class SupportActivityDelegate {
     }
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mTransactionDelegate = new TransactionDelegate(mSupport);
+        mTransactionDelegate = getTransactionDelegate();
         mDebugStackDelegate = new DebugStackDelegate(mActivity);
 
         mFragmentAnimator = mSupport.onCreateFragmentAnimator();
@@ -42,7 +43,7 @@ public class SupportActivityDelegate {
 
     public TransactionDelegate getTransactionDelegate() {
         if (mTransactionDelegate == null) {
-            mTransactionDelegate = new TransactionDelegate(null);
+            mTransactionDelegate = new TransactionDelegate(mSupport);
         }
         return mTransactionDelegate;
     }
@@ -96,6 +97,20 @@ public class SupportActivityDelegate {
     }
 
     /**
+     * 显示栈视图dialog,调试时使用
+     */
+    public void showFragmentStackHierarchyView() {
+        mDebugStackDelegate.showFragmentStackHierarchyView();
+    }
+
+    /**
+     * 显示栈视图日志,调试时使用
+     */
+    public void logFragmentStackHierarchy(String TAG) {
+        mDebugStackDelegate.logFragmentRecords(TAG);
+    }
+
+    /**
      * 不建议复写该方法,请使用 {@link #onBackPressedSupport} 代替
      */
     public void onBackPressed() {
@@ -104,7 +119,7 @@ public class SupportActivityDelegate {
         }
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
-        SupportFragment activeFragment = mSupportManager.getActiveFragment(mActivity.getSupportFragmentManager());
+        SupportFragment activeFragment = SupportHelper.getActiveFragment(getSupportFragmentManager());
         if (mTransactionDelegate.dispatchBackPressedEvent(activeFragment)) return;
 
         onBackPressedSupport();
@@ -115,7 +130,7 @@ public class SupportActivityDelegate {
      * 请尽量复写该方法,避免复写onBackPress(),以保证SupportFragment内的onBackPressedSupport()回退事件正常执行
      */
     public void onBackPressedSupport() {
-        if (mActivity.getSupportFragmentManager().getBackStackEntryCount() > 1) {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             pop();
         } else {
             ActivityCompat.finishAfterTransition(mActivity);
@@ -131,21 +146,30 @@ public class SupportActivityDelegate {
         return !mFragmentClickable;
     }
 
+    /**********************************************************************************************/
+
+    /**
+     * 额外的事务：自定义Tag，添加SharedElement动画，操作非回退栈Fragment
+     */
+    @Override
+    public ExtraTransaction extraTransaction() {
+        return new ExtraTransaction.ExtraTransactionImpl<>(getTopFragment(), getTransactionDelegate(), true);
+    }
+
     /**
      * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
      *
      * @param containerId 容器id
      * @param toFragment  目标Fragment
      */
+    @Override
     public void loadRootFragment(int containerId, SupportFragment toFragment) {
-        mTransactionDelegate.loadRootTransaction(mActivity.getSupportFragmentManager(), containerId, toFragment);
+        loadRootFragment(containerId, toFragment, true, false);
     }
 
-    /**
-     * 以replace方式加载根Fragment
-     */
-    public void replaceLoadRootFragment(int containerId, SupportFragment toFragment) {
-        mTransactionDelegate.replaceLoadRootTransaction(mActivity.getSupportFragmentManager(), containerId, toFragment);
+    @Override
+    public void loadRootFragment(int containerId, SupportFragment toFragment, boolean addToBackStack, boolean allowAnimation) {
+        mTransactionDelegate.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBackStack, allowAnimation);
     }
 
     /**
@@ -154,8 +178,9 @@ public class SupportActivityDelegate {
      * @param containerId 容器id
      * @param toFragments 目标Fragments
      */
+    @Override
     public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
-        mTransactionDelegate.loadMultipleRootTransaction(mActivity.getSupportFragmentManager(), containerId, showPosition, toFragments);
+        mTransactionDelegate.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
     }
 
     /**
@@ -166,7 +191,7 @@ public class SupportActivityDelegate {
      *
      * @param showFragment 需要show的Fragment
      */
-    @Deprecated
+    @Override
     public void showHideFragment(SupportFragment showFragment) {
         showHideFragment(showFragment, null);
     }
@@ -177,8 +202,9 @@ public class SupportActivityDelegate {
      * @param showFragment 需要show的Fragment
      * @param hideFragment 需要hide的Fragment
      */
+    @Override
     public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
-        mTransactionDelegate.showHideFragment(mActivity.getSupportFragmentManager(), showFragment, hideFragment);
+        mTransactionDelegate.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
     }
 
     /**
@@ -186,27 +212,37 @@ public class SupportActivityDelegate {
      *
      * @param toFragment 目标Fragment
      */
+    @Override
     public void start(SupportFragment toFragment) {
         start(toFragment, SupportFragment.STANDARD);
     }
 
+    @Override
     public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
-        mTransactionDelegate.dispatchStartTransaction(mActivity.getSupportFragmentManager(), mSupportManager.getTopFragment(mActivity.getSupportFragmentManager()), toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
     }
 
+    @Override
     public void startForResult(SupportFragment toFragment, int requestCode) {
-        mTransactionDelegate.dispatchStartTransaction(mActivity.getSupportFragmentManager(), mSupportManager.getTopFragment(mActivity.getSupportFragmentManager()), toFragment, requestCode, SupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_RESULT);
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, requestCode, SupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_RESULT);
     }
 
+    @Override
     public void startWithPop(SupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(mActivity.getSupportFragmentManager(), mSupportManager.getTopFragment(mActivity.getSupportFragmentManager()), toFragment, 0, SupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+    }
+
+    @Override
+    public void replaceFragment(SupportFragment toFragment, boolean addToBackStack) {
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
     }
 
     /**
      * 出栈
      */
+    @Override
     public void pop() {
-        mTransactionDelegate.back(mActivity.getSupportFragmentManager());
+        mTransactionDelegate.back(getSupportFragmentManager());
     }
 
     /**
@@ -215,44 +251,29 @@ public class SupportActivityDelegate {
      * @param targetFragmentClass   目标fragment
      * @param includeTargetFragment 是否包含该fragment
      */
+    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, null);
-    }
-
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment) {
-        popTo(targetFragmentTag, includeTargetFragment, null);
+        popTo(targetFragmentClass, includeTargetFragment, null);
     }
 
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
+    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, 0);
+        popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, 0);
-    }
-
+    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, popAnim);
+        mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, getSupportFragmentManager(), popAnim);
     }
 
-    public void popTo(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
-        mTransactionDelegate.popTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, mActivity.getSupportFragmentManager(), popAnim);
+    private FragmentManager getSupportFragmentManager() {
+        return mActivity.getSupportFragmentManager();
     }
 
-    /**
-     * 显示栈视图dialog,调试时使用
-     */
-    public void showFragmentStackHierarchyView() {
-        mDebugStackDelegate.showFragmentStackHierarchyView();
-    }
-
-    /**
-     * 显示栈视图日志,调试时使用
-     */
-    public void logFragmentStackHierarchy(String TAG) {
-        mDebugStackDelegate.logFragmentRecords(TAG);
+    private SupportFragment getTopFragment() {
+        return SupportHelper.getTopFragment(getSupportFragmentManager());
     }
 }
