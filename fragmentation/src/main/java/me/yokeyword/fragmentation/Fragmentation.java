@@ -28,7 +28,7 @@ public class Fragmentation {
     static volatile Fragmentation INSTANCE;
 
     private boolean debug;
-    private int mode;
+    private int mode = NONE;
     private ExceptionHandler handler;
 
     @IntDef({NONE, SHAKE, BUBBLE})
@@ -49,7 +49,9 @@ public class Fragmentation {
 
     Fragmentation(FragmentationBuilder builder) {
         debug = builder.debug;
-        mode = builder.mode;
+        if (debug) {
+            mode = builder.mode;
+        }
         handler = builder.handler;
     }
 
@@ -96,6 +98,10 @@ public class Fragmentation {
 
         /**
          * Sets the mode to display the stack view
+         *
+         * None if debug(false).
+         *
+         * Default:NONE
          */
         public FragmentationBuilder stackViewMode(@StackViewMode int mode) {
             this.mode = mode;

@@ -3,14 +3,17 @@ package me.yokeyword.fragmentation.debug;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class DebugHierarchyViewContainer extends ScrollView {
     private Context mContext;
 
     private LinearLayout mLinearLayout;
+    private LinearLayout mTitleLayout;
 
     private int mItemHeight;
     private int mPadding;
@@ -44,9 +48,11 @@ public class DebugHierarchyViewContainer extends ScrollView {
 
     private void initView(Context context) {
         mContext = context;
+        HorizontalScrollView hScrollView = new HorizontalScrollView(context);
         mLinearLayout = new LinearLayout(context);
         mLinearLayout.setOrientation(LinearLayout.VERTICAL);
-        addView(mLinearLayout);
+        hScrollView.addView(mLinearLayout);
+        addView(hScrollView);
 
         mItemHeight = dip2px(50);
         mPadding = dip2px(16);
@@ -59,10 +65,47 @@ public class DebugHierarchyViewContainer extends ScrollView {
 
     public void bindFragmentRecords(List<DebugFragmentRecord> fragmentRecords) {
         mLinearLayout.removeAllViews();
+        LinearLayout ll = getTitleLayout();
+        mLinearLayout.addView(ll);
 
         if (fragmentRecords == null) return;
 
         DebugHierarchyViewContainer.this.setView(fragmentRecords, 0, null);
+    }
+
+    @NonNull
+    private LinearLayout getTitleLayout() {
+        if (mTitleLayout != null) return mTitleLayout;
+
+        mTitleLayout = new LinearLayout(mContext);
+        mTitleLayout.setPadding(dip2px(24), dip2px(24), 0, dip2px(8));
+        mTitleLayout.setOrientation(LinearLayout.HORIZONTAL);
+        ViewGroup.LayoutParams flParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mTitleLayout.setLayoutParams(flParams);
+
+        TextView title = new TextView(mContext);
+        title.setText("栈视图(Stack)");
+        title.setTextSize(20);
+        title.setTextColor(Color.BLACK);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        p.gravity = Gravity.CENTER_VERTICAL;
+        title.setLayoutParams(p);
+        mTitleLayout.addView(title);
+
+        ImageView img = new ImageView(mContext);
+        img.setImageResource(R.drawable.fragmentation_help);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = dip2px(16);
+        params.gravity = Gravity.CENTER_VERTICAL;
+        img.setLayoutParams(params);
+        img.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "* means not in backBack.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mTitleLayout.addView(img);
+        return mTitleLayout;
     }
 
     private void setView(final List<DebugFragmentRecord> fragmentRecordList, final int hierarchy, final TextView tvItem) {
@@ -119,7 +162,7 @@ public class DebugHierarchyViewContainer extends ScrollView {
         int size = mLinearLayout.getChildCount();
         for (int i = size - 1; i >= 0; i--) {
             View view = mLinearLayout.getChildAt(i);
-            if ((int) view.getTag(R.id.hierarchy) >= hierarchy) {
+            if (view.getTag(R.id.hierarchy) != null && (int) view.getTag(R.id.hierarchy) >= hierarchy) {
                 mLinearLayout.removeView(view);
             }
         }
@@ -131,7 +174,7 @@ public class DebugHierarchyViewContainer extends ScrollView {
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight);
         tvItem.setLayoutParams(params);
         if (hierarchy == 0) {
-            tvItem.setTextColor(Color.BLACK);
+            tvItem.setTextColor(Color.parseColor("#333333"));
             tvItem.setTextSize(16);
         }
         tvItem.setGravity(Gravity.CENTER_VERTICAL);

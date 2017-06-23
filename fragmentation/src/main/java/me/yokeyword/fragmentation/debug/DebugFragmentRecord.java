@@ -7,10 +7,10 @@ import java.util.List;
  * Created by YoKeyword on 16/2/21.
  */
 public class DebugFragmentRecord {
-    public String fragmentName;
+    public CharSequence fragmentName;
     public List<DebugFragmentRecord> childFragmentRecord;
 
-    public DebugFragmentRecord(String fragmentName, List<DebugFragmentRecord> childFragmentRecord) {
+    public DebugFragmentRecord(CharSequence fragmentName, List<DebugFragmentRecord> childFragmentRecord) {
         this.fragmentName = fragmentName;
         this.childFragmentRecord = childFragmentRecord;
     }

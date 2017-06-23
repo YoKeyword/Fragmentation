@@ -5,8 +5,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentationHack;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -54,7 +56,7 @@ public class DebugStackDelegate implements SensorEventListener {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.END;
             final int dp18 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 18, mActivity.getResources().getDisplayMetrics());
-            params.topMargin = dp18 * 5;
+            params.topMargin = dp18 * 7;
             params.rightMargin = dp18;
             stackView.setLayoutParams(params);
             content.addView(stackView);
@@ -99,7 +101,6 @@ public class DebugStackDelegate implements SensorEventListener {
         container.bindFragmentRecords(getFragmentRecords());
         container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mStackDialog = new AlertDialog.Builder(mActivity)
-                .setTitle("栈视图")
                 .setView(container)
                 .setPositiveButton("关闭", null)
                 .setCancelable(true)
@@ -138,7 +139,6 @@ public class DebugStackDelegate implements SensorEventListener {
             }
 
             processChildLog(fragmentRecord.childFragmentRecord, sb, 1);
-            Log.i(tag, sb.toString());
         }
     }
 
@@ -150,8 +150,7 @@ public class DebugStackDelegate implements SensorEventListener {
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
         for (Fragment fragment : fragmentList) {
-            if (fragment == null) continue;
-            fragmentRecordList.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
+            addDebugFragmentRecord(fragmentRecordList, fragment);
         }
         return fragmentRecordList;
     }
@@ -184,13 +183,37 @@ public class DebugStackDelegate implements SensorEventListener {
         List<Fragment> fragmentList = FragmentationHack.getActiveFragments(parentFragment.getChildFragmentManager());
         if (fragmentList == null || fragmentList.size() < 1) return null;
 
-
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment != null) {
-                fragmentRecords.add(new DebugFragmentRecord(fragment.getClass().getSimpleName(), getChildFragmentRecords(fragment)));
-            }
+            addDebugFragmentRecord(fragmentRecords, fragment);
         }
         return fragmentRecords;
+    }
+
+    private void addDebugFragmentRecord(List<DebugFragmentRecord> fragmentRecords, Fragment fragment) {
+        if (fragment != null) {
+            int backStackCount = fragment.getFragmentManager().getBackStackEntryCount();
+            CharSequence name = fragment.getClass().getSimpleName();
+            if (backStackCount == 0) {
+                name = span(name);
+            } else {
+                for (int j = 0; j < backStackCount; j++) {
+                    FragmentManager.BackStackEntry entry = fragment.getFragmentManager().getBackStackEntryAt(j);
+                    if (entry.getName().equals(fragment.getClass().getName())) {
+                        break;
+                    }
+                    if (j == backStackCount - 1) {
+                        name = span(name);
+                    }
+                }
+            }
+            fragmentRecords.add(new DebugFragmentRecord(name, getChildFragmentRecords(fragment)));
+        }
+    }
+
+    @NonNull
+    private CharSequence span(CharSequence name) {
+        name = name + " *";
+        return name;
     }
 }
