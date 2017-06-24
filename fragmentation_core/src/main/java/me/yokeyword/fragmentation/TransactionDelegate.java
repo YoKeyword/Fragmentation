@@ -58,22 +58,11 @@ class TransactionDelegate {
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    /**
-     * 分发load根Fragment事务
-     *
-     * @param containerId    容器id
-     * @param to             目标Fragment
-     * @param addToBackStack
-     * @param allowAnimation
-     */
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, ISupportFragment to, boolean addToBackStack, boolean allowAnimation) {
         bindContainerId(containerId, to);
         start(fragmentManager, null, to, to.getClass().getName(), !addToBackStack, null, allowAnimation, TYPE_ADD);
     }
 
-    /**
-     * 加载多个根Fragment
-     */
     void loadMultipleRootTransaction(FragmentManager fragmentManager, int containerId, int showPosition, ISupportFragment... tos) {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
@@ -101,7 +90,7 @@ class TransactionDelegate {
     }
 
     /**
-     * 分发start事务
+     * Dispatch the start transaction.
      */
     void dispatchStartTransaction(FragmentManager fragmentManager, ISupportFragment from, ISupportFragment to, int requestCode, int launchMode, int type) {
         fragmentManager = checkFragmentManager(fragmentManager, from);
@@ -131,7 +120,7 @@ class TransactionDelegate {
             dontAddToBackStack = transactionRecord.dontAddToBackStack;
             if (transactionRecord.sharedElementList != null) {
                 sharedElementList = transactionRecord.sharedElementList;
-                // 这里发现使用addSharedElement时,在被强杀重启时导致栈内顺序异常,这里进行一次hack顺序
+                // Compat SharedElement
                 FragmentationHack.reorderIndices(fragmentManager);
             }
         }
@@ -160,12 +149,6 @@ class TransactionDelegate {
         args.putInt(FRAGMENTATION_ARG_CONTAINER, containerId);
     }
 
-    /**
-     * show一个Fragment,hide另一个／多个Fragment ; 主要用于类似微信主页那种 切换tab的情况
-     *
-     * @param showFragment 需要show的Fragment
-     * @param hideFragment 需要hide的Fragment
-     */
     void showHideFragment(FragmentManager fragmentManager, ISupportFragment showFragment, ISupportFragment hideFragment) {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
@@ -199,7 +182,7 @@ class TransactionDelegate {
         bundle.putBoolean(FRAGMENTATION_ARG_REPLACE, !addMode);
 
         if (sharedElementList == null) {
-            if (addMode) { // replace模式禁止动画，官方的replace动画存在重叠Bug
+            if (addMode) { // Replace mode forbidden animation, the replace animations exist overlapping Bug on support-v4.
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             } else {
                 bundle.putBoolean(FRAGMENTATION_ARG_ANIM_DISABLE, true);
@@ -259,7 +242,6 @@ class TransactionDelegate {
         } else {
             boolean stateSaved = FragmentationHack.isStateSaved(fragmentManager);
             if (stateSaved) {
-                // 这里的警告请重视，请在Activity回来后，在onPostResume()中执行该事务
                 Log.e(TAG, "Please beginTransaction in onPostResume() after the Activity returns!");
                 IllegalStateException e = new IllegalStateException("Can not perform this action after onSaveInstanceState!");
                 e.printStackTrace();
@@ -280,7 +262,7 @@ class TransactionDelegate {
     }
 
     /**
-     * 分发回退事件, 优先栈顶(有子栈则是子栈的栈顶)的Fragment
+     * Dispatch the back-event. Priority of the top of the stack of Fragment
      */
     boolean dispatchBackPressedEvent(ISupportFragment activeFragment) {
         if (activeFragment != null) {
@@ -409,25 +391,25 @@ class TransactionDelegate {
     }
 
     /**
-     * 出栈到目标fragment
+     * Pop the last fragment transition from the manager's fragment back stack.
      *
-     * @param fragmentTag tag
-     * @param includeSelf 是否包含该fragment
+     * @param targetFragmentTag Tag
+     * @param includeTargetFragment Whether it includes targetFragment
      */
-    void popTo(final String fragmentTag, boolean includeSelf, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, int popAnim) {
+    void popTo(final String targetFragmentTag, boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, int popAnim) {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
 
         fragmentManager.executePendingTransactions();
-        Fragment targetFragment = fragmentManager.findFragmentByTag(fragmentTag);
+        Fragment targetFragment = fragmentManager.findFragmentByTag(targetFragmentTag);
 
         if (targetFragment == null) {
-            Log.e(TAG, "Pop failure! Can't find FragmentTag:" + fragmentTag + " in the FragmentManager's Stack.");
+            Log.e(TAG, "Pop failure! Can't find FragmentTag:" + targetFragmentTag + " in the FragmentManager's Stack.");
             return;
         }
 
         int flag = 0;
-        if (includeSelf) {
+        if (includeTargetFragment) {
             flag = FragmentManager.POP_BACK_STACK_INCLUSIVE;
             targetFragment = (Fragment) getPreFragment(targetFragment);
         }
@@ -453,7 +435,7 @@ class TransactionDelegate {
         mockPopAnim(fromFragment, (ISupportFragment) targetFragment, popAnimation, new Callback() {
             @Override
             public void call() {
-                popToFix(fragmentTag, finalFlag, finalFragmentManager);
+                popToFix(targetFragmentTag, finalFlag, finalFragmentManager);
                 if (afterPopTransactionRunnable != null) {
                     mHandler.post(new Runnable() {
                         @Override
@@ -469,7 +451,8 @@ class TransactionDelegate {
     }
 
     /**
-     * 解决popTo多个fragment时动画引起的异常问题
+     * To fix the FragmentManagerImpl.mAvailIndices incorrect ordering when pop() multiple Fragments
+     * on pre-support-v4-25.4.0
      */
     private void popToFix(String fragmentTag, int flag, final FragmentManager fragmentManager) {
         if (FragmentationHack.getActiveFragments(fragmentManager) == null) return;
@@ -488,7 +471,7 @@ class TransactionDelegate {
     }
 
     /**
-     * hack startWithPop/popTo anim
+     * Hack startWithPop/popTo anim
      */
     private void mockPopAnim(ISupportFragment from, ISupportFragment targetF, Animation exitAnim, final Callback cb) {
         if (from == targetF) {
@@ -508,6 +491,7 @@ class TransactionDelegate {
             ViewGroup preViewGroup = null;
             from.getSupportDelegate().mLockAnim = true;
 
+            // Compatible with flicker on pre-L when calling popTo()
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && preF != targetF) {
                 if (preF != null && preF.getView() instanceof ViewGroup) {
                     preViewGroup = (ViewGroup) preF.getView();
@@ -563,7 +547,7 @@ class TransactionDelegate {
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            // compat pre L
+            // compat pre-L
             exitAnim.setDuration(exitAnim.getDuration() + 100L);
         }
         mock.startAnimation(exitAnim);

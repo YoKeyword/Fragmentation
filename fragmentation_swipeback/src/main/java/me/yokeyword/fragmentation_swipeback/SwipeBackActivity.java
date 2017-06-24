@@ -12,8 +12,10 @@ import me.yokeyword.fragmentation.SwipeBackLayout;
 
 
 /**
- * SwipeBackActivity
- * Created by YoKeyword on 16/4/19.
+ * You can also refer to {@link SwipeBackActivity} to implement YourSwipeBackActivity
+ * (extends Activity and impl {@link me.yokeyword.fragmentation.ISupportActivity})
+ *
+ * Created by YoKey on 16/4/19.
  */
 public class SwipeBackActivity extends SupportActivity {
     private SwipeBackLayout mSwipeBackLayout;
@@ -39,14 +41,6 @@ public class SwipeBackActivity extends SupportActivity {
         return view;
     }
 
-    void onActivityCreate() {
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getWindow().getDecorView().setBackgroundDrawable(null);
-        mSwipeBackLayout = new SwipeBackLayout(this);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mSwipeBackLayout.setLayoutParams(params);
-    }
-
     public SwipeBackLayout getSwipeBackLayout() {
         return mSwipeBackLayout;
     }
@@ -62,5 +56,13 @@ public class SwipeBackActivity extends SupportActivity {
      */
     public boolean swipeBackPriority() {
         return getSupportFragmentManager().getBackStackEntryCount() <= 1;
+    }
+
+    private void onActivityCreate() {
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getWindow().getDecorView().setBackgroundDrawable(null);
+        mSwipeBackLayout = new SwipeBackLayout(this);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mSwipeBackLayout.setLayoutParams(params);
     }
 }

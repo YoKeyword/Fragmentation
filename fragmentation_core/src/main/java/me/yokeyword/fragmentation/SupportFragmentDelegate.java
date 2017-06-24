@@ -27,12 +27,12 @@ public class SupportFragmentDelegate {
     AnimatorHelper mAnimHelper;
     boolean mLockAnim;
 
-    private boolean mNeedHideSoft;  // 隐藏软键盘
+    private boolean mNeedHideSoft;
     private Handler mHandler;
     private boolean mFirstCreateView = true;
     private boolean mReplaceMode;
-    private boolean mIsHidden = true;   // 用于记录Fragment show/hide 状态
-    int mContainerId;   // 该Fragment所处的Container的id
+    private boolean mIsHidden = true;
+    int mContainerId;
 
     private TransactionDelegate mTransactionDelegate;
     TransactionRecord mTransactionRecord;
@@ -54,7 +54,8 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * Add some action when calling start()/startXX()
+     * Perform some extra transactions.
+     * 额外的事务：自定义Tag，添加SharedElement动画，操作非回退栈Fragment
      */
     public ExtraTransaction extraTransaction() {
         if (mTransactionDelegate == null)
@@ -92,7 +93,7 @@ public class SupportFragmentDelegate {
             mIsHidden = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
         }
 
-        // 解决重叠问题
+        // Fix the overlapping BUG on pre-24.0.0
         processRestoreInstanceState(savedInstanceState);
 
         initAnim();
@@ -178,13 +179,14 @@ public class SupportFragmentDelegate {
     }
 
     /**
+     * Called when the enter-animation end.
      * 入栈动画 结束时,回调
      */
     public void onEnterAnimationEnd(Bundle savedInstanceState) {
     }
 
     /**
-     * Lazy initial，Called when fragment is first called.
+     * Lazy initial，Called when fragment is first visible.
      * <p>
      * 同级下的 懒加载 ＋ ViewPager下的懒加载  的结合回调方法
      */
@@ -192,7 +194,9 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * Called when the fragment is vivible.
+     * Called when the fragment is visible.
+     * <p>
+     * 当Fragment对用户可见时回调
      * <p>
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
@@ -218,14 +222,15 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * 设定当前Fragmemt动画,优先级比在SupportActivity里高
+     * Set fragment animation with a higher priority than the ISupportActivity
+     * 设定当前Fragmemt动画,优先级比在ISupportActivity里高
      */
     public FragmentAnimator onCreateFragmentAnimator() {
         return mSupport.getFragmentAnimator();
     }
 
     /**
-     * 获取设置的全局动画 copy
+     * 获取设置的全局动画
      *
      * @return FragmentAnimator
      */
@@ -243,7 +248,7 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * 设置Fragment内的全局动画
+     * 设置Fragment内的动画
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
@@ -288,6 +293,16 @@ public class SupportFragmentDelegate {
     }
 
     /**
+     * Back Event
+     * @return false则继续向上传递, true则消费掉该事件
+     */
+    public boolean onBackPressedSupport() {
+        return false;
+    }
+
+    /**********************************************************************************************/
+
+    /**
      * 隐藏软键盘
      */
     public void hideSoftInput() {
@@ -303,20 +318,9 @@ public class SupportFragmentDelegate {
         SupportHelper.showSoftInput(view);
     }
 
-    /**
-     * 按返回键触发,前提是SupportActivity的onBackPressed()方法能被调用
-     *
-     * @return false则继续向上传递, true则消费掉该事件
-     */
-    public boolean onBackPressedSupport() {
-        return false;
-    }
 
     /**
      * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
-     *
-     * @param containerId 容器id
-     * @param toFragment  目标Fragment
      */
     public void loadRootFragment(int containerId, ISupportFragment toFragment) {
         loadRootFragment(containerId, toFragment, true, false);
@@ -327,10 +331,7 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * 加载多个同级根Fragment
-     *
-     * @param containerId 容器id
-     * @param toFragments 目标Fragments
+     * 加载多个同级根Fragment,类似Wechat, QQ主页的场景
      */
     public void loadMultipleRootFragment(int containerId, int showPosition, ISupportFragment... toFragments) {
         mTransactionDelegate.loadMultipleRootTransaction(getChildFragmentManager(), containerId, showPosition, toFragments);
@@ -341,8 +342,6 @@ public class SupportFragmentDelegate {
      * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
      * <p>
      * 建议使用更明确的{@link #showHideFragment(ISupportFragment, ISupportFragment)}
-     *
-     * @param showFragment 需要show的Fragment
      */
     public void showHideFragment(ISupportFragment showFragment) {
         showHideFragment(showFragment, null);
@@ -350,31 +349,32 @@ public class SupportFragmentDelegate {
 
     /**
      * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
-     *
-     * @param showFragment 需要show的Fragment
-     * @param hideFragment 需要hide的Fragment
      */
     public void showHideFragment(ISupportFragment showFragment, ISupportFragment hideFragment) {
         mTransactionDelegate.showHideFragment(getChildFragmentManager(), showFragment, hideFragment);
     }
 
-    /**
-     * 启动目标Fragment
-     *
-     * @param toFragment 目标Fragment
-     */
     public void start(ISupportFragment toFragment) {
         start(toFragment, ISupportFragment.STANDARD);
     }
 
+    /**
+     * @param launchMode Same as Activity's LaunchMode.
+     */
     public void start(final ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
     }
 
+    /**
+     * Launch an fragment for which you would like a result when it poped.
+     */
     public void startForResult(ISupportFragment toFragment, int requestCode) {
         mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, requestCode, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_RESULT);
     }
 
+    /**
+     * Launch a fragment while poping self.
+     */
     public void startWithPop(ISupportFragment toFragment) {
         mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
     }
@@ -383,11 +383,6 @@ public class SupportFragmentDelegate {
         mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
     }
 
-    /**
-     * 启动目标Fragment
-     *
-     * @param toFragment 目标Fragment
-     */
     public void startChild(ISupportFragment toFragment) {
         startChild(toFragment, ISupportFragment.STANDARD);
     }
@@ -408,32 +403,34 @@ public class SupportFragmentDelegate {
         mTransactionDelegate.dispatchStartTransaction(getChildFragmentManager(), getTopFragment(), toFragment, 0, ISupportFragment.STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
     }
 
-    /**
-     * 出栈
-     */
     public void pop() {
         mTransactionDelegate.back(mFragment.getFragmentManager());
     }
 
     /**
-     * 子栈内 出栈
+     * Pop the child fragment.
      */
     public void popChild() {
         mTransactionDelegate.back(getChildFragmentManager());
     }
 
     /**
+     * Pop the last fragment transition from the manager's fragment
+     * back stack.
+     *
      * 出栈到目标fragment
      *
      * @param targetFragmentClass   目标fragment
      * @param includeTargetFragment 是否包含该fragment
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
+        getChildFragmentManager().popBackStack();
         popTo(targetFragmentClass, includeTargetFragment, null);
     }
 
     /**
-     * 用于出栈后,立刻进行FragmentTransaction操作
+     * If you want to begin another FragmentTransaction immediately after popTo(), use this method.
+     * 如果你想在出栈后, 立刻进行FragmentTransaction操作，请使用该方法
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
         popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, 0);
@@ -443,9 +440,6 @@ public class SupportFragmentDelegate {
         mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, mFragment.getFragmentManager(), popAnim);
     }
 
-    /**
-     * 子栈内
-     */
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment) {
         popToChild(targetFragmentClass, includeTargetFragment, null);
     }
@@ -480,7 +474,6 @@ public class SupportFragmentDelegate {
 
     private void initAnim() {
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
-        // 监听入栈动画结束(1.为了防抖动; 2.为了Fragmentation的回调所用)
         mAnimHelper.enterAnim.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
@@ -546,5 +539,9 @@ public class SupportFragmentDelegate {
             mVisibleDelegate = new VisibleDelegate(mSupportF);
         }
         return mVisibleDelegate;
+    }
+
+    public FragmentActivity getActivity() {
+        return _mActivity;
     }
 }

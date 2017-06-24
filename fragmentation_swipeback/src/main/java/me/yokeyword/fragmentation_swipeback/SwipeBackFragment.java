@@ -11,8 +11,10 @@ import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.SwipeBackLayout;
 
 /**
- * SwipeBackFragment
- * Created by YoKeyword on 16/4/19.
+ * You can also refer to {@link SwipeBackFragment} to implement YourSwipeBackFragment
+ * (extends Fragment and impl {@link me.yokeyword.fragmentation.ISupportFragment})
+ *
+ * Created by YoKey on 16/4/19.
  */
 public class SwipeBackFragment extends SupportFragment {
     private SwipeBackLayout mSwipeBackLayout;
@@ -23,11 +25,15 @@ public class SwipeBackFragment extends SupportFragment {
         onFragmentCreate();
     }
 
-    private void onFragmentCreate() {
-        mSwipeBackLayout = new SwipeBackLayout(_mActivity);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mSwipeBackLayout.setLayoutParams(params);
-        mSwipeBackLayout.setBackgroundColor(Color.TRANSPARENT);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (view instanceof SwipeBackLayout) {
+            View childView = ((SwipeBackLayout) view).getChildAt(0);
+            getSupportDelegate().setBackground(childView);
+        } else {
+            getSupportDelegate().setBackground(view);
+        }
     }
 
     protected View attachToSwipeBack(View view) {
@@ -40,16 +46,6 @@ public class SwipeBackFragment extends SupportFragment {
         super.onHiddenChanged(hidden);
         if (hidden && mSwipeBackLayout != null) {
             mSwipeBackLayout.hiddenFragment();
-        }
-    }
-
-    @Override
-    protected void initFragmentBackground(View view) {
-        if (view instanceof SwipeBackLayout) {
-            View childView = ((SwipeBackLayout) view).getChildAt(0);
-            setBackground(childView);
-        } else {
-            setBackground(view);
         }
     }
 
@@ -72,5 +68,12 @@ public class SwipeBackFragment extends SupportFragment {
     public void onDestroyView() {
         mSwipeBackLayout.internalCallOnDestroyView();
         super.onDestroyView();
+    }
+
+    private void onFragmentCreate() {
+        mSwipeBackLayout = new SwipeBackLayout(_mActivity);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mSwipeBackLayout.setLayoutParams(params);
+        mSwipeBackLayout.setBackgroundColor(Color.TRANSPARENT);
     }
 }

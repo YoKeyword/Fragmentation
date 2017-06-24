@@ -26,9 +26,9 @@ import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
 
 /**
- * Thx https://github.com/ikew0ng/SwipeBackLayout
- * SwipeBackLayout
- * Created by YoKeyword on 16/4/19.
+ * Thx https://github.com/ikew0ng/SwipeBackLayout.
+ *
+ * Created by YoKey on 16/4/19.
  */
 public class SwipeBackLayout extends FrameLayout {
     /**
@@ -77,7 +77,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private FragmentActivity mActivity;
     private View mContentView;
-    private SupportFragment mFragment;
+    private ISupportFragment mFragment;
     private Fragment mPreFragment;
 
     private Drawable mShadowLeft;
@@ -292,7 +292,7 @@ public class SwipeBackLayout extends FrameLayout {
         mCallOnDestroyView = true;
     }
 
-    public void setFragment(final SupportFragment fragment, View view) {
+    public void setFragment(final ISupportFragment fragment, View view) {
         this.mFragment = fragment;
         mContentView = view;
     }
@@ -333,7 +333,7 @@ public class SwipeBackLayout extends FrameLayout {
         mEnable = enable;
     }
 
-    class ViewDragCallback extends ViewDragHelper.Callback {
+    private class ViewDragCallback extends ViewDragHelper.Callback {
 
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
@@ -353,7 +353,7 @@ public class SwipeBackLayout extends FrameLayout {
 
                 if (mPreFragment == null) {
                     if (mFragment != null) {
-                        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(mFragment.getFragmentManager());
+                        List<Fragment> fragmentList = FragmentationHack.getActiveFragments(((Fragment)mFragment).getFragmentManager());
                         if (fragmentList != null && fragmentList.size() > 1) {
                             int index = fragmentList.indexOf(mFragment);
                             for (int i = index - 1; i >= 0; i--) {
@@ -409,17 +409,17 @@ public class SwipeBackLayout extends FrameLayout {
                 if (mFragment != null) {
                     if (mCallOnDestroyView) return;
 
-                    if (mPreFragment instanceof SupportFragment) {
-                        ((SupportFragment) mPreFragment).mLockAnim = true;
+                    if (mPreFragment instanceof ISupportFragment) {
+                        ((ISupportFragment) mPreFragment).getSupportDelegate().mLockAnim = true;
                     }
-                    if (!mFragment.isDetached()) {
-                        mFragment.mLockAnim = true;
-                        mFragment.pop();
-                        mFragment.getFragmentManager().executePendingTransactions();
-                        mFragment.mLockAnim = false;
+                    if (!((Fragment)mFragment).isDetached()) {
+                        mFragment.getSupportDelegate().mLockAnim = true;
+                        mFragment.getSupportDelegate().pop();
+                        ((Fragment)mFragment).getFragmentManager().executePendingTransactions();
+                        mFragment.getSupportDelegate().mLockAnim = false;
                     }
-                    if (mPreFragment instanceof SupportFragment) {
-                        ((SupportFragment) mPreFragment).mLockAnim = false;
+                    if (mPreFragment instanceof ISupportFragment) {
+                        ((ISupportFragment) mPreFragment).getSupportDelegate().mLockAnim = false;
                     }
                 } else {
                     if (!mActivity.isFinishing()) {

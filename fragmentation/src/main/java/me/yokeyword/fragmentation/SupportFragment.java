@@ -11,7 +11,10 @@ import android.view.animation.Animation;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 
 /**
- * Created by YoKeyword on 16/1/22.
+ * Base class for activities that use the support-based
+ * {@link ISupportFragment} and
+ * {@link android.support.v4.app.Fragment} APIs.
+ * Created by YoKey on 17/6/22.
  */
 public class SupportFragment extends Fragment implements ISupportFragment {
     final SupportFragmentDelegate mDelegate = new SupportFragmentDelegate(this);
@@ -23,7 +26,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * Add some action when calling start()/startXX()
+     * Perform some extra transactions.
+     * 额外的事务：自定义Tag，添加SharedElement动画，操作非回退栈Fragment
      */
     @Override
     public ExtraTransaction extraTransaction() {
@@ -34,7 +38,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mDelegate.onAttach(activity);
-        _mActivity = mDelegate._mActivity;
+        _mActivity = mDelegate.getActivity();
     }
 
     @Override
@@ -97,6 +101,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
+     * Called when the enter-animation end.
      * 入栈动画 结束时,回调
      */
     @Override
@@ -116,7 +121,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * Called when the fragment is vivible.
+     * Called when the fragment is visible.
+     * 当Fragment对用户可见时回调
      * <p>
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
@@ -144,6 +150,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
+     * Set fragment animation with a higher priority than the ISupportActivity
      * 设定当前Fragmemt动画,优先级比在SupportActivity里高
      */
     @Override
@@ -213,7 +220,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mDelegate.putNewBundle(newBundle);
     }
 
-    /****************************************以下为可选方法******************************************************/
+
+    /****************************************以下为可选方法(Optional methods)******************************************************/
 
     /**
      * 隐藏软键盘
@@ -244,10 +252,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 加载多个同级根Fragment
-     *
-     * @param containerId 容器id
-     * @param toFragments 目标Fragments
+     * 加载多个同级根Fragment,类似Wechat, QQ主页的场景
      */
     public void loadMultipleRootFragment(int containerId, int showPosition, ISupportFragment... toFragments) {
         mDelegate.loadMultipleRootFragment(containerId, showPosition, toFragments);
@@ -267,31 +272,32 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
-     *
-     * @param showFragment 需要show的Fragment
-     * @param hideFragment 需要hide的Fragment
      */
     public void showHideFragment(ISupportFragment showFragment, ISupportFragment hideFragment) {
         mDelegate.showHideFragment(showFragment, hideFragment);
     }
 
-    /**
-     * 启动目标Fragment
-     *
-     * @param toFragment 目标Fragment
-     */
     public void start(ISupportFragment toFragment) {
         mDelegate.start(toFragment);
     }
 
+    /**
+     * @param launchMode Same as Activity's LaunchMode.
+     */
     public void start(final ISupportFragment toFragment, @LaunchMode int launchMode) {
         mDelegate.start(toFragment, launchMode);
     }
 
+    /**
+     * Launch an fragment for which you would like a result when it poped.
+     */
     public void startForResult(ISupportFragment toFragment, int requestCode) {
         mDelegate.startForResult(toFragment, requestCode);
     }
 
+    /**
+     * Launch a fragment while poping self.
+     */
     public void startWithPop(ISupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);
     }
@@ -300,21 +306,21 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mDelegate.replaceFragment(toFragment, addToBackStack);
     }
 
-    /**
-     * 出栈
-     */
     public void pop() {
         mDelegate.pop();
     }
 
     /**
-     * 子栈内 出栈
+     * Pop the child fragment.
      */
     public void popChild() {
         mDelegate.popChild();
     }
 
     /**
+     * Pop the last fragment transition from the manager's fragment
+     * back stack.
+     *
      * 出栈到目标fragment
      *
      * @param targetFragmentClass   目标fragment
@@ -325,7 +331,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 用于出栈后,立刻进行FragmentTransaction操作
+     * If you want to begin another FragmentTransaction immediately after popTo(), use this method.
+     * 如果你想在出栈后, 立刻进行FragmentTransaction操作，请使用该方法
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
         mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable);
@@ -335,9 +342,6 @@ public class SupportFragment extends Fragment implements ISupportFragment {
         mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, popAnim);
     }
 
-    /**
-     * 子栈内
-     */
     public void popToChild(Class<?> targetFragmentClass, boolean includeTargetFragment) {
         mDelegate.popToChild(targetFragmentClass, includeTargetFragment);
     }

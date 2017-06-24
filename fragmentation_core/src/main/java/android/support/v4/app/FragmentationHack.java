@@ -27,7 +27,8 @@ public class FragmentationHack {
     }
 
     /**
-     * 25.4.0以下版本， 存在popBackStack(String tag,int flag)引起栈顺序错误的BUG
+     * To fix the FragmentManagerImpl.mAvailIndices incorrect ordering when pop() multiple Fragments
+     * on pre-support-v4-25.4.0
      */
     @SuppressWarnings("unchecked")
     public static void reorderIndices(FragmentManager fragmentManager) {
@@ -61,7 +62,7 @@ public class FragmentationHack {
     }
 
     /**
-     * 在25.4.0＋版本，fragmentManager.getFragments()返回mAdd， 而不是老版本的mActive
+     * On 25.4.0+，fragmentManager.getFragments () returns mAdd, instead of the mActive on 25.4.0-
      */
     @SuppressWarnings("unchecked")
     public static List<Fragment> getActiveFragments(FragmentManager fragmentManager) {

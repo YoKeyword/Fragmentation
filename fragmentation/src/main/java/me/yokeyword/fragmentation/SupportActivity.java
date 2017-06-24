@@ -10,7 +10,11 @@ import android.view.MotionEvent;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 
 /**
- * Created by YoKeyword on 16/1/22.
+ * Base class for activities that use the support-based
+ * {@link ISupportActivity} and
+ * {@link AppCompatActivity} APIs.
+ *
+ * Created by YoKey on 17/6/20.
  */
 public class SupportActivity extends AppCompatActivity implements ISupportActivity {
     final SupportActivityDelegate mDelegate = new SupportActivityDelegate(this);
@@ -20,6 +24,10 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
         return mDelegate;
     }
 
+    /**
+     * Perform some extra transactions.
+     * 额外的事务：自定义Tag，添加SharedElement动画，操作非回退栈Fragment
+     */
     @Override
     public ExtraTransaction extraTransaction() {
         return mDelegate.extraTransaction();
@@ -79,6 +87,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     /**
+     * Set all fragments animation.
      * 设置Fragment内的全局动画
      */
     @Override
@@ -87,6 +96,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     /**
+     * Set all fragments animation.
      * 构建Fragment转场动画
      * <p/>
      * 如果是在Activity内实现,则构建的是Activity内所有Fragment的转场动画,
@@ -99,7 +109,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
         return mDelegate.onCreateFragmentAnimator();
     }
 
-    /****************************************以下为可选方法******************************************************/
+    /****************************************以下为可选方法(Optional methods)******************************************************/
 
     /**
      * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
@@ -116,10 +126,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     /**
-     * 加载多个根Fragment
-     *
-     * @param containerId 容器id
-     * @param toFragments 目标Fragments
+     * 加载多个同级根Fragment,类似Wechat, QQ主页的场景
      */
     public void loadMultipleRootFragment(int containerId, int showPosition, ISupportFragment... toFragments) {
         mDelegate.loadMultipleRootFragment(containerId, showPosition, toFragments);
@@ -139,31 +146,32 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
 
     /**
      * show一个Fragment,hide一个Fragment ; 主要用于类似微信主页那种 切换tab的情况
-     *
-     * @param showFragment 需要show的Fragment
-     * @param hideFragment 需要hide的Fragment
      */
     public void showHideFragment(ISupportFragment showFragment, ISupportFragment hideFragment) {
         mDelegate.showHideFragment(showFragment, hideFragment);
     }
 
-    /**
-     * 启动目标Fragment
-     *
-     * @param toFragment 目标Fragment
-     */
     public void start(ISupportFragment toFragment) {
         mDelegate.start(toFragment);
     }
 
+    /**
+     * @param launchMode Same as Activity's LaunchMode.
+     */
     public void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mDelegate.start(toFragment, launchMode);
     }
 
+    /**
+     * Launch an fragment for which you would like a result when it poped.
+     */
     public void startForResult(ISupportFragment toFragment, int requestCode) {
         mDelegate.startForResult(toFragment, requestCode);
     }
 
+    /**
+     * Launch a fragment while poping self.
+     */
     public void startWithPop(ISupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);
     }
@@ -173,13 +181,16 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     /**
-     * 出栈
+     * Pop the fragment.
      */
     public void pop() {
         mDelegate.pop();
     }
 
     /**
+     * Pop the last fragment transition from the manager's fragment
+     * back stack.
+     *
      * 出栈到目标fragment
      *
      * @param targetFragmentClass   目标fragment
@@ -190,7 +201,8 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     /**
-     * 用于出栈后,立刻进行FragmentTransaction操作
+     * If you want to begin another FragmentTransaction immediately after popTo(), use this method.
+     * 如果你想在出栈后, 立刻进行FragmentTransaction操作，请使用该方法
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
         mDelegate.popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable);
