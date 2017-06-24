@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentationHack;
 
 import java.util.List;
 
-import me.yokeyword.fragmentation.SupportFragment;
+import me.yokeyword.fragmentation.ISupportFragment;
 
 /**
  * Created by YoKey on 17/4/4.
@@ -27,10 +27,12 @@ public class VisibleDelegate {
     private boolean mFirstCreateViewCompatReplace = true;
     private boolean mLazyInitCompatReplace = true;
 
-    private SupportFragment mSupportFragment;
+    private ISupportFragment mSupportF;
+    private Fragment mFragment;
 
-    public VisibleDelegate(SupportFragment fragment) {
-        this.mSupportFragment = fragment;
+    public VisibleDelegate(ISupportFragment fragment) {
+        this.mSupportF = fragment;
+        this.mFragment = (Fragment) fragment;
     }
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class VisibleDelegate {
     }
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        if (!mFirstCreateViewCompatReplace && mSupportFragment.getTag() != null && mSupportFragment.getTag().startsWith("android:switcher:")) {
+        if (!mFirstCreateViewCompatReplace && mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:")) {
             return;
         }
 
@@ -55,10 +57,10 @@ public class VisibleDelegate {
             mFirstCreateViewCompatReplace = false;
         }
 
-        if (!mInvisibleWhenLeave && !mSupportFragment.isHidden() &&
-                (mSupportFragment.getUserVisibleHint() || mFixStatePagerAdapter)) {
-            if ((mSupportFragment.getParentFragment() != null && isFragmentVisible(mSupportFragment.getParentFragment()))
-                    || mSupportFragment.getParentFragment() == null) {
+        if (!mInvisibleWhenLeave && !mFragment.isHidden() &&
+                (mFragment.getUserVisibleHint() || mFixStatePagerAdapter)) {
+            if ((mFragment.getParentFragment() != null && isFragmentVisible(mFragment.getParentFragment()))
+                    || mFragment.getParentFragment() == null) {
                 mNeedDispatch = false;
                 dispatchSupportVisible(true);
             }
@@ -67,7 +69,7 @@ public class VisibleDelegate {
 
     public void onResume() {
         if (!mIsFirstVisible) {
-            if (!mIsSupportVisible && !mInvisibleWhenLeave && isFragmentVisible(mSupportFragment)) {
+            if (!mIsSupportVisible && !mInvisibleWhenLeave && isFragmentVisible(mFragment)) {
                 mNeedDispatch = false;
                 dispatchSupportVisible(true);
             }
@@ -75,7 +77,7 @@ public class VisibleDelegate {
     }
 
     public void onPause() {
-        if (mIsSupportVisible && isFragmentVisible(mSupportFragment)) {
+        if (mIsSupportVisible && isFragmentVisible(mFragment)) {
             mNeedDispatch = false;
             mInvisibleWhenLeave = false;
             dispatchSupportVisible(false);
@@ -85,9 +87,7 @@ public class VisibleDelegate {
     }
 
     public void onHiddenChanged(boolean hidden) {
-        if (mSupportFragment.isResumed()) {
-            dispatchSupportVisible(!hidden);
-        }
+        dispatchSupportVisible(!hidden);
     }
 
     public void onDestroyView() {
@@ -96,7 +96,7 @@ public class VisibleDelegate {
     }
 
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (mSupportFragment.isResumed() || (mSupportFragment.isDetached() && isVisibleToUser)) {
+        if (mFragment.isResumed() || (mFragment.isDetached() && isVisibleToUser)) {
             if (!mIsSupportVisible && isVisibleToUser) {
                 dispatchSupportVisible(true);
             } else if (mIsSupportVisible && !isVisibleToUser) {
@@ -112,27 +112,27 @@ public class VisibleDelegate {
         mIsSupportVisible = visible;
 
         if (visible) {
-            mSupportFragment.onSupportVisible();
+            mSupportF.onSupportVisible();
 
             if (mIsFirstVisible && mLazyInitCompatReplace) {
                 mIsFirstVisible = false;
                 mLazyInitCompatReplace = false;
-                mSupportFragment.onLazyInitView(mSaveInstanceState);
+                mSupportF.onLazyInitView(mSaveInstanceState);
             }
         } else {
-            mSupportFragment.onSupportInvisible();
+            mSupportF.onSupportInvisible();
         }
 
         if (!mNeedDispatch) {
             mNeedDispatch = true;
         } else {
-            FragmentManager fragmentManager = mSupportFragment.getChildFragmentManager();
+            FragmentManager fragmentManager = mFragment.getChildFragmentManager();
             if (fragmentManager != null) {
                 List<Fragment> childFragments = FragmentationHack.getActiveFragments(fragmentManager);
                 if (childFragments != null) {
                     for (Fragment child : childFragments) {
-                        if (child instanceof SupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
-                            ((SupportFragment) child).getVisibleDelegate().dispatchSupportVisible(visible);
+                        if (child instanceof ISupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
+                            ((ISupportFragment) child).getSupportDelegate().getVisibleDelegate().dispatchSupportVisible(visible);
                         }
                     }
                 }

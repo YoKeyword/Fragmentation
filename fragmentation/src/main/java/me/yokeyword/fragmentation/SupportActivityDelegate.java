@@ -12,9 +12,8 @@ import android.view.MotionEvent;
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.debug.DebugStackDelegate;
-import me.yokeyword.fragmentation.helper.internal.ITransanction;
 
-public class SupportActivityDelegate implements ITransanction {
+public class SupportActivityDelegate {
     private ISupportActivity mSupport;
     private FragmentActivity mActivity;
 
@@ -119,10 +118,10 @@ public class SupportActivityDelegate implements ITransanction {
         }
 
         // 获取activeFragment:即从栈顶开始 状态为show的那个Fragment
-        SupportFragment activeFragment = SupportHelper.getActiveFragment(getSupportFragmentManager());
+        ISupportFragment activeFragment = SupportHelper.getActiveFragment(getSupportFragmentManager());
         if (mTransactionDelegate.dispatchBackPressedEvent(activeFragment)) return;
 
-        onBackPressedSupport();
+        mSupport.onBackPressedSupport();
     }
 
     /**
@@ -151,7 +150,6 @@ public class SupportActivityDelegate implements ITransanction {
     /**
      * 额外的事务：自定义Tag，添加SharedElement动画，操作非回退栈Fragment
      */
-    @Override
     public ExtraTransaction extraTransaction() {
         return new ExtraTransaction.ExtraTransactionImpl<>(getTopFragment(), getTransactionDelegate(), true);
     }
@@ -162,13 +160,11 @@ public class SupportActivityDelegate implements ITransanction {
      * @param containerId 容器id
      * @param toFragment  目标Fragment
      */
-    @Override
-    public void loadRootFragment(int containerId, SupportFragment toFragment) {
+    public void loadRootFragment(int containerId, ISupportFragment toFragment) {
         loadRootFragment(containerId, toFragment, true, false);
     }
 
-    @Override
-    public void loadRootFragment(int containerId, SupportFragment toFragment, boolean addToBackStack, boolean allowAnimation) {
+    public void loadRootFragment(int containerId, ISupportFragment toFragment, boolean addToBackStack, boolean allowAnimation) {
         mTransactionDelegate.loadRootTransaction(getSupportFragmentManager(), containerId, toFragment, addToBackStack, allowAnimation);
     }
 
@@ -178,8 +174,7 @@ public class SupportActivityDelegate implements ITransanction {
      * @param containerId 容器id
      * @param toFragments 目标Fragments
      */
-    @Override
-    public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
+    public void loadMultipleRootFragment(int containerId, int showPosition, ISupportFragment... toFragments) {
         mTransactionDelegate.loadMultipleRootTransaction(getSupportFragmentManager(), containerId, showPosition, toFragments);
     }
 
@@ -187,12 +182,11 @@ public class SupportActivityDelegate implements ITransanction {
      * show一个Fragment,hide其他同栈所有Fragment
      * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
      * <p>
-     * 建议使用更明确的{@link #showHideFragment(SupportFragment, SupportFragment)}
+     * 建议使用更明确的{@link #showHideFragment(ISupportFragment, ISupportFragment)}
      *
      * @param showFragment 需要show的Fragment
      */
-    @Override
-    public void showHideFragment(SupportFragment showFragment) {
+    public void showHideFragment(ISupportFragment showFragment) {
         showHideFragment(showFragment, null);
     }
 
@@ -202,8 +196,7 @@ public class SupportActivityDelegate implements ITransanction {
      * @param showFragment 需要show的Fragment
      * @param hideFragment 需要hide的Fragment
      */
-    @Override
-    public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
+    public void showHideFragment(ISupportFragment showFragment, ISupportFragment hideFragment) {
         mTransactionDelegate.showHideFragment(getSupportFragmentManager(), showFragment, hideFragment);
     }
 
@@ -212,35 +205,29 @@ public class SupportActivityDelegate implements ITransanction {
      *
      * @param toFragment 目标Fragment
      */
-    @Override
-    public void start(SupportFragment toFragment) {
-        start(toFragment, SupportFragment.STANDARD);
+    public void start(ISupportFragment toFragment) {
+        start(toFragment, ISupportFragment.STANDARD);
     }
 
-    @Override
-    public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
+    public void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
     }
 
-    @Override
-    public void startForResult(SupportFragment toFragment, int requestCode) {
-        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, requestCode, SupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_RESULT);
+    public void startForResult(ISupportFragment toFragment, int requestCode) {
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, requestCode, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_RESULT);
     }
 
-    @Override
-    public void startWithPop(SupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+    public void startWithPop(ISupportFragment toFragment) {
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
     }
 
-    @Override
-    public void replaceFragment(SupportFragment toFragment, boolean addToBackStack) {
-        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, SupportFragment.STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
+    public void replaceFragment(ISupportFragment toFragment, boolean addToBackStack) {
+        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, ISupportFragment.STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
     }
 
     /**
      * 出栈
      */
-    @Override
     public void pop() {
         mTransactionDelegate.back(getSupportFragmentManager());
     }
@@ -251,7 +238,6 @@ public class SupportActivityDelegate implements ITransanction {
      * @param targetFragmentClass   目标fragment
      * @param includeTargetFragment 是否包含该fragment
      */
-    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
         popTo(targetFragmentClass, includeTargetFragment, null);
     }
@@ -259,12 +245,10 @@ public class SupportActivityDelegate implements ITransanction {
     /**
      * 用于出栈后,立刻进行FragmentTransaction操作
      */
-    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
         popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, 0);
     }
 
-    @Override
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {
         mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, getSupportFragmentManager(), popAnim);
     }
@@ -273,7 +257,7 @@ public class SupportActivityDelegate implements ITransanction {
         return mActivity.getSupportFragmentManager();
     }
 
-    private SupportFragment getTopFragment() {
+    private ISupportFragment getTopFragment() {
         return SupportHelper.getTopFragment(getSupportFragmentManager());
     }
 }

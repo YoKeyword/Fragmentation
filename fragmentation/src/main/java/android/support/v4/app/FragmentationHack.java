@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * http://stackoverflow.com/questions/23504790/android-multiple-fragment-transaction-ordering
+ *
+ * Created by YoKey on 16/1/22.
  */
 public class FragmentationHack {
     private static boolean sSupportLessThan25dot4 = false;
@@ -22,10 +24,6 @@ public class FragmentationHack {
                 break;
             }
         }
-    }
-
-    public static boolean isSupportLessThan25dot4(){
-        return sSupportLessThan25dot4;
     }
 
     /**
@@ -43,9 +41,7 @@ public class FragmentationHack {
 
             ArrayList<Integer> arrayList = (ArrayList<Integer>) object;
             if (arrayList.size() > 1) {
-//                Log.i("FragmentationHack", "Pre reorder: " + arrayList);
                 Collections.sort(arrayList, Collections.reverseOrder());
-//                Log.i("FragmentationHack", "After reorder: " + arrayList);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,7 +53,6 @@ public class FragmentationHack {
             return false;
         try {
             FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
-            // 从5年前一直到当前的Support-25.0.1,该字段没有变化过
             return fragmentManagerImpl.mStateSaved;
         } catch (Exception e) {
             e.printStackTrace();

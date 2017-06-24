@@ -60,14 +60,14 @@ public class SupportHelper {
     /**
      * 获得栈顶SupportFragment
      */
-    public static SupportFragment getTopFragment(FragmentManager fragmentManager) {
+    public static ISupportFragment getTopFragment(FragmentManager fragmentManager) {
         List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
         if (fragmentList == null) return null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
-                return (SupportFragment) fragment;
+            if (fragment instanceof ISupportFragment) {
+                return (ISupportFragment) fragment;
             }
         }
         return null;
@@ -78,7 +78,7 @@ public class SupportHelper {
      *
      * @param fragment 目标Fragment
      */
-    public static SupportFragment getPreFragment(Fragment fragment) {
+    public static ISupportFragment getPreFragment(Fragment fragment) {
         FragmentManager fragmentManager = fragment.getFragmentManager();
         if (fragmentManager == null) return null;
 
@@ -88,8 +88,8 @@ public class SupportHelper {
         int index = fragmentList.indexOf(fragment);
         for (int i = index - 1; i >= 0; i--) {
             Fragment preFragment = fragmentList.get(i);
-            if (preFragment instanceof SupportFragment) {
-                return (SupportFragment) preFragment;
+            if (preFragment instanceof ISupportFragment) {
+                return (ISupportFragment) preFragment;
             }
         }
         return null;
@@ -100,29 +100,29 @@ public class SupportHelper {
      * find Fragment from FragmentStack
      */
     @SuppressWarnings("unchecked")
-    public static <T extends SupportFragment> T findFragment(FragmentManager fragmentManager, Class<T> fragmentClass) {
+    public static <T extends ISupportFragment> T findFragment(FragmentManager fragmentManager, Class<T> fragmentClass) {
         return findStackFragment(fragmentClass, null, fragmentManager);
     }
 
     /**
      * Same as fragmentManager.findFragmentByTag(fragmentTag);
-     *
+     * <p>
      * find Fragment from FragmentStack
      */
     @SuppressWarnings("unchecked")
-    public static <T extends SupportFragment> T findFragment(FragmentManager fragmentManager, String fragmentTag) {
+    public static <T extends ISupportFragment> T findFragment(FragmentManager fragmentManager, String fragmentTag) {
         return findStackFragment(null, fragmentTag, fragmentManager);
     }
 
     /**
      * 从栈顶开始，寻找FragmentManager以及其所有子栈, 直到找到状态为show & userVisible的Fragment
      */
-    public static SupportFragment getActiveFragment(FragmentManager fragmentManager) {
+    public static ISupportFragment getActiveFragment(FragmentManager fragmentManager) {
         return getActiveFragment(fragmentManager, null);
     }
 
     @SuppressWarnings("unchecked")
-    static <T extends SupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
+    static <T extends ISupportFragment> T findStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
         Fragment fragment = null;
 
         if (toFragmentTag == null) {
@@ -133,7 +133,7 @@ public class SupportHelper {
 
             for (int i = sizeChildFrgList - 1; i >= 0; i--) {
                 Fragment brotherFragment = fragmentList.get(i);
-                if (brotherFragment instanceof SupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
+                if (brotherFragment instanceof ISupportFragment && brotherFragment.getClass().getName().equals(fragmentClass.getName())) {
                     fragment = brotherFragment;
                     break;
                 }
@@ -145,17 +145,16 @@ public class SupportHelper {
         return (T) fragment;
     }
 
-    private static SupportFragment getActiveFragment(FragmentManager fragmentManager, SupportFragment parentFragment) {
+    private static ISupportFragment getActiveFragment(FragmentManager fragmentManager, ISupportFragment parentFragment) {
         List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
         if (fragmentList == null) {
             return parentFragment;
         }
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment instanceof SupportFragment) {
-                SupportFragment supportFragment = (SupportFragment) fragment;
-                if (supportFragment.isResumed() && !supportFragment.isHidden() && supportFragment.getUserVisibleHint()) {
-                    return getActiveFragment(supportFragment.getChildFragmentManager(), supportFragment);
+            if (fragment instanceof ISupportFragment) {
+                if (fragment.isResumed() && !fragment.isHidden() && fragment.getUserVisibleHint()) {
+                    return getActiveFragment(fragment.getChildFragmentManager(), (ISupportFragment) fragment);
                 }
             }
         }

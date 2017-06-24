@@ -2,6 +2,7 @@ package me.yokeyword.fragmentation;
 
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -25,23 +26,26 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDelegate.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDelegate.onCreate(savedInstanceState);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mDelegate.onDestroy();
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDelegate.onPostCreate(savedInstanceState);
     }
 
+    @Override
+    protected void onDestroy() {
+        mDelegate.onDestroy();
+        super.onDestroy();
+    }
+
+    /**
+     * Note： return mDelegate.dispatchTouchEvent(ev) || super.dispatchTouchEvent(ev);
+     */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return mDelegate.dispatchTouchEvent(ev) || super.dispatchTouchEvent(ev);
@@ -95,7 +99,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
         return mDelegate.onCreateFragmentAnimator();
     }
 
-    /**********************************************************************************************/
+    /****************************************以下为可选方法******************************************************/
 
     /**
      * 加载根Fragment, 即Activity内的第一个Fragment 或 Fragment内的第一个子Fragment
@@ -103,11 +107,11 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * @param containerId 容器id
      * @param toFragment  目标Fragment
      */
-    public void loadRootFragment(int containerId, SupportFragment toFragment) {
+    public void loadRootFragment(int containerId, @NonNull ISupportFragment toFragment) {
         mDelegate.loadRootFragment(containerId, toFragment);
     }
 
-    public void loadRootFragment(int containerId, SupportFragment toFragment, boolean addToBackStack, boolean allowAnimation) {
+    public void loadRootFragment(int containerId, ISupportFragment toFragment, boolean addToBackStack, boolean allowAnimation) {
         mDelegate.loadRootFragment(containerId, toFragment, addToBackStack, allowAnimation);
     }
 
@@ -117,7 +121,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * @param containerId 容器id
      * @param toFragments 目标Fragments
      */
-    public void loadMultipleRootFragment(int containerId, int showPosition, SupportFragment... toFragments) {
+    public void loadMultipleRootFragment(int containerId, int showPosition, ISupportFragment... toFragments) {
         mDelegate.loadMultipleRootFragment(containerId, showPosition, toFragments);
     }
 
@@ -125,11 +129,11 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * show一个Fragment,hide其他同栈所有Fragment
      * 使用该方法时，要确保同级栈内无多余的Fragment,(只有通过loadMultipleRootFragment()载入的Fragment)
      * <p>
-     * 建议使用更明确的{@link #showHideFragment(SupportFragment, SupportFragment)}
+     * 建议使用更明确的{@link #showHideFragment(ISupportFragment, ISupportFragment)}
      *
      * @param showFragment 需要show的Fragment
      */
-    public void showHideFragment(SupportFragment showFragment) {
+    public void showHideFragment(ISupportFragment showFragment) {
         mDelegate.showHideFragment(showFragment);
     }
 
@@ -139,7 +143,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      * @param showFragment 需要show的Fragment
      * @param hideFragment 需要hide的Fragment
      */
-    public void showHideFragment(SupportFragment showFragment, SupportFragment hideFragment) {
+    public void showHideFragment(ISupportFragment showFragment, ISupportFragment hideFragment) {
         mDelegate.showHideFragment(showFragment, hideFragment);
     }
 
@@ -148,23 +152,23 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
      *
      * @param toFragment 目标Fragment
      */
-    public void start(SupportFragment toFragment) {
+    public void start(ISupportFragment toFragment) {
         mDelegate.start(toFragment);
     }
 
-    public void start(SupportFragment toFragment, @SupportFragment.LaunchMode int launchMode) {
+    public void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mDelegate.start(toFragment, launchMode);
     }
 
-    public void startForResult(SupportFragment toFragment, int requestCode) {
+    public void startForResult(ISupportFragment toFragment, int requestCode) {
         mDelegate.startForResult(toFragment, requestCode);
     }
 
-    public void startWithPop(SupportFragment toFragment) {
+    public void startWithPop(ISupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);
     }
 
-    public void replaceFragment(SupportFragment toFragment, boolean addToBackStack) {
+    public void replaceFragment(ISupportFragment toFragment, boolean addToBackStack) {
         mDelegate.replaceFragment(toFragment, addToBackStack);
     }
 
@@ -199,9 +203,23 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     /**
      * 当Fragment根布局 没有 设定background属性时,
      * Fragmentation默认使用Theme的android:windowbackground作为Fragment的背景,
-     * 可以通过该方法改变Fragment背景。
+     * 可以通过该方法改变其内所有Fragment的默认背景。
      */
     public void setDefaultFragmentBackground(@DrawableRes int backgroundRes) {
         mDelegate.setDefaultFragmentBackground(backgroundRes);
+    }
+
+    /**
+     * 得到位于栈顶Fragment
+     */
+    public ISupportFragment getTopFragment() {
+        return SupportHelper.getTopFragment(getSupportFragmentManager());
+    }
+
+    /**
+     * 获取栈内的fragment对象
+     */
+    public <T extends ISupportFragment> T findFragment(Class<T> fragmentClass) {
+        return SupportHelper.findFragment(getSupportFragmentManager(), fragmentClass);
     }
 }
