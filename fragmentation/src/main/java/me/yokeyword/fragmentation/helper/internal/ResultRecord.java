@@ -20,7 +20,7 @@ public final class ResultRecord implements Parcelable {
     protected ResultRecord(Parcel in) {
         requestCode = in.readInt();
         resultCode = in.readInt();
-        resultBundle = in.readBundle();
+        resultBundle = in.readBundle(getClass().getClassLoader());
     }
 
     public static final Creator<ResultRecord> CREATOR = new Creator<ResultRecord>() {

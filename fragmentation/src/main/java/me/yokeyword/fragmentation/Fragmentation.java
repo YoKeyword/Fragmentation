@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import me.yokeyword.fragmentation.helper.ExceptionHandler;
-import me.yokeyword.fragmentation.helper.internal.InstanceException;
 
 /**
  * Created by YoKey on 17/2/5.
@@ -119,7 +118,7 @@ public class Fragmentation {
         public Fragmentation install() {
             synchronized (Fragmentation.class) {
                 if (Fragmentation.INSTANCE != null) {
-                    throw new InstanceException("Default instance already exists." +
+                    throw new RuntimeException("Default instance already exists." +
                             " It may be only set once before it's used the first time to ensure consistent behavior.");
                 }
                 Fragmentation.INSTANCE = new Fragmentation(this);

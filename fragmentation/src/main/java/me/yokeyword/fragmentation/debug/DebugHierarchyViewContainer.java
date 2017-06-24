@@ -98,7 +98,7 @@ public class DebugHierarchyViewContainer extends ScrollView {
         params.leftMargin = dip2px(16);
         params.gravity = Gravity.CENTER_VERTICAL;
         img.setLayoutParams(params);
-        img.setOnClickListener(new OnClickListener() {
+        mTitleLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "* means not in backBack.", Toast.LENGTH_SHORT).show();
