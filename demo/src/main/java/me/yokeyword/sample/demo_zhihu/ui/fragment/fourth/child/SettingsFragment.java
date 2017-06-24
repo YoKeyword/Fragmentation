@@ -7,13 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/6.
  */
-public class SettingsFragment extends BaseFragment {
+public class SettingsFragment extends SupportFragment {
     private Toolbar mToolbar;
 
     public static SettingsFragment newInstance() {

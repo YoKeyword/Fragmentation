@@ -6,13 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_wechat.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/30.
  */
-public class OtherPagerFragment extends BaseFragment {
+public class OtherPagerFragment extends SupportFragment {
 
     public static OtherPagerFragment newInstance() {
 

@@ -3,7 +3,6 @@ package me.yokeyword.sample.demo_flow;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,12 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import me.yokeyword.fragmentation.SupportActivity;
+import me.yokeyword.fragmentation.ISupportFragment;
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
+import me.yokeyword.sample.demo_flow.base.MySupportActivity;
+import me.yokeyword.sample.demo_flow.base.MySupportFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.account.LoginFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.discover.DiscoverFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.home.HomeFragment;
@@ -30,7 +30,7 @@ import me.yokeyword.sample.demo_flow.ui.fragment_swipe_back.SwipeBackSampleFragm
  * 流程式demo  tip: 多使用右上角的"查看栈视图"
  * Created by YoKeyword on 16/1/29.
  */
-public class MainActivity extends SupportActivity
+public class MainActivity extends MySupportActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseMainFragment.OnFragmentOpenDrawerListener
         , LoginFragment.OnLoginSuccessListener, SwipeBackSampleFragment.OnLockDrawLayoutListener {
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -49,7 +49,7 @@ public class MainActivity extends SupportActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SupportFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), HomeFragment.class);
+        MySupportFragment fragment = findFragment(HomeFragment.class);
         if (fragment == null) {
             loadRootFragment(R.id.fl_container, HomeFragment.newInstance());
         }
@@ -100,7 +100,7 @@ public class MainActivity extends SupportActivity
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            Fragment topFragment = SupportHelper.getTopFragment(getSupportFragmentManager());
+            ISupportFragment topFragment = getTopFragment();
 
             // 主页的Fragment
             if (topFragment instanceof BaseMainFragment) {
@@ -139,38 +139,39 @@ public class MainActivity extends SupportActivity
             public void run() {
                 int id = item.getItemId();
 
-                final SupportFragment topFragment = SupportHelper.getTopFragment(getSupportFragmentManager());
+                final ISupportFragment topFragment = getTopFragment();
 
                 if (id == R.id.nav_home) {
 
-                    HomeFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), HomeFragment.class);
+                    HomeFragment fragment = findFragment(HomeFragment.class);
                     Bundle newBundle = new Bundle();
                     newBundle.putString("from", "主页-->来自:" + topFragment.getClass().getSimpleName());
                     fragment.putNewBundle(newBundle);
 
                     start(fragment, SupportFragment.SINGLETASK);
                 } else if (id == R.id.nav_discover) {
-                    DiscoverFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), DiscoverFragment.class);
+                    DiscoverFragment fragment = findFragment(DiscoverFragment.class);
                     if (fragment == null) {
                         popTo(HomeFragment.class, false, new Runnable() {
                             @Override
                             public void run() {
                                 start(DiscoverFragment.newInstance());
                             }
-                        }, getFragmentAnimator().getPopExit()); // 设置pop动画为： popExit， 配合start()，视觉上动画会很合理（类似startWithPop()的动画）
+                        });
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start
                         start(fragment, SupportFragment.SINGLETASK);
                     }
                 } else if (id == R.id.nav_msg) {
-                    ShopFragment fragment = SupportHelper.findFragment(getSupportFragmentManager(), ShopFragment.class);
+                    ShopFragment fragment = findFragment(ShopFragment.class);
                     if (fragment == null) {
                         popTo(HomeFragment.class, false, new Runnable() {
                             @Override
                             public void run() {
                                 start(ShopFragment.newInstance());
+                                // 设置pop动画为： popExit， 配合start()，视觉上动画会很合理（类似startWithPop()的动画）
                             }
-                        });
+                        }, getFragmentAnimator().getPopExit());
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start,也可以用popTo
 //                        start(fragment, SupportFragment.SINGLETASK);
@@ -184,7 +185,7 @@ public class MainActivity extends SupportActivity
                     start(SwipeBackSampleFragment.newInstance());
                 }
             }
-        }, 250);
+        }, 300);
 
         return true;
     }

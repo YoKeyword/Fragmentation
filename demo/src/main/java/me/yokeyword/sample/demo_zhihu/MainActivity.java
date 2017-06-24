@@ -8,9 +8,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.SupportHelper;
-import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
-import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
@@ -45,7 +42,7 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
         setContentView(R.layout.zhihu_activity_main);
 //        EventBus.getDefault().register(this);
 
-        SupportFragment firstFragment = SupportHelper.findFragment(getSupportFragmentManager(), ZhihuFirstFragment.class);
+        SupportFragment firstFragment = findFragment(ZhihuFirstFragment.class);
         if (firstFragment == null) {
             mFragments[FIRST] = ZhihuFirstFragment.newInstance();
             mFragments[SECOND] = ZhihuSecondFragment.newInstance();
@@ -62,9 +59,9 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
 
             // 这里我们需要拿到mFragments的引用,也可以通过getSupportFragmentManager.findFragmentByTag()自行进行判断查找(效率更高些),用下面的方法查找更方便些
             mFragments[FIRST] = firstFragment;
-            mFragments[SECOND] = SupportHelper.findFragment(getSupportFragmentManager(), ZhihuSecondFragment.class);
-            mFragments[THIRD] = SupportHelper.findFragment(getSupportFragmentManager(), ZhihuThirdFragment.class);
-            mFragments[FOURTH] = SupportHelper.findFragment(getSupportFragmentManager(), ZhihuFourthFragment.class);
+            mFragments[SECOND] = findFragment(ZhihuSecondFragment.class);
+            mFragments[THIRD] = findFragment(ZhihuThirdFragment.class);
+            mFragments[FOURTH] = findFragment(ZhihuFourthFragment.class);
         }
 
         initView();
@@ -91,7 +88,7 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
 
             @Override
             public void onTabReselected(int position) {
-                SupportFragment currentFragment = mFragments[position];
+                final SupportFragment currentFragment = mFragments[position];
                 int count = currentFragment.getChildFragmentManager().getBackStackEntryCount();
 
                 // 如果不在该类别Fragment的主页,则回到主页;
@@ -126,11 +123,6 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
         } else {
             ActivityCompat.finishAfterTransition(this);
         }
-    }
-
-    @Override
-    public FragmentAnimator onCreateFragmentAnimator() {
-        return new DefaultHorizontalAnimator();
     }
 
     @Override

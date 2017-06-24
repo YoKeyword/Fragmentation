@@ -20,10 +20,10 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.MainActivity;
 import me.yokeyword.sample.demo_zhihu.adapter.FirstHomeAdapter;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.entity.Article;
 import me.yokeyword.sample.demo_zhihu.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_zhihu.helper.DetailTransition;
@@ -32,7 +32,7 @@ import me.yokeyword.sample.demo_zhihu.listener.OnItemClickListener;
 /**
  * Created by YoKeyword on 16/6/5.
  */
-public class FirstHomeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FirstHomeFragment extends SupportFragment implements SwipeRefreshLayout.OnRefreshListener {
     private Toolbar mToolbar;
     private RecyclerView mRecy;
     private SwipeRefreshLayout mRefreshLayout;

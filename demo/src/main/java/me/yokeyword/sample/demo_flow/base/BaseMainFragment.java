@@ -10,7 +10,7 @@ import me.yokeyword.sample.R;
 /**
  * Created by YoKeyword on 16/2/3.
  */
-public class BaseMainFragment extends BaseFragment {
+public class BaseMainFragment extends MySupportFragment {
 
     protected OnFragmentOpenDrawerListener mOpenDraweListener;
 

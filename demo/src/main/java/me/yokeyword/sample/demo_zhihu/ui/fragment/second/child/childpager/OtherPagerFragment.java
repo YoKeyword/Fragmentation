@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/5.
  */
-public class OtherPagerFragment extends BaseFragment {
+public class OtherPagerFragment extends SupportFragment {
     private static final String ARG_TYPE = "arg_pos";
     public static int TYPE_HOT = 1;
     public static int TYPE_FAV = 2;

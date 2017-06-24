@@ -7,7 +7,8 @@ import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.home.HomeFragment;
 
 /**
- * 该类是展示 0.8 版本新特性，仅供参考
+ * 该类是展示 1.0 版本新特性 extraTransaction()
+ *
  * Created by YoKey on 16/11/25.
  */
 public class NewFeatureFragment extends SupportFragment {
@@ -25,7 +26,7 @@ public class NewFeatureFragment extends SupportFragment {
         HomeFragment homeFragment = HomeFragment.newInstance();
         homeFragment.extraTransaction()
                 .setTag("我是自定义Tag")
-//                .addSharedElement() // 等同：startWithSharedElement
+//                .addSharedElement()
                 .start(homeFragment);
     }
 

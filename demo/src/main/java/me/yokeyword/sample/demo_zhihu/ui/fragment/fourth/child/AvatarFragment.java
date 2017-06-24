@@ -6,13 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/6.
  */
-public class AvatarFragment extends BaseFragment {
+public class AvatarFragment extends SupportFragment {
 
     public static AvatarFragment newInstance() {
 

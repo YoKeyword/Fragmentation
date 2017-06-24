@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseBackFragment;
-import me.yokeyword.sample.demo_flow.ui.fragment.home.DetailFragment;
 
 /**
  * Created by YoKeyword on 16/2/7.

@@ -8,14 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.adapter.ZhihuPagerFragmentAdapter;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/6/5.
  */
-public class ViewPagerFragment extends BaseFragment {
+public class ViewPagerFragment extends SupportFragment {
     private TabLayout mTab;
     private ViewPager mViewPager;
 

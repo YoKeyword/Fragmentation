@@ -7,14 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.ZhihuFourthFragment;
 
 /**
  * Created by YoKeyword on 16/6/6.
  */
-public class MeFragment extends BaseFragment {
+public class MeFragment extends SupportFragment {
     private TextView mTvBtnSettings;
 
     public static MeFragment newInstance() {

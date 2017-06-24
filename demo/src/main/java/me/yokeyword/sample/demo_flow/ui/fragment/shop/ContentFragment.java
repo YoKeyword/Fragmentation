@@ -12,13 +12,13 @@ import android.widget.TextView;
 import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_flow.base.BaseFragment;
+import me.yokeyword.sample.demo_flow.base.MySupportFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.CycleFragment;
 
 /**
  * Created by YoKeyword on 16/2/9.
  */
-public class ContentFragment extends BaseFragment {
+public class ContentFragment extends MySupportFragment {
     private static final String ARG_MENU = "arg_menu";
 
     private TextView mTvContent;
@@ -47,7 +47,7 @@ public class ContentFragment extends BaseFragment {
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
+    public FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultNoAnimator();
     }
 

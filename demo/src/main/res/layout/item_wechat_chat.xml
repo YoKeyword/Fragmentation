@@ -4,7 +4,6 @@
                 android:layout_height="72dp"
                 android:orientation="vertical"
                 android:paddingBottom="8dp"
-                android:background="@android:color/white"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="8dp">

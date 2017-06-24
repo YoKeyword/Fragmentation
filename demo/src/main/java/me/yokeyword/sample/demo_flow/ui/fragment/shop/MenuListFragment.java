@@ -14,13 +14,13 @@ import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.adapter.MenuAdapter;
+import me.yokeyword.sample.demo_flow.base.MySupportFragment;
 import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_flow.base.BaseFragment;
 
 /**
  * Created by YoKeyword on 16/2/9.
  */
-public class MenuListFragment extends BaseFragment {
+public class MenuListFragment extends MySupportFragment {
     private static final String ARG_MENUS = "arg_menus";
     private static final String SAVE_STATE_POSITION = "save_state_position";
 
@@ -59,7 +59,7 @@ public class MenuListFragment extends BaseFragment {
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
+    public FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultNoAnimator();
     }
 

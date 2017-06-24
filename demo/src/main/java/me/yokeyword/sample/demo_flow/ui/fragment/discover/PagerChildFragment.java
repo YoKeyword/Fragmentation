@@ -12,12 +12,12 @@ import java.util.List;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.adapter.PagerAdapter;
+import me.yokeyword.sample.demo_flow.base.MySupportFragment;
 import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_flow.base.BaseFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.CycleFragment;
 
 
-public class PagerChildFragment extends BaseFragment {
+public class PagerChildFragment extends MySupportFragment {
     private static final String ARG_FROM = "arg_from";
 
     private int mFrom;

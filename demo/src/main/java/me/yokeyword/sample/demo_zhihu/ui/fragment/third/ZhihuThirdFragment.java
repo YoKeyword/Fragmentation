@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.ShopFragment;
@@ -36,7 +35,7 @@ public class ZhihuThirdFragment extends BaseMainFragment {
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         super.onLazyInitView(savedInstanceState);
 
-        if (SupportHelper.findFragment(getChildFragmentManager(), ShopFragment.class) == null) {
+        if (findChildFragment(ShopFragment.class) == null) {
             // ShopFragment是flow包里的
             loadRootFragment(R.id.fl_third_container, ShopFragment.newInstance());
         }

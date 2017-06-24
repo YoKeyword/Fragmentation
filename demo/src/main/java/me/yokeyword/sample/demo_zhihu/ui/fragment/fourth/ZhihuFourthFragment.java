@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.fourth.child.AvatarFragment;
@@ -39,7 +38,7 @@ public class ZhihuFourthFragment extends BaseMainFragment {
     @Override
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         super.onLazyInitView(savedInstanceState);
-        if (SupportHelper.findFragment(getChildFragmentManager(), AvatarFragment.class) == null) {
+        if (findChildFragment(AvatarFragment.class) == null) {
             loadFragment();
         }
 

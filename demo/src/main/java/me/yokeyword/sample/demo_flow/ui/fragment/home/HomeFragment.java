@@ -1,8 +1,6 @@
 package me.yokeyword.sample.demo_flow.ui.fragment.home;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -44,8 +42,6 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
     };
 
     private Toolbar mToolbar;
-
-    private FloatingActionButton mFab;
     private RecyclerView mRecy;
     private HomeAdapter mAdapter;
 
@@ -65,7 +61,6 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
 
     private void initView(View view) {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
         mRecy = (RecyclerView) view.findViewById(R.id.recy);
 
         mToolbar.setTitle(R.string.home);
@@ -77,18 +72,6 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
         LinearLayoutManager manager = new LinearLayoutManager(_mActivity);
         mRecy.setLayoutManager(manager);
         mRecy.setAdapter(mAdapter);
-
-        mRecy.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 5) {
-                    mFab.hide();
-                } else if (dy < -5) {
-                    mFab.show();
-                }
-            }
-        });
 
         mAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -105,21 +88,13 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
             articleList.add(article);
         }
         mAdapter.setDatas(articleList);
-
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     /**
      * 类似于 Activity的 onNewIntent()
      */
     @Override
-    protected void onNewBundle(Bundle args) {
+    public void onNewBundle(Bundle args) {
         super.onNewBundle(args);
 
         Toast.makeText(_mActivity, args.getString("from"), Toast.LENGTH_SHORT).show();

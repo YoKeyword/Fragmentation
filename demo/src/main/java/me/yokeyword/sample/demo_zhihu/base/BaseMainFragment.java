@@ -2,14 +2,14 @@ package me.yokeyword.sample.demo_zhihu.base;
 
 import android.content.Context;
 
-import me.yokeyword.sample.demo_flow.base.BaseFragment;
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.first.ZhihuFirstFragment;
 
 /**
  * 懒加载
  * Created by YoKeyword on 16/6/5.
  */
-public abstract class BaseMainFragment extends BaseFragment {
+public abstract class BaseMainFragment extends SupportFragment {
     protected OnBackToFirstListener _mBackToFirstListener;
 
     @Override

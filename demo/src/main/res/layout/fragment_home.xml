@@ -5,7 +5,6 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:fitsSystemWindows="true"
-             android:background="@android:color/transparent"
              tools:context=".demo_flow.ui.fragment.home.HomeFragment">
 
     <android.support.design.widget.CoordinatorLayout
@@ -20,14 +19,6 @@
             android:layout_height="match_parent"
             android:background="#f1f1f1"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email"/>
     </android.support.design.widget.CoordinatorLayout>
 
     <FrameLayout

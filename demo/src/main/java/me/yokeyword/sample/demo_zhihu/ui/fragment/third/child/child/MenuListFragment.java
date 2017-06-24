@@ -10,18 +10,18 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.anim.DefaultNoAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.adapter.MenuAdapter;
 import me.yokeyword.sample.demo_zhihu.listener.OnItemClickListener;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.ShopFragment;
 
 /**
  * Created by YoKeyword on 16/2/9.
  */
-public class MenuListFragment extends BaseFragment {
+public class MenuListFragment extends SupportFragment {
     private static final String ARG_MENUS = "arg_menus";
     private static final String SAVE_STATE_POSITION = "save_state_position";
 
@@ -60,7 +60,7 @@ public class MenuListFragment extends BaseFragment {
     }
 
     @Override
-    protected FragmentAnimator onCreateFragmentAnimator() {
+    public FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultNoAnimator();
     }
 

@@ -67,7 +67,7 @@ public class MsgFragment extends BaseBackFragment {
     }
 
     @Override
-    protected void onEnterAnimationEnd(Bundle savedInstanceState) {
+    public void onEnterAnimationEnd(Bundle savedInstanceState) {
         super.onEnterAnimationEnd(savedInstanceState);
         // 入场动画结束后执行  优化,防动画卡顿
 

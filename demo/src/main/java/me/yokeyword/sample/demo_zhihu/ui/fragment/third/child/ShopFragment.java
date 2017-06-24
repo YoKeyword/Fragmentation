@@ -11,16 +11,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_zhihu.base.BaseFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.child.ContentFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.third.child.child.MenuListFragment;
 
 /**
  * Created by YoKeyword on 16/2/4.
  */
-public class ShopFragment extends BaseFragment {
+public class ShopFragment extends SupportFragment {
     public static final String TAG = ShopFragment.class.getSimpleName();
 
     private Toolbar mToolbar;
@@ -46,7 +44,7 @@ public class ShopFragment extends BaseFragment {
 
         mToolbar.setTitle("商店");
 
-        if (SupportHelper.findFragment(getChildFragmentManager(), MenuListFragment.class) == null) {
+        if (findChildFragment(MenuListFragment.class) == null) {
             ArrayList<String> listMenus = new ArrayList<>();
             listMenus.add("销量排行");
             listMenus.add("当季特选");
@@ -85,9 +83,9 @@ public class ShopFragment extends BaseFragment {
      * @param fragment
      */
     public void switchContentFragment(ContentFragment fragment) {
-        SupportFragment contentFragment = SupportHelper.findFragment(getChildFragmentManager(), ContentFragment.class);
+        SupportFragment contentFragment = findChildFragment(ContentFragment.class);
         if (contentFragment != null) {
-            contentFragment.replaceFragment(contentFragment, false);
+            contentFragment.replaceFragment(fragment, false);
         }
     }
 }

@@ -10,9 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import me.yokeyword.fragmentation.SupportFragment;
-import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_wechat.base.BaseFragment;
 import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_wechat.ui.fragment.first.WechatFirstTabFragment;
@@ -24,7 +22,7 @@ import me.yokeyword.sample.demo_wechat.ui.view.BottomBarTab;
 /**
  * Created by YoKeyword on 16/6/30.
  */
-public class MainFragment extends BaseFragment {
+public class MainFragment extends SupportFragment {
     private static final int REQ_MSG = 10;
 
     public static final int FIRST = 0;
@@ -50,7 +48,7 @@ public class MainFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wechat_fragment_main, container, false);
 
-        SupportFragment firstFragment = SupportHelper.findFragment(getChildFragmentManager(), WechatFirstTabFragment.class);
+        SupportFragment firstFragment = findChildFragment(WechatFirstTabFragment.class);
         if (firstFragment == null) {
             mFragments[FIRST] = WechatFirstTabFragment.newInstance();
             mFragments[SECOND] = WechatSecondTabFragment.newInstance();
@@ -65,8 +63,8 @@ public class MainFragment extends BaseFragment {
 
             // 这里我们需要拿到mFragments的引用,也可以通过getChildFragmentManager.findFragmentByTag自行进行判断查找(效率更高些),用下面的方法查找更方便些
             mFragments[FIRST] = firstFragment;
-            mFragments[SECOND] = SupportHelper.findFragment(getChildFragmentManager(), WechatSecondTabFragment.class);
-            mFragments[THIRD] = SupportHelper.findFragment(getChildFragmentManager(), WechatThirdTabFragment.class);
+            mFragments[SECOND] = findChildFragment(WechatSecondTabFragment.class);
+            mFragments[THIRD] = findChildFragment(WechatThirdTabFragment.class);
         }
 
         initView(view);
@@ -114,7 +112,7 @@ public class MainFragment extends BaseFragment {
     }
 
     @Override
-    protected void onFragmentResult(int requestCode, int resultCode, Bundle data) {
+    public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
         if (requestCode == REQ_MSG && resultCode == RESULT_OK) {
 

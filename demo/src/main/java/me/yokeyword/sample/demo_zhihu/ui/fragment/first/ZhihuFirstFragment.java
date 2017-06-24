@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import me.yokeyword.fragmentation.SupportHelper;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.base.BaseMainFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.first.child.FirstHomeFragment;
@@ -36,7 +35,7 @@ public class ZhihuFirstFragment extends BaseMainFragment {
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         super.onLazyInitView(savedInstanceState);
 
-        if (SupportHelper.findFragment(getChildFragmentManager(), FirstHomeFragment.class) == null) {
+        if (findChildFragment(FirstHomeFragment.class) == null) {
             loadRootFragment(R.id.fl_first_container, FirstHomeFragment.newInstance());
         }
     }
