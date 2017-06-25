@@ -30,7 +30,7 @@ class TransactionDelegate {
     private static final String TAG = "Fragmentation";
 
     static final String FRAGMENTATION_ARG_RESULT_RECORD = "fragment_arg_result_record";
-    static final String FRAGMENTATION_ARG_ANIM_DISABLE = "fragmentation_arg_is_root";
+    static final String FRAGMENTATION_ARG_ANIM_DISABLE = "fragmentation_arg_anim_disable";
     static final String FRAGMENTATION_ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
     static final String FRAGMENTATION_ARG_REPLACE = "fragmentation_arg_replace";
@@ -99,8 +99,9 @@ class TransactionDelegate {
         checkNotNull(to, "toFragment == null");
 
         if (from != null) {
+            from = getTopFragment(fragmentManager);
+            Fragment fromF = (Fragment) from;
             if (from.getSupportDelegate().mContainerId == 0) {
-                Fragment fromF = (Fragment) from;
                 if (fromF.getTag() != null && !fromF.getTag().startsWith("android:switcher:")) {
                     throw new RuntimeException("Can't find container, please call loadRootFragment() first!");
                 }
@@ -133,7 +134,7 @@ class TransactionDelegate {
             return;
 
         if (type == TYPE_ADD_WITH_POP) {
-            startWithPop(fragmentManager, from, to, toFragmentTag, type);
+            startWithPop(fragmentManager, to);
         } else {
             start(fragmentManager, from, to, toFragmentTag, dontAddToBackStack, sharedElementList, false, type);
         }
@@ -199,7 +200,7 @@ class TransactionDelegate {
         } else {
             if (addMode) {
                 ft.add(from.getSupportDelegate().mContainerId, toF, toFragmentTag);
-                if (fromF.getTag() != null && type != TYPE_ADD_WITHOUT_HIDE) {
+                if (type != TYPE_ADD_WITHOUT_HIDE) {
                     ft.hide(fromF);
                 }
             } else {
@@ -213,8 +214,9 @@ class TransactionDelegate {
         supportCommit(fragmentManager, ft);
     }
 
-    private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to, final String toFragmentTag, final int type) {
+    private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment to) {
         fragmentManager.executePendingTransactions();
+        final ISupportFragment from = getTopFragment(fragmentManager);
         final ISupportFragment preFragment = getPreFragment((Fragment) from);
         mockPopAnim(from, preFragment, from.getSupportDelegate().mAnimHelper.popExitAnim, new Callback() {
             @Override
@@ -229,7 +231,6 @@ class TransactionDelegate {
                         } else {
                             from.getSupportDelegate().start(to);
                         }
-                        fragmentManager.executePendingTransactions();
                     }
                 });
             }
@@ -251,6 +252,7 @@ class TransactionDelegate {
             }
             transaction.commitAllowingStateLoss();
         }
+        fragmentManager.executePendingTransactions();
     }
 
     private ISupportFragment getTopFragment(FragmentManager fragmentManager) {
@@ -354,12 +356,18 @@ class TransactionDelegate {
         });
     }
 
-    void remove(FragmentManager fm, Fragment fragment) {
-        fm.beginTransaction()
+    void remove(FragmentManager fm, Fragment fragment, boolean showPreFragment) {
+        FragmentTransaction ft = fm.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                .remove(fragment)
-                .show((Fragment) SupportHelper.getPreFragment(fragment))
-                .commit();
+                .remove(fragment);
+
+        if (showPreFragment) {
+            ISupportFragment preFragment = SupportHelper.getPreFragment(fragment);
+            if (preFragment instanceof Fragment) {
+                ft.show((Fragment) preFragment);
+            }
+        }
+        supportCommit(fm, ft);
     }
 
 
@@ -388,12 +396,13 @@ class TransactionDelegate {
         }
 
         fm.popBackStackImmediate();
+        fm.executePendingTransactions();
     }
 
     /**
      * Pop the last fragment transition from the manager's fragment back stack.
      *
-     * @param targetFragmentTag Tag
+     * @param targetFragmentTag     Tag
      * @param includeTargetFragment Whether it includes targetFragment
      */
     void popTo(final String targetFragmentTag, boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, int popAnim) {

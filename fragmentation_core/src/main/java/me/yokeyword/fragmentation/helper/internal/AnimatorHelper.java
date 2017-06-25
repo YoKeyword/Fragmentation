@@ -88,8 +88,7 @@ public final class AnimatorHelper {
 
     private Animation initPopExitAnim() {
         if (fragmentAnimator.getPopExit() == 0) {
-            // 用于解决 start新Fragment时,转场动画过程中上一个Fragment页面因无动画hide空白问题
-            popExitAnim = AnimationUtils.loadAnimation(context, R.anim.pop_exit_no_anim);
+            popExitAnim = AnimationUtils.loadAnimation(context, R.anim.no_anim);
         } else {
             popExitAnim = AnimationUtils.loadAnimation(context, fragmentAnimator.getPopExit());
         }

@@ -46,7 +46,7 @@ public abstract class ExtraTransaction {
     /**
      * 使用dontAddToBackStack() 加载Fragment时， 使用remove()移除Fragment
      */
-    public abstract void remove(ISupportFragment fragment);
+    public abstract void remove(ISupportFragment fragment, boolean showPreFragment);
 
     /**
      * 使用setTag()自定义Tag时，使用下面popTo()／popToChild()出栈
@@ -122,12 +122,10 @@ public abstract class ExtraTransaction {
 
         @Override
         public ExtraSupportTransaction addSharedElement(View sharedElement, String sharedName) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                if (mRecord.sharedElementList == null) {
-                    mRecord.sharedElementList = new ArrayList<>();
-                }
-                mRecord.sharedElementList.add(new TransactionRecord.SharedElement(sharedElement, sharedName));
+            if (mRecord.sharedElementList == null) {
+                mRecord.sharedElementList = new ArrayList<>();
             }
+            mRecord.sharedElementList.add(new TransactionRecord.SharedElement(sharedElement, sharedName));
             return this;
         }
 
@@ -138,8 +136,8 @@ public abstract class ExtraTransaction {
         }
 
         @Override
-        public void remove(ISupportFragment fragment) {
-            mTransactionDelegate.remove(mFragment.getFragmentManager(), (Fragment) fragment);
+        public void remove(ISupportFragment fragment, boolean showPreFragment) {
+            mTransactionDelegate.remove(mFragment.getFragmentManager(), (Fragment) fragment, showPreFragment);
         }
 
         @Override

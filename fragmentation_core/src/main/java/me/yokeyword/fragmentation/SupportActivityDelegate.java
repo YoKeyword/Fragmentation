@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentationHack;
 import android.view.MotionEvent;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
@@ -65,10 +67,7 @@ public class SupportActivityDelegate {
      * @return FragmentAnimator
      */
     public FragmentAnimator getFragmentAnimator() {
-        return new FragmentAnimator(
-                mFragmentAnimator.getEnter(), mFragmentAnimator.getExit(),
-                mFragmentAnimator.getPopEnter(), mFragmentAnimator.getPopExit()
-        );
+        return mFragmentAnimator.copy();
     }
 
     /**
@@ -77,6 +76,19 @@ public class SupportActivityDelegate {
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
+
+        for (Fragment fragment : FragmentationHack.getActiveFragments(getSupportFragmentManager())) {
+            if (fragment instanceof ISupportFragment) {
+                ISupportFragment iF = (ISupportFragment) fragment;
+                SupportFragmentDelegate delegate = iF.getSupportDelegate();
+                if (delegate.mAnimByActivity) {
+                    delegate.mFragmentAnimator = fragmentAnimator.copy();
+                    if (delegate.mAnimHelper != null) {
+                        delegate.mAnimHelper.notifyChanged(delegate.mFragmentAnimator);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -202,7 +214,7 @@ public class SupportActivityDelegate {
     }
 
     /**
-     * @param launchMode Same as Activity's LaunchMode.
+     * @param launchMode Similar to Activity's LaunchMode.
      */
     public void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
@@ -236,7 +248,7 @@ public class SupportActivityDelegate {
     /**
      * Pop the last fragment transition from the manager's fragment
      * back stack.
-     *
+     * <p>
      * 出栈到目标fragment
      *
      * @param targetFragmentClass   目标fragment

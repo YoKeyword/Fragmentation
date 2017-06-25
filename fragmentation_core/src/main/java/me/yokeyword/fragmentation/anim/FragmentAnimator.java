@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.AnimRes;
 
-import me.yokeyword.fragmentation.R;
-
 /**
  * Fragment动画实体类
  * Created by YoKeyword on 16/2/4.
@@ -33,6 +31,10 @@ public class FragmentAnimator implements Parcelable {
         this.exit = exit;
         this.popEnter = popEnter;
         this.popExit = popExit;
+    }
+
+    public FragmentAnimator copy() {
+        return new FragmentAnimator(getEnter(), getExit(), getPopEnter(), getPopExit());
     }
 
     protected FragmentAnimator(Parcel in) {

@@ -79,9 +79,10 @@ public class FragmentationHack {
         return fragmentManager.getFragments();
     }
 
+    @SuppressWarnings("unchecked")
     private static List<Fragment> getActiveList(SparseArray<Fragment> active) {
         if (active == null) {
-            return null;
+            return Collections.EMPTY_LIST;
         }
         final int count = active.size();
         ArrayList<Fragment> fragments = new ArrayList<>(count);

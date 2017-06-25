@@ -1,7 +1,9 @@
 package me.yokeyword.fragmentation;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.transition.Transition;
 import android.view.View;
 import android.view.animation.Animation;
 
@@ -23,7 +26,7 @@ public class SupportFragmentDelegate {
     // Animation
     private boolean mEnterAnimDisable;
     boolean mIsSharedElement;
-    private FragmentAnimator mFragmentAnimator;
+    FragmentAnimator mFragmentAnimator;
     AnimatorHelper mAnimHelper;
     boolean mLockAnim;
 
@@ -45,6 +48,7 @@ public class SupportFragmentDelegate {
     private Fragment mFragment;
     protected FragmentActivity _mActivity;
     private ISupportActivity mSupport;
+    boolean mAnimByActivity = true;
 
     public SupportFragmentDelegate(ISupportFragment support) {
         if (!(support instanceof Fragment))
@@ -91,12 +95,12 @@ public class SupportFragmentDelegate {
             mSaveInstanceState = savedInstanceState;
             mFragmentAnimator = savedInstanceState.getParcelable(TransactionDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
+            mContainerId = savedInstanceState.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
         }
 
         // Fix the overlapping BUG on pre-24.0.0
         processRestoreInstanceState(savedInstanceState);
-
-        initAnim();
+        mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
     }
 
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -108,15 +112,23 @@ public class SupportFragmentDelegate {
         }
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                if (mEnterAnimDisable) return mAnimHelper.getNoneAnim();
-                return mAnimHelper.enterAnim;
+                Animation enterAnim;
+                if (mEnterAnimDisable) {
+                    enterAnim = mAnimHelper.getNoneAnim();
+                } else {
+                    enterAnim = mAnimHelper.enterAnim;
+                }
+                fixAnimationListener(enterAnim);
+                return enterAnim;
             } else {
                 return mAnimHelper.popExitAnim;
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             return enter ? mAnimHelper.popEnterAnim : mAnimHelper.exitAnim;
         } else {
-            if (mIsSharedElement && enter) notifyEnterAnimEnd();
+            if (mIsSharedElement && enter) {
+                compatSharedElements();
+            }
 
             Animation fixedAnim = mAnimHelper.getViewPagerChildFragmentAnimFixed(mFragment, enter);
             if (fixedAnim != null) return fixedAnim;
@@ -129,6 +141,7 @@ public class SupportFragmentDelegate {
         getVisibleDelegate().onSaveInstanceState(outState);
         outState.putParcelable(TransactionDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR, mFragmentAnimator);
         outState.putBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN, mFragment.isHidden());
+        outState.putInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER, mContainerId);
     }
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -136,6 +149,7 @@ public class SupportFragmentDelegate {
 
         View view = mFragment.getView();
         if (view != null) {
+            view.setTag(view.isClickable());
             view.setClickable(true);
             setBackground(view);
         }
@@ -201,9 +215,6 @@ public class SupportFragmentDelegate {
      * Is the combination of  [onHiddenChanged() + onResume()/onPause() + setUserVisibleHint()]
      */
     public void onSupportVisible() {
-        if (_mActivity != null) {
-            mSupport.getSupportDelegate().mFragmentClickable = true;
-        }
     }
 
     /**
@@ -248,15 +259,20 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * 设置Fragment内的动画
+     * Set the fragment animation.
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
         mAnimHelper.notifyChanged(fragmentAnimator);
+        mAnimByActivity = false;
     }
 
     /**
-     * 设置Result数据 (通过startForResult)
+     * 类似 {@link Activity#setResult(int, Intent)}
+     * <p>
+     * Similar to {@link Activity#setResult(int, Intent)}
+     *
+     * @see #startForResult(ISupportFragment, int)
      */
     public void setFragmentResult(int resultCode, Bundle bundle) {
         Bundle args = mFragment.getArguments();
@@ -272,21 +288,31 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * 接受Result数据 (通过startForResult的返回数据)
+     * 类似  {@link Activity#onActivityResult(int, int, Intent)}
+     * <p>
+     * Similar to {@link Activity#onActivityResult(int, int, Intent)}
+     *
+     * @see #startForResult(ISupportFragment, int)
      */
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
     }
 
     /**
      * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, 回调TargetFragment的该方法
+     * 类似 {@link Activity#onNewIntent(Intent)}
+     * <p>
+     * Similar to {@link Activity#onNewIntent(Intent)}
      *
-     * @param args 通过上个Fragment的putNewBundle(Bundle newBundle)时传递的数据
+     * @param args putNewBundle(Bundle newBundle)
+     * @see #start(ISupportFragment, int)
      */
     public void onNewBundle(Bundle args) {
     }
 
     /**
      * 添加NewBundle,用于启动模式为SingleTask/SingleTop时
+     *
+     * @see #start(ISupportFragment, int)
      */
     public void putNewBundle(Bundle newBundle) {
         this.mNewBundle = newBundle;
@@ -294,6 +320,7 @@ public class SupportFragmentDelegate {
 
     /**
      * Back Event
+     *
      * @return false则继续向上传递, true则消费掉该事件
      */
     public boolean onBackPressedSupport() {
@@ -359,7 +386,7 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * @param launchMode Same as Activity's LaunchMode.
+     * @param launchMode Similar to Activity's LaunchMode.
      */
     public void start(final ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD);
@@ -417,7 +444,7 @@ public class SupportFragmentDelegate {
     /**
      * Pop the last fragment transition from the manager's fragment
      * back stack.
-     *
+     * <p>
      * 出栈到目标fragment
      *
      * @param targetFragmentClass   目标fragment
@@ -472,24 +499,29 @@ public class SupportFragmentDelegate {
         }
     }
 
-    private void initAnim() {
-        mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
-        mAnimHelper.enterAnim.setAnimationListener(new Animation.AnimationListener() {
-
+    private void fixAnimationListener(Animation enterAnim) {
+        mSupport.getSupportDelegate().mFragmentClickable = false;
+        // AnimationListener is not reliable.
+        getHandler().postDelayed(new Runnable() {
             @Override
-            public void onAnimationStart(Animation animation) {
-                mSupport.getSupportDelegate().mFragmentClickable = false;  // 开启防抖动
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
+            public void run() {
                 notifyEnterAnimEnd();
             }
+        }, enterAnim.getDuration());
+    }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
+    private void compatSharedElements() {
+        Object transition = mFragment.getSharedElementEnterTransition();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && transition instanceof Transition) {
+            getHandler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    notifyEnterAnimEnd();
+                }
+            }, ((Transition) transition).getDuration());
+        } else {
+            notifyEnterAnimEnd();
+        }
     }
 
     public void setBackground(View view) {
@@ -521,7 +553,13 @@ public class SupportFragmentDelegate {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
+                if (mFragment == null) return;
                 mSupportF.onEnterAnimationEnd(mSaveInstanceState);
+
+                View view = mFragment.getView();
+                if (view != null && view.getTag() instanceof Boolean) {
+                    view.setClickable((Boolean) view.getTag());
+                }
             }
         });
         mSupport.getSupportDelegate().mFragmentClickable = true;
