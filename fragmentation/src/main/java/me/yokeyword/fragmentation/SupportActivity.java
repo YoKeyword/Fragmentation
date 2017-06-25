@@ -156,7 +156,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
     }
 
     /**
-     * @param launchMode Same as Activity's LaunchMode.
+     * @param launchMode Similar to Activity's LaunchMode.
      */
     public void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
         mDelegate.start(toFragment, launchMode);

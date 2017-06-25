@@ -1,6 +1,7 @@
 package me.yokeyword.fragmentation;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -187,7 +188,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 设置Result数据 (通过startForResult)
+     * 类似 {@link Activity#setResult(int, Intent)}
+     *
+     * Similar to {@link Activity#setResult(int, Intent)}
+     *
+     * @see #startForResult(ISupportFragment, int)
      */
     @Override
     public void setFragmentResult(int resultCode, Bundle bundle) {
@@ -195,7 +200,11 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * 接受Result数据 (通过startForResult的返回数据)
+     * 类似  {@link Activity#onActivityResult(int, int, Intent)}
+     *
+     * Similar to {@link Activity#onActivityResult(int, int, Intent)}
+     *
+     * @see #startForResult(ISupportFragment, int)
      */
     @Override
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
@@ -204,8 +213,13 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, 回调TargetFragment的该方法
+     * 类似 {@link Activity#onNewIntent(Intent)}
      *
-     * @param args 通过上个Fragment的putNewBundle(Bundle newBundle)时传递的数据
+     * Similar to {@link Activity#onNewIntent(Intent)}
+     *
+     * @see #start(ISupportFragment, int)
+     *
+     * @param args putNewBundle(Bundle newBundle)
      */
     @Override
     public void onNewBundle(Bundle args) {
@@ -214,6 +228,8 @@ public class SupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 添加NewBundle,用于启动模式为SingleTask/SingleTop时
+     *
+     * @see #start(ISupportFragment, int)
      */
     @Override
     public void putNewBundle(Bundle newBundle) {
@@ -282,7 +298,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * @param launchMode Same as Activity's LaunchMode.
+     * @param launchMode Similar to Activity's LaunchMode.
      */
     public void start(final ISupportFragment toFragment, @LaunchMode int launchMode) {
         mDelegate.start(toFragment, launchMode);
