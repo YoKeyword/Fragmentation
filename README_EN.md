@@ -1,3 +1,4 @@
+ [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
@@ -23,7 +24,7 @@ The first demo shows the basic use case of this library, the second demo shows t
 
 4、**Add onBackPressedSupport() method to handle back button press in Fragment**
 
-5、**New！！！ Add onSupportVisible() ,onLazyInitView() to simplify the dev of nested-fragment**
+5、**Add onSupportVisible() ,onLazyInitView() to simplify the dev of nested-fragment**
 
 6、**Now you'll be able to easily manage your Fragment transition animations**
 
@@ -64,30 +65,37 @@ New: **v0.9.2: Fix `initLazyView()` callback timing in the ViewPager scene.**
 **1. Add dependency in build.gradle file of your app module：**
 ````gradle
 // appcompat v7 library is needed
-compile 'me.yokeyword:fragmentation:0.10.7'
+compile 'me.yokeyword:fragmentation:1.0.0'
 //If you want to integrate SwipeBack to exist Framgent/Activity feature, please also add this library
-// compile 'me.yokeyword:fragmentation-swipeback:0.10.4'
+// compile 'me.yokeyword:fragmentation-swipeback:1.0.0'
 ````
 **2. Your Activity should extend SupportActivity：**
 ````java
+// Since v1.0.0, you don't force extends SupportActivity.
+// You can implement interface + delegate to implement your own SupportActivity.
 public class MainActivity extends SupportActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(...);
-        if (savedInstanceState == null) {
+        // It is recommended to initialize in Application.
+        Fragmentation.builder()
+                        // Display StackView Bubble ; other mode: SHAKE, NONE
+                        .stackViewMode(Fragmentation.BUBBLE)
+                        ...
+                        .install();
+
+        if (findFragment(HomeFragment.class) == null) {
             loadRootFragment(R.id.fl_container, HomeFragment.newInstance());  
         }
-        Fragmentation.builder()
-                // Display StackView Bubble ; other mode: SHAKE, NONE
-                .stackViewMode(Fragmentation.BUBBLE)
-                .install();
     }
 ````
 
 **3. Your Fragment should extend SupportFragment：**
 ````java
+// Since v1.0.0, you don't force extends SupportFragment.
+// You can implement interface + delegate to implement your own SupportFragment.
 public class HomeFragment extends SupportFragment {
 
     private void xxx() {

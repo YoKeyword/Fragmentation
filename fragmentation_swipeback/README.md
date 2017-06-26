@@ -12,11 +12,12 @@ Activity内Fragment数大于1时，滑动返回的是Fragment，否则滑动返�
 1、项目下app的build.gradle中依赖：
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.10.4'
-compile 'me.yokeyword:fragmentation-swipeback:0.10.4'
+compile 'me.yokeyword:fragmentation:1.0.0'
+compile 'me.yokeyword:fragmentation-swipeback:1.0.0'
 ````
 2、如果Activity也需要支持SwipeBack，则继承SwipeBackActivity:
 ````java
+// 1.0.0起，SwipeBackActivity，可以自行通过实现＋委托形式 实现自己SupportActivity，再实现SwipeBackActivity
 public class SwipeBackSampleActivity extends SwipeBackActivity {}
 ````
 同时该Activity的theme添加如下属性：
@@ -26,6 +27,7 @@ public class SwipeBackSampleActivity extends SwipeBackActivity {}
 
 3、如果Fragment需要支持SwipeBack，则继承SwipeBackFragment:
 ````java
+// 1.0.0起，不强制要求继承SwipeBackFragment，可以自行通过实现＋委托形式 实现自己的SupportFragment，再实现SwipeBackFragment
 public class SwipeBackSampleFragment extends SwipeBackFragment {
  @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

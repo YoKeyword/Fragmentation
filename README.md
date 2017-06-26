@@ -1,9 +1,10 @@
+ [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
 ## [English README](https://github.com/YoKeyword/Fragmentation/blob/master/README_EN.md)
 
-为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，帮你大大简化使用过程，轻松解决各种复杂嵌套等问题，修复了官方Fragment库中存在的一些BUG。
+为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，简化开发，轻松解决动画、嵌套、事务相关等问题，修复了官方Fragment库中存在的一些BUG。
 
 ![](/gif/logo.png)
 
@@ -25,15 +26,15 @@ A powerful library that manage Fragment for Android!
 
 1、**可以快速开发出各种嵌套设计的Fragment App**
 
-2、**悬浮球／摇一摇实时查看Fragment的栈视图Dialog，大大降低开发难度**
+2、**悬浮球／摇一摇实时查看Fragment的栈视图Dialog，降低开发难度**
 
 3、**增加启动模式、startForResult等类似Activity方法**
 
 4、**类似Android事件分发机制的Fragment回退方法：onBackPressedSupport()，轻松为每个Fragment实现Back按键事件**
 
-5、**New！！！ 提供onSupportVisible()等生命周期方法，简化嵌套Fragment的开发过程； 提供统一的onLazyInitView()懒加载方法**
+5、**提供onSupportVisible()等生命周期方法，简化嵌套Fragment的开发过程； 提供统一的onLazyInitView()懒加载方法**
 
-6、**提供靠谱的 Fragment转场动画 的解决方案**
+6、**提供 Fragment转场动画 系列解决方案，动态更换动画**
 
 7、**更强的兼容性, 解决多点触控、重叠等问题**
 
@@ -41,81 +42,59 @@ A powerful library that manage Fragment for Android!
 
 <img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
 
-# TODO
-* ~~栈视图悬浮球／摇一摇唤出 栈视图~~
-* Activity侧滑返回：更换实现方式
-* ~~Fragment侧滑返回：实现视觉差效果~~
-* replace进一步的支持
-* ~~Fragment路由module~~ （建议使用阿里巴巴出品的[ARouter](https://github.com/alibaba/ARouter)）
-# 重大更新日志
-
-### 0.10.X [详情点这里](https://github.com/YoKeyword/Fragmentation/wiki/Home)
-
-1、添加可全局配置的Fragmentaion Builder类：
-* 提供方便打开栈视图Dialog的方法：
-    * bubble: 显示悬浮球，可点击唤出栈视图Dialog，可自由拖拽
-    * shake: 摇一摇唤出栈视图Dialog
-    * none: 默认不显示栈视图Dialog
-
-* 根据是否是Debug环境，方便区别处理异常（"Can not perform this action after onSaveInstanceState!"）
-
-2、Fix popToChild(fg,boolean,Runnable)层级错误问题.
-
-### 0.9.X
-
-1、解决多点触控问题，多项优化、兼容、Fix
-
-2、对于25.1.0+的 v4包，完善了SharedElement！
-
-### 0.8.X
-1、提供onLazyInitView()懒加载，onSupportVisible()，onSupportInvisible()等生命周期方法，简化开发；
-
-2、SupportActivity提供registerFragmentLifecycleCallbacks()来监控其下所有Fragment的生命周期；
-
-3、自定义Tag
-
 # 如何使用
 
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
-// appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:0.10.7'
-// 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，请再添加下面的库
-// compile 'me.yokeyword:fragmentation-swipeback:0.10.4'
+// appcompat-v7包是必须的
+compile 'me.yokeyword:fragmentation:1.0.0'
+
+// 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
+// compile 'me.yokeyword:fragmentation-core:1.0.0'
+
+// 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
+compile 'me.yokeyword:fragmentation:1.0.0'
+// swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
+compile 'me.yokeyword:fragmentation-swipeback:1.0.0'
 ````
 
 **2. Activity继承SupportActivity：**
 ````java
+// v1.0.0开始，不强制继承SupportActivity，可使用接口＋委托形式来实现自己的SupportActivity
 public class MainActivity extends SupportActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(...);
-        if (savedInstanceState == null) {
+        // 栈视图等功能，建议在Application里初始化
+        Fragmentation.builder()
+             // 显示悬浮球 ; 其他Mode:SHAKE: 摇一摇唤出   NONE：隐藏
+             .stackViewMode(Fragmentation.BUBBLE)
+             .debug(BuildConfig.DEBUG)
+             ...
+             .install();
+
+        if (findFragment(HomeFragment.class) == null) {
             loadRootFragment(R.id.fl_container, HomeFragment.newInstance());  // 加载根Fragment
         }
-        // 栈视图功能，大大降低Fragment的开发难度，建议在Application里初始化
-        Fragmentation.builder()
-                // 显示悬浮球 ; 其他Mode:SHAKE: 摇一摇唤出   NONE：隐藏
-                .stackViewMode(Fragmentation.BUBBLE)
-                .install();
     }
 ````
 
 **3. Fragment继承SupportFragment：**
 ````java
+// v1.0.0开始，不强制继承SupportFragment，可使用接口＋委托形式来实现自己的SupportFragment
 public class HomeFragment extends SupportFragment {
 
     private void xxx() {
-        // 启动新的Fragment, 另外还有start(fragment,SINGTASK)、startForResult、startWithPop等启动方法
+        // 启动新的Fragment, 另有start(fragment,SINGTASK)、startForResult、startWithPop等启动方法
         start(DetailFragment.newInstance(HomeBean));
         // ... 其他pop, find, 设置动画等等API, 请自行查看WIKI
     }
 }
 ````
 
-### [进一步使用，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
+## [进一步使用、ChangeLog，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
 
 # 最后
 有任何问题欢迎提issue或发邮件一起探讨，欢迎Star，Fork，PR！
