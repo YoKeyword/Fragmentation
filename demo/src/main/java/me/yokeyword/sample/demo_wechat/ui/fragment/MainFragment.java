@@ -47,7 +47,13 @@ public class MainFragment extends SupportFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wechat_fragment_main, container, false);
+        initView(view);
+        return view;
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         SupportFragment firstFragment = findChildFragment(WechatFirstTabFragment.class);
         if (firstFragment == null) {
             mFragments[FIRST] = WechatFirstTabFragment.newInstance();
@@ -66,9 +72,6 @@ public class MainFragment extends SupportFragment {
             mFragments[SECOND] = findChildFragment(WechatSecondTabFragment.class);
             mFragments[THIRD] = findChildFragment(WechatThirdTabFragment.class);
         }
-
-        initView(view);
-        return view;
     }
 
     private void initView(View view) {

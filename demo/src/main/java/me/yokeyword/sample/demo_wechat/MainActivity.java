@@ -3,17 +3,17 @@ package me.yokeyword.sample.demo_wechat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.anim.DefaultHorizontalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_wechat.base.MySupportActivity;
 import me.yokeyword.sample.demo_wechat.ui.fragment.MainFragment;
 
 /**
  * 仿微信交互方式Demo   tip: 多使用右上角的"查看栈视图"
  * Created by YoKeyword on 16/6/30.
  */
-public class MainActivity extends MySupportActivity {
+public class MainActivity extends SupportActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

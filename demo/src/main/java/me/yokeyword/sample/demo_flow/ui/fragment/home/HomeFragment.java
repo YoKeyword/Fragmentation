@@ -53,10 +53,44 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         initView(view);
 
+//        动态改动 当前Fragment的动画
+//        setFragmentAnimator(fragmentAnimator);
         return view;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_anim:
+                final PopupMenu popupMenu = new PopupMenu(_mActivity, mToolbar, GravityCompat.END);
+                popupMenu.inflate(R.menu.home_pop);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_anim_veritical:
+                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultVerticalAnimator());
+                                Toast.makeText(_mActivity, "设置全局动画成功! 竖向", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.action_anim_horizontal:
+                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultHorizontalAnimator());
+                                Toast.makeText(_mActivity, "设置全局动画成功! 横向", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.action_anim_none:
+                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultNoAnimator());
+                                Toast.makeText(_mActivity, "设置全局动画成功! 无", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        popupMenu.dismiss();
+                        return true;
+                    }
+                });
+                popupMenu.show();
+                break;
+        }
+        return true;
     }
 
     private void initView(View view) {
@@ -98,38 +132,5 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
         super.onNewBundle(args);
 
         Toast.makeText(_mActivity, args.getString("from"), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_anim:
-                final PopupMenu popupMenu = new PopupMenu(_mActivity, mToolbar, GravityCompat.END);
-                popupMenu.inflate(R.menu.home_pop);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_anim_veritical:
-                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultVerticalAnimator());
-                                Toast.makeText(_mActivity, "设置全局动画成功! 竖向", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.action_anim_horizontal:
-                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultHorizontalAnimator());
-                                Toast.makeText(_mActivity, "设置全局动画成功! 横向", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.action_anim_none:
-                                ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultNoAnimator());
-                                Toast.makeText(_mActivity, "设置全局动画成功! 无", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        popupMenu.dismiss();
-                        return true;
-                    }
-                });
-                popupMenu.show();
-                break;
-        }
-        return true;
     }
 }

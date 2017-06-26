@@ -53,10 +53,12 @@ public class MainActivity extends MySupportActivity
         if (fragment == null) {
             loadRootFragment(R.id.fl_container, HomeFragment.newInstance());
         }
-
         initView();
     }
 
+    /**
+     * 设置动画，也可以使用setFragmentAnimator()设置
+     */
     @Override
     public FragmentAnimator onCreateFragmentAnimator() {
         // 设置默认Fragment动画  默认竖向(和安卓5.0以上的动画相同)
