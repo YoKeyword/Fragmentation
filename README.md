@@ -1,5 +1,7 @@
  [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 # Fragmentation
+
+[![Join the chat at https://gitter.im/fragmentationx/Lobby](https://badges.gitter.im/fragmentationx/Lobby.svg)](https://gitter.im/fragmentationx/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A powerful library that manage Fragment for Android!
 
 ## [English README](https://github.com/YoKeyword/Fragmentation/blob/master/README_EN.md)
