@@ -60,7 +60,7 @@ class TransactionDelegate {
 
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, ISupportFragment to, boolean addToBackStack, boolean allowAnimation) {
         bindContainerId(containerId, to);
-        start(fragmentManager, null, to, to.getClass().getName(), !addToBackStack, null, allowAnimation, TYPE_ADD);
+        start(fragmentManager, null, to, to.getClass().getName(), !addToBackStack, null, allowAnimation, TYPE_REPLACE);
     }
 
     void loadMultipleRootTransaction(FragmentManager fragmentManager, int containerId, int showPosition, ISupportFragment... tos) {
@@ -99,7 +99,6 @@ class TransactionDelegate {
         checkNotNull(to, "toFragment == null");
 
         if (from != null) {
-            from = getTopFragment(fragmentManager);
             Fragment fromF = (Fragment) from;
             if (from.getSupportDelegate().mContainerId == 0) {
                 if (fromF.getTag() != null && !fromF.getTag().startsWith("android:switcher:")) {
@@ -134,7 +133,7 @@ class TransactionDelegate {
             return;
 
         if (type == TYPE_ADD_WITH_POP) {
-            startWithPop(fragmentManager, to);
+            startWithPop(fragmentManager, from, to);
         } else {
             start(fragmentManager, from, to, toFragmentTag, dontAddToBackStack, sharedElementList, false, type);
         }
@@ -195,7 +194,7 @@ class TransactionDelegate {
             }
         }
         if (from == null) {
-            ft.add(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
+            ft.replace(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
             bundle.putBoolean(FRAGMENTATION_ARG_ANIM_DISABLE, !allowRootFragmentAnim);
         } else {
             if (addMode) {
@@ -214,10 +213,10 @@ class TransactionDelegate {
         supportCommit(fragmentManager, ft);
     }
 
-    private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment to) {
+    private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to) {
         fragmentManager.executePendingTransactions();
-        final ISupportFragment from = getTopFragment(fragmentManager);
         final ISupportFragment preFragment = getPreFragment((Fragment) from);
+        final int fromContainerId = from.getSupportDelegate().mContainerId;
         mockPopAnim(from, preFragment, from.getSupportDelegate().mAnimHelper.popExitAnim, new Callback() {
             @Override
             public void call() {
@@ -226,7 +225,7 @@ class TransactionDelegate {
                     @Override
                     public void run() {
                         FragmentationHack.reorderIndices(fragmentManager);
-                        if (preFragment != null) {
+                        if (preFragment != null && preFragment.getSupportDelegate().mContainerId == fromContainerId) {
                             preFragment.getSupportDelegate().start(to);
                         } else {
                             from.getSupportDelegate().start(to);
