@@ -1,8 +1,9 @@
- [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Fragmentation-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5937)
+[![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 # Fragmentation
 A powerful library that manage Fragment for Android!
-
-## [English README](https://github.com/YoKeyword/Fragmentation/blob/master/README_EN.md)
 
 为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，简化开发，轻松解决动画、嵌套、事务相关等问题。
 
@@ -97,7 +98,7 @@ public class HomeFragment extends SupportFragment {
 ## [进一步使用、ChangeLog，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
 
 ## LICENSE
-
+````
 Copyright 2016 YoKey
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -111,3 +112,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+````
