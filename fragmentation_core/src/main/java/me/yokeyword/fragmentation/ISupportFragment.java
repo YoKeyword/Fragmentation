@@ -32,6 +32,8 @@ public interface ISupportFragment {
 
     ExtraTransaction extraTransaction();
 
+    void enqueueAction(Runnable runnable);
+
     void onEnterAnimationEnd(@Nullable Bundle savedInstanceState);
 
     void onLazyInitView(@Nullable Bundle savedInstanceState);

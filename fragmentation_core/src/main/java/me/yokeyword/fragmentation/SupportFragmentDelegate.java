@@ -193,6 +193,18 @@ public class SupportFragmentDelegate {
     }
 
     /**
+     * If you want to call the start()/pop()/showHideFragment() on the onCreateXX/onActivityCreated,
+     * call this method to deliver the transaction to the queue.
+     * <p>
+     * 在onCreate/onCreateView/onActivityCreated中使用 start()/pop()/showHideFragment(),请使用该方法把你的任务入队
+     *
+     * @param runnable start() , pop() or showHideFragment()
+     */
+    public void enqueueAction(Runnable runnable) {
+        getHandler().postDelayed(runnable, mAnimHelper == null ? 0 : mAnimHelper.enterAnim.getDuration());
+    }
+
+    /**
      * Called when the enter-animation end.
      * 入栈动画 结束时,回调
      */
@@ -263,7 +275,9 @@ public class SupportFragmentDelegate {
      */
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
-        mAnimHelper.notifyChanged(fragmentAnimator);
+        if (mAnimHelper != null) {
+            mAnimHelper.notifyChanged(fragmentAnimator);
+        }
         mAnimByActivity = false;
     }
 

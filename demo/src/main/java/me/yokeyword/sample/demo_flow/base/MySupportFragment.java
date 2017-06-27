@@ -104,6 +104,19 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
+     * If you want to call the start()/pop()/showHideFragment() on the onCreateXX/onActivityCreated,
+     * call this method to deliver the transaction to the queue.
+     *
+     * 在onCreate/onCreateView/onActivityCreated中使用 start()/pop()/showHideFragment(),请使用该方法把你的任务入队
+     *
+     * @param runnable start() , pop() or showHideFragment()
+     */
+    @Override
+    public void enqueueAction(Runnable runnable) {
+        mDelegate.enqueueAction(runnable);
+    }
+
+    /**
      * Called when the enter-animation end.
      * 入栈动画 结束时,回调
      */
