@@ -25,7 +25,6 @@ public class VisibleDelegate {
     private boolean mFixStatePagerAdapter;
     private Bundle mSaveInstanceState;
     private boolean mFirstCreateViewCompatReplace = true;
-    private boolean mLazyInitCompatReplace = true;
 
     private ISupportFragment mSupportF;
     private Fragment mFragment;
@@ -114,9 +113,8 @@ public class VisibleDelegate {
         if (visible) {
             mSupportF.onSupportVisible();
 
-            if (mIsFirstVisible && mLazyInitCompatReplace) {
+            if (mIsFirstVisible) {
                 mIsFirstVisible = false;
-                mLazyInitCompatReplace = false;
                 mSupportF.onLazyInitView(mSaveInstanceState);
             }
         } else {

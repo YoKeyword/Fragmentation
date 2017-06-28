@@ -3,7 +3,6 @@ package me.yokeyword.fragmentation;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.transition.Transition;
 import android.view.View;
 import android.view.animation.Animation;
 
@@ -525,17 +523,7 @@ public class SupportFragmentDelegate {
     }
 
     private void compatSharedElements() {
-        Object transition = mFragment.getSharedElementEnterTransition();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && transition instanceof Transition) {
-            getHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    notifyEnterAnimEnd();
-                }
-            }, ((Transition) transition).getDuration());
-        } else {
-            notifyEnterAnimEnd();
-        }
+        notifyEnterAnimEnd();
     }
 
     public void setBackground(View view) {
