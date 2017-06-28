@@ -43,5 +43,5 @@
 1. Add `onLazyInitView()`, `onSupportVisible()`,`onSupportInvisible()` to simplify dev
 
 2. SupportActivity provides ability to monitoring lifecycle of Fragment through `registerFragmentLifecycleCallbacks()`
-
+ 
 3. Support self-defined tag
