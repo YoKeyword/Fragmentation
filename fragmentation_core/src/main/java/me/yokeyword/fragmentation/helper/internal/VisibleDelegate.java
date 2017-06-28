@@ -1,6 +1,8 @@
 package me.yokeyword.fragmentation.helper.internal;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +18,7 @@ import me.yokeyword.fragmentation.ISupportFragment;
 
 public class VisibleDelegate {
     private static final String FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE = "fragmentation_invisible_when_leave";
+    private static final String FRAGMENTATION_STATE_SAVE_COMPAT_REPLACE = "fragmentation_compat_replace";
 
     // SupportVisible相关
     private boolean mIsSupportVisible;
@@ -23,8 +26,10 @@ public class VisibleDelegate {
     private boolean mInvisibleWhenLeave;
     private boolean mIsFirstVisible = true;
     private boolean mFixStatePagerAdapter;
-    private Bundle mSaveInstanceState;
     private boolean mFirstCreateViewCompatReplace = true;
+
+    private Handler mHandler;
+    private Bundle mSaveInstanceState;
 
     private ISupportFragment mSupportF;
     private Fragment mFragment;
@@ -39,12 +44,14 @@ public class VisibleDelegate {
             mSaveInstanceState = savedInstanceState;
             if (!mFixStatePagerAdapter) { // setUserVisibleHint() may be called before onCreate()
                 mInvisibleWhenLeave = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
+                mFirstCreateViewCompatReplace = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_COMPAT_REPLACE);
             }
         }
     }
 
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE, mInvisibleWhenLeave);
+        outState.putBoolean(FRAGMENTATION_STATE_SAVE_COMPAT_REPLACE, mFirstCreateViewCompatReplace);
     }
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -97,7 +104,16 @@ public class VisibleDelegate {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (mFragment.isResumed() || (mFragment.isDetached() && isVisibleToUser)) {
             if (!mIsSupportVisible && isVisibleToUser) {
-                dispatchSupportVisible(true);
+                if (mIsFirstVisible) {
+                    getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            dispatchSupportVisible(true);
+                        }
+                    });
+                } else {
+                    dispatchSupportVisible(true);
+                }
             } else if (mIsSupportVisible && !isVisibleToUser) {
                 dispatchSupportVisible(false);
             }
@@ -146,4 +162,10 @@ public class VisibleDelegate {
         return mIsSupportVisible;
     }
 
+    private Handler getHandler() {
+        if (mHandler == null) {
+            mHandler = new Handler(Looper.getMainLooper());
+        }
+        return mHandler;
+    }
 }
