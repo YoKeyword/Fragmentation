@@ -40,15 +40,15 @@ The first demo shows the basic usage of the library. The second one shows the wa
 **1、build.gradle**
 ````gradle
 // appcompat-v7 is required
-compile 'me.yokeyword:fragmentation:1.0.1'
+compile 'me.yokeyword:fragmentation:1.0.2'
 
 // If you don't want to extends SupportActivity/Fragment and would like to customize your own support, just rely on fragmentation-core
-// compile 'me.yokeyword:fragmentation-core:1.0.1'
+// compile 'me.yokeyword:fragmentation-core:1.0.2'
 
 // To get SwipeBack feature, rely on both fragmentation & fragmentation-swipeback
-compile 'me.yokeyword:fragmentation:1.0.1'
+compile 'me.yokeyword:fragmentation:1.0.2'
 // Swipeback is based on fragmentation. Refer to SwipeBackActivity/Fragment for your Customized SupportActivity/Fragment
-compile 'me.yokeyword:fragmentation-swipeback:1.0.1'
+compile 'me.yokeyword:fragmentation-swipeback:1.0.2'
 ````
 
 **2、 Activity extends SupportActivity**
