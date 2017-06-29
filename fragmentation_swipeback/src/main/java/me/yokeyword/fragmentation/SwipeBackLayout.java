@@ -22,8 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
-import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
+import me.yokeyword.fragmentation_swipeback.core.ISwipeBackActivity;
 
 /**
  * Thx https://github.com/ikew0ng/SwipeBackLayout.
@@ -320,9 +319,9 @@ public class SwipeBackLayout extends FrameLayout {
         decor.addView(this);
     }
 
-    public void attachToFragment(SwipeBackFragment swipeBackFragment, View view) {
+    public void attachToFragment(ISupportFragment fragment, View view) {
         addView(view);
-        setFragment(swipeBackFragment, view);
+        setFragment(fragment, view);
     }
 
     private void setContentView(View view) {
@@ -432,12 +431,10 @@ public class SwipeBackLayout extends FrameLayout {
 
         @Override
         public int getViewHorizontalDragRange(View child) {
-            // SwipeBackFragment
             if (mFragment != null) {
                 return 1;
             }
-            // SwipeBackActivity
-            if (mActivity != null && ((SwipeBackActivity) mActivity).swipeBackPriority()) {
+            if (mActivity instanceof ISwipeBackActivity && ((ISwipeBackActivity) mActivity).swipeBackPriority()) {
                 return 1;
             }
             return 0;

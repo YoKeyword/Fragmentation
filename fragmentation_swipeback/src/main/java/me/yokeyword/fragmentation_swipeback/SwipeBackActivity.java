@@ -1,52 +1,43 @@
 
 package me.yokeyword.fragmentation_swipeback;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
 
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SwipeBackLayout;
+import me.yokeyword.fragmentation_swipeback.core.ISwipeBackActivity;
+import me.yokeyword.fragmentation_swipeback.core.SwipeBackActivityDelegate;
 
 
 /**
  * You can also refer to {@link SwipeBackActivity} to implement YourSwipeBackActivity
  * (extends Activity and impl {@link me.yokeyword.fragmentation.ISupportActivity})
- *
+ * <p>
  * Created by YoKey on 16/4/19.
  */
-public class SwipeBackActivity extends SupportActivity {
-    private SwipeBackLayout mSwipeBackLayout;
+public class SwipeBackActivity extends SupportActivity implements ISwipeBackActivity {
+    final SwipeBackActivityDelegate mDelegate = new SwipeBackActivityDelegate(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        onActivityCreate();
+        mDelegate.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mSwipeBackLayout.attachToActivity(this);
+        mDelegate.onPostCreate(savedInstanceState);
     }
 
     @Override
-    public View findViewById(int id) {
-        View view = super.findViewById(id);
-        if (view == null && mSwipeBackLayout != null) {
-            return mSwipeBackLayout.findViewById(id);
-        }
-        return view;
-    }
-
     public SwipeBackLayout getSwipeBackLayout() {
-        return mSwipeBackLayout;
+        return mDelegate.getSwipeBackLayout();
     }
 
+    @Override
     public void setSwipeBackEnable(boolean enable) {
-        mSwipeBackLayout.setEnableGesture(enable);
+        mDelegate.setSwipeBackEnable(enable);
     }
 
     /**
@@ -54,15 +45,8 @@ public class SwipeBackActivity extends SupportActivity {
      *
      * @return true: Activity可以滑动退出, 并且总是优先;  false: Fragment优先滑动退出
      */
+    @Override
     public boolean swipeBackPriority() {
-        return getSupportFragmentManager().getBackStackEntryCount() <= 1;
-    }
-
-    private void onActivityCreate() {
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getWindow().getDecorView().setBackgroundDrawable(null);
-        mSwipeBackLayout = new SwipeBackLayout(this);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mSwipeBackLayout.setLayoutParams(params);
+        return mDelegate.swipeBackPriority();
     }
 }
