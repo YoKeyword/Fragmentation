@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -45,6 +46,8 @@ class TransactionDelegate {
     static final int TYPE_REPLACE = 10;
     static final int TYPE_REPLACE_DONT_BACK = 14;
 
+    private final static long BUFFER_TIME = 50L;
+
     private ISupportActivity mSupport;
     private FragmentActivity mActivity;
 
@@ -59,6 +62,9 @@ class TransactionDelegate {
     }
 
     void loadRootTransaction(FragmentManager fragmentManager, int containerId, ISupportFragment to, boolean addToBackStack, boolean allowAnimation) {
+        fragmentManager = checkFragmentManager(fragmentManager, null);
+        if (fragmentManager == null) return;
+
         bindContainerId(containerId, to);
         start(fragmentManager, null, to, to.getClass().getName(), !addToBackStack, null, allowAnimation, TYPE_REPLACE);
     }
@@ -217,21 +223,18 @@ class TransactionDelegate {
         fragmentManager.executePendingTransactions();
         final ISupportFragment preFragment = getPreFragment((Fragment) from);
         final int fromContainerId = from.getSupportDelegate().mContainerId;
-        mockPopAnim(from, preFragment, from.getSupportDelegate().mAnimHelper.popExitAnim, new Callback() {
+
+        mockStartWithPopAnim(from, to, from.getSupportDelegate().mAnimHelper.popExitAnim);
+        fragmentManager.popBackStackImmediate();
+        mHandler.post(new Runnable() {
             @Override
-            public void call() {
-                fragmentManager.popBackStackImmediate();
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        FragmentationHack.reorderIndices(fragmentManager);
-                        if (preFragment != null && preFragment.getSupportDelegate().mContainerId == fromContainerId) {
-                            preFragment.getSupportDelegate().start(to);
-                        } else {
-                            from.getSupportDelegate().start(to);
-                        }
-                    }
-                });
+            public void run() {
+                FragmentationHack.reorderIndices(fragmentManager);
+                if (preFragment != null && preFragment.getSupportDelegate().mContainerId == fromContainerId) {
+                    preFragment.getSupportDelegate().start(to);
+                } else {
+                    dispatchStartTransaction(fragmentManager, from, to, 0, ISupportFragment.STANDARD, TYPE_ADD);
+                }
             }
         });
     }
@@ -440,7 +443,7 @@ class TransactionDelegate {
         final int finalFlag = flag;
         final FragmentManager finalFragmentManager = fragmentManager;
 
-        mockPopAnim(fromFragment, (ISupportFragment) targetFragment, popAnimation, new Callback() {
+        mockPopAnim(fromFragment, (ISupportFragment) targetFragment, popAnimation, afterPopTransactionRunnable != null, new Callback() {
             @Override
             public void call() {
                 popToFix(targetFragmentTag, finalFlag, finalFragmentManager);
@@ -478,62 +481,86 @@ class TransactionDelegate {
         });
     }
 
+    private void mockStartWithPopAnim(ISupportFragment from, ISupportFragment to, final Animation exitAnim) {
+        Fragment fromF = (Fragment) from;
+        final ViewGroup container = findContainerById(fromF, from.getSupportDelegate().mContainerId);
+        if (container == null) return;
+
+        from.getSupportDelegate().mLockAnim = true;
+        View fromView = fromF.getView();
+        container.removeViewInLayout(fromView);
+
+        final ViewGroup mock = addMockView(fromView, container);
+
+        to.getSupportDelegate().mEnterAnimListener = new SupportFragmentDelegate.EnterAnimListener() {
+            @Override
+            public void onEnterAnimStart() {
+                mock.startAnimation(exitAnim);
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        container.removeView(mock);
+                    }
+                }, exitAnim.getDuration() + BUFFER_TIME);
+            }
+        };
+    }
+
     /**
      * Hack startWithPop/popTo anim
      */
-    private void mockPopAnim(ISupportFragment from, ISupportFragment targetF, Animation exitAnim, final Callback cb) {
+    private void mockPopAnim(ISupportFragment from, ISupportFragment targetF, Animation exitAnim, boolean afterRunnable, final Callback cb) {
         if (from == targetF) {
             if (cb != null) {
                 cb.call();
             }
             return;
         }
+
         Fragment fromF = (Fragment) from;
+        final ViewGroup container = findContainerById(fromF, from.getSupportDelegate().mContainerId);
+        if (container == null) return;
 
-        View view = mActivity.findViewById(from.getSupportDelegate().mContainerId);
-        final View fromView = fromF.getView();
-        if (view instanceof ViewGroup && fromView != null) {
-            final ViewGroup container = (ViewGroup) view;
+        View fromView = fromF.getView();
+        Fragment preF = (Fragment) getPreFragment(fromF);
+        ViewGroup preViewGroup = null;
+        from.getSupportDelegate().mLockAnim = true;
 
-            Fragment preF = (Fragment) getPreFragment(fromF);
-            ViewGroup preViewGroup = null;
-            from.getSupportDelegate().mLockAnim = true;
-
-            // Compatible with flicker on pre-L when calling popTo()
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && preF != targetF) {
+        // Compatible with flicker on pre-L when calling popTo()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            if (afterRunnable) {
+                exitAnim.setDuration(exitAnim.getDuration() + BUFFER_TIME);
+            }
+            if (preF != targetF) {
                 if (preF != null && preF.getView() instanceof ViewGroup) {
                     preViewGroup = (ViewGroup) preF.getView();
                 }
             }
+        }
 
-            if (preViewGroup != null) {
-                hideChildView(preViewGroup);
-                container.removeViewInLayout(fromView);
-                preViewGroup.addView(fromView);
-                if (cb != null) {
-                    cb.call();
-                }
-                preViewGroup.removeViewInLayout(fromView);
-                handleMock(exitAnim, null, fromView, container);
-            } else {
-                container.removeViewInLayout(fromView);
-                handleMock(exitAnim, cb, fromView, container);
+        if (preViewGroup != null) {
+            hideChildView(preViewGroup);
+            container.removeViewInLayout(fromView);
+            preViewGroup.addView(fromView);
+            if (cb != null) {
+                cb.call();
             }
+            preViewGroup.removeViewInLayout(fromView);
+            handleMock(exitAnim, null, fromView, container);
+        } else {
+            container.removeViewInLayout(fromView);
+            handleMock(exitAnim, cb, fromView, container);
         }
     }
 
-    private void handleMock(Animation exitAnim, Callback cb, View fromView, final ViewGroup container) {
-        final ViewGroup mock = new ViewGroup(mActivity) {
-            @Override
-            protected void onLayout(boolean changed, int l, int t, int r, int b) {
-            }
-        };
-        mock.addView(fromView);
-        container.addView(mock);
+    private void handleMock(final Animation exitAnim, Callback cb, final View fromView, final ViewGroup container) {
+        final ViewGroup mock = addMockView(fromView, container);
 
         if (cb != null) {
             cb.call();
         }
+        exitAnim.setDuration(exitAnim.getDuration() + BUFFER_TIME);
         exitAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -542,23 +569,56 @@ class TransactionDelegate {
             @Override
             public void onAnimationEnd(Animation animation) {
                 mock.setVisibility(View.INVISIBLE);
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        container.removeView(mock);
-                    }
-                });
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            // compat pre-L
-            exitAnim.setDuration(exitAnim.getDuration() + 100L);
-        }
+
         mock.startAnimation(exitAnim);
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mock.removeViewInLayout(fromView);
+                container.removeView(mock);
+            }
+        }, exitAnim.getDuration() + BUFFER_TIME);
+    }
+
+    @NonNull
+    private ViewGroup addMockView(View fromView, ViewGroup container) {
+        ViewGroup mock = new ViewGroup(mActivity) {
+            @Override
+            protected void onLayout(boolean changed, int l, int t, int r, int b) {
+            }
+        };
+        mock.addView(fromView);
+        container.addView(mock);
+        return mock;
+    }
+
+    private ViewGroup findContainerById(Fragment fragment, int containerId) {
+        if (fragment.getView() == null) return null;
+
+        View container;
+        Fragment parentFragment = fragment.getParentFragment();
+        if (parentFragment != null) {
+            if (parentFragment.getView() != null) {
+                container = parentFragment.getView().findViewById(containerId);
+            } else {
+                container = findContainerById(parentFragment, containerId);
+            }
+        } else {
+            container = mActivity.findViewById(containerId);
+        }
+
+        if (container instanceof ViewGroup) {
+            return (ViewGroup) container;
+        }
+
+        return null;
     }
 
     private void hideChildView(ViewGroup viewGroup) {

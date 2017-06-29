@@ -47,6 +47,7 @@ public class SupportFragmentDelegate {
     protected FragmentActivity _mActivity;
     private ISupportActivity mSupport;
     boolean mAnimByActivity = true;
+    EnterAnimListener mEnterAnimListener;
 
     public SupportFragmentDelegate(ISupportFragment support) {
         if (!(support instanceof Fragment))
@@ -520,6 +521,16 @@ public class SupportFragmentDelegate {
                 notifyEnterAnimEnd();
             }
         }, enterAnim.getDuration());
+
+        if (mEnterAnimListener != null) {
+            getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mEnterAnimListener.onEnterAnimStart();
+                    mEnterAnimListener = null;
+                }
+            });
+        }
     }
 
     private void compatSharedElements() {
@@ -583,5 +594,9 @@ public class SupportFragmentDelegate {
 
     public FragmentActivity getActivity() {
         return _mActivity;
+    }
+
+    interface EnterAnimListener {
+        void onEnterAnimStart();
     }
 }
