@@ -20,6 +20,8 @@ A powerful library that manage Fragment for Android!
 # Demo演示：
 均为单Activity + 多Fragment，第一个为简单流式demo，第二个为仿微信交互的demo(全页面支持滑动退出)，第三个为仿知乎交互的复杂嵌套demo
 
+[下载APK](https://www.pgyer.com/fragmentation)
+
 <img src="/gif/demo.gif" width="280px"/>&emsp;<img src="/gif/wechat.gif" width="280px"/>
 &emsp;<img src="/gif/nested.gif" width="280px"/>
 

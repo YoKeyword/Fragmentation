@@ -2,15 +2,20 @@
 [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-# Fragmentation
 ### [中文版 README.md](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
 
-Fragmentation is a powerful library managing Fragment for Android. 
+# Fragmentation
 
-It is designed for "Single Activity + Multi-Fragments" and "Multi-FragmentActivities + Multi-Fragments" architecture to simplify development process. 
+![](/gif/logo.png)
+
+Fragmentation is a powerful library managing Fragment for Android.
+
+It is designed for "Single Activity + Multi-Fragments" and "Multi-FragmentActivities + Multi-Fragments" architecture to simplify development process.
 
 ## Demo
 The first demo shows the basic usage of the library. The second one shows the way to implement an app which is similar to WeChat. Complicated nested fragments' usage demo are also showed.
+
+[Download APK](https://www.pgyer.com/fragmentation)
 
 <img src="/gif/demo.gif" width="280px"/> <img src="/gif/wechat.gif" width="280px"/>
  <img src="/gif/nested.gif" width="280px"/>
