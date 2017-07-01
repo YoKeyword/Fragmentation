@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * http://stackoverflow.com/questions/23504790/android-multiple-fragment-transaction-ordering
- *
+ * <p>
  * Created by YoKey on 16/1/22.
  */
 public class FragmentationHack {
@@ -68,10 +68,13 @@ public class FragmentationHack {
     public static List<Fragment> getActiveFragments(FragmentManager fragmentManager) {
         if (!(fragmentManager instanceof FragmentManagerImpl))
             return Collections.EMPTY_LIST;
+        // For pre-25.4.0
         if (sSupportLessThan25dot4) return fragmentManager.getFragments();
 
+        // For compat 25.4.0+
         try {
             FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
+            // Since v4-25.4.0，mActive: ArrayList -> SparseArray
             return getActiveList(fragmentManagerImpl.mActive);
         } catch (Exception e) {
             e.printStackTrace();
