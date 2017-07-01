@@ -20,7 +20,7 @@ public class App extends Application {
                 // true时，遇到异常："Can not perform this action after onSaveInstanceState!"时，会抛出;
                 // false时，不会抛出，会捕获，可以在handleException()里监听到
                 // 同时，如果为false, stackViewMode为None
-                .debug(BuildConfig.DEBUG)
+                .debug(true) // 实际场景建议.debug(BuildConfig.DEBUG)
                 // 线上环境时，可能会遇到上述异常，此时debug=false，不会抛出该异常（避免crash），会捕获
                 // 建议在回调处上传至我们的Crash检测服务器
                 .handleException(new ExceptionHandler() {
@@ -31,11 +31,5 @@ public class App extends Application {
                     }
                 })
                 .install();
-
-        // init EventBus Index  配合build.gradle里Eventbus apt{}开启
-//        EventBus.builder()
-//                .addIndex(new EventBusIndex())
-//                .logNoSubscriberMessages(false)
-//                .installDefaultEventBus();
     }
 }

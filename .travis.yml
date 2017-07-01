@@ -1,0 +1,33 @@
+language: android
+
+jdk: oraclejdk8
+
+sudo: false
+
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-25.0.1
+  - android-25
+  - extra-android-m2repository
+  - extra-android-support
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_e460bf741e28_key -iv $encrypted_e460bf741e28_iv
+  -in demo/fragmentation.jks.enc -out demo/fragmentation.jks -d
+
+script:
+- ./gradlew assembleRelease
+
+deploy:
+  provider: releases
+  api_key:
+    secure: geywOZpk89iwemfT5YdxhkpO0q80Jd2eL3caLvs6spwDXknwZQay6T0qdsQ+R488tPgYpael4udoC0D/dQ93n3Rh0ssw6xCzznfQbrqb00PURcEH8grRQKwDoQAifrwpBEy3RzrF5M/4t4Pd+NAdlinsbDXjiTYxahJgltv0wpwFtMR3G0t7RMduU7m+tup2DAe3YF02VXrsSu8TBxf1cqnQ6vMp+TfD9FHGF0IUh/O0eTDw4twI9n0tQMxoJeb0oY5Eq/k+eL/zmDGjLbUHojmBkx1539y7RP4d+e4Y41cblwZWpFkh0IKSJmiRfJ1lSO9dcUnagFem5Z1SZqc1SgsIbJGJZdliAtxQgbgdmQvY9DsD5aNh60GGbk0cX5E3evCRz9fQlaxiNq4b68ZfysJmPHp6fsX6WR/cYVop3Sh1tYeNKPw4MhMfrN9ozTpxxe1oqB/oaw6bhZ7dwn0T1Ol6mjHnhyQXzmTkIqikhOe3ySk6vTm+F2iS+RL0nBLTp4h5hQe+jdvnlsc+z2nWLpcgPIVFdtse5+RC+OhcmCLyKCV9IGQUoFhT8suswGTzN8EO0RYV/tRi6ES0ZcBoGs5+upDI9kN2oBSNbYBWAHl2u4YGKuozXtJjseNPdva+qKHG1p7fPzTYTFVtP1HDGc0pjZ/ih8YnnX6baytgOpA=
+  file: demo/build/outputs/apk/fragmentation.apk
+  skip_cleanup: true
+  on:
+    tags: true
+
+after_deploy:
+- curl -F "file=@./demo/build/outputs/apk/fragmentation.apk" -F "uKey=$UKEY" -F "_api_key=$API_KEY" https://qiniu-storage.pgyer.com/apiv1/app/upload

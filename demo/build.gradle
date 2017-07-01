@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.neenbedankt.android-apt'
 
+static def gitLatestTag() {
+    def cmd = 'git describe --abbrev=0 --tags'
+    def result = cmd.execute().text.trim()
+    return result
+}
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -11,12 +15,37 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName gitLatestTag()
     }
+
+    signingConfigs {
+        releaseConfig {
+            storeFile file("./fragmentation.jks")
+            storePassword System.getenv("KEYSTORE_PASS")
+            keyAlias System.getenv("ALIAS_NAME")
+            keyPassword System.getenv("ALIAS_PASS")
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+
+            signingConfig signingConfigs.releaseConfig
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == 'release') {
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile
+                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                    def fileName = "fragmentation.apk"
+                    output.outputFile = new File(outputFile.parent, fileName)
+                }
+            }
         }
     }
 }
@@ -36,11 +65,4 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
 //    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 }
-
-// EventBus3.0 Index  实际环境建议用 Index 特性，具体查看EventBus官网
-//apt {
-//    arguments {
-//        eventBusIndex "me.yokeyword.sample.EventBusIndex"
-//    }
-//}
 
