@@ -100,6 +100,12 @@ public class HomeFragment extends SupportFragment {
 
 ## [进一步使用、ChangeLog，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
 
+
+## 混淆规则
+````xml
+-keep class * extends android.support.v4.app.FragmentManager{ *; }
+````
+
 ## LICENSE
 ````
 Copyright 2016 YoKey
