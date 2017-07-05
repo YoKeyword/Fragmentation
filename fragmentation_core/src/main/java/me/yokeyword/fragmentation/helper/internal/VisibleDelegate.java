@@ -93,7 +93,11 @@ public class VisibleDelegate {
     }
 
     public void onHiddenChanged(boolean hidden) {
-        dispatchSupportVisible(!hidden);
+        if (hidden) {
+            safeDispatchUserVisibleHint(false);
+        } else {
+            dispatchSupportVisible(true);
+        }
     }
 
     public void onDestroyView() {
@@ -104,22 +108,26 @@ public class VisibleDelegate {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (mFragment.isResumed() || (mFragment.isDetached() && isVisibleToUser)) {
             if (!mIsSupportVisible && isVisibleToUser) {
-                if (mIsFirstVisible) {
-                    getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            dispatchSupportVisible(true);
-                        }
-                    });
-                } else {
-                    dispatchSupportVisible(true);
-                }
+                safeDispatchUserVisibleHint(true);
             } else if (mIsSupportVisible && !isVisibleToUser) {
                 dispatchSupportVisible(false);
             }
         } else if (isVisibleToUser) {
             mInvisibleWhenLeave = false;
             mFixStatePagerAdapter = true;
+        }
+    }
+
+    private void safeDispatchUserVisibleHint(final boolean visible) {
+        if (mIsFirstVisible) {
+            getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    dispatchSupportVisible(visible);
+                }
+            });
+        } else {
+            dispatchSupportVisible(visible);
         }
     }
 

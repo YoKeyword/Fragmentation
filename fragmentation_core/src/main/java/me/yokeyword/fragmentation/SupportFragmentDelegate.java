@@ -508,7 +508,7 @@ public class SupportFragmentDelegate {
             } else {
                 ft.show(mFragment);
             }
-            ft.commit();
+            ft.commitAllowingStateLoss();
         }
     }
 
