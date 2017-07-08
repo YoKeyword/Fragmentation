@@ -28,7 +28,6 @@ public class SupportFragmentDelegate {
     AnimatorHelper mAnimHelper;
     boolean mLockAnim;
 
-    private boolean mNeedHideSoft;
     private Handler mHandler;
     private boolean mFirstCreateView = true;
     private boolean mReplaceMode;
@@ -169,9 +168,6 @@ public class SupportFragmentDelegate {
 
     public void onPause() {
         getVisibleDelegate().onPause();
-        if (mNeedHideSoft) {
-            hideSoftInput();
-        }
     }
 
     public void onDestroyView() {
@@ -353,8 +349,6 @@ public class SupportFragmentDelegate {
      * 显示软键盘,调用该方法后,会在onPause时自动隐藏软键盘
      */
     public void showSoftInput(View view) {
-        if (view == null) return;
-        mNeedHideSoft = true;
         SupportHelper.showSoftInput(view);
     }
 

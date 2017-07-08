@@ -134,17 +134,6 @@ public class VisibleDelegate {
     private void dispatchSupportVisible(boolean visible) {
         mIsSupportVisible = visible;
 
-        if (visible) {
-            mSupportF.onSupportVisible();
-
-            if (mIsFirstVisible) {
-                mIsFirstVisible = false;
-                mSupportF.onLazyInitView(mSaveInstanceState);
-            }
-        } else {
-            mSupportF.onSupportInvisible();
-        }
-
         if (!mNeedDispatch) {
             mNeedDispatch = true;
         } else {
@@ -159,6 +148,17 @@ public class VisibleDelegate {
                     }
                 }
             }
+        }
+
+        if (visible) {
+            mSupportF.onSupportVisible();
+
+            if (mIsFirstVisible) {
+                mIsFirstVisible = false;
+                mSupportF.onLazyInitView(mSaveInstanceState);
+            }
+        } else {
+            mSupportF.onSupportInvisible();
         }
     }
 
