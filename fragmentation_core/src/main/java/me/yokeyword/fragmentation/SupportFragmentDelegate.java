@@ -147,7 +147,6 @@ public class SupportFragmentDelegate {
 
         View view = mFragment.getView();
         if (view != null) {
-            view.setTag(view.isClickable());
             view.setClickable(true);
             setBackground(view);
         }
@@ -562,11 +561,6 @@ public class SupportFragmentDelegate {
             public void run() {
                 if (mFragment == null) return;
                 mSupportF.onEnterAnimationEnd(mSaveInstanceState);
-
-                View view = mFragment.getView();
-                if (view != null && view.getTag() instanceof Boolean) {
-                    view.setClickable((Boolean) view.getTag());
-                }
             }
         });
         mSupport.getSupportDelegate().mFragmentClickable = true;
