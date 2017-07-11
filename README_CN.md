@@ -51,15 +51,15 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat-v7包是必须的
-compile 'me.yokeyword:fragmentation:1.0.6'
+compile 'me.yokeyword:fragmentation:1.0.7'
 
 // 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
-// compile 'me.yokeyword:fragmentation-core:1.0.6'
+// compile 'me.yokeyword:fragmentation-core:1.0.7'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentation:1.0.6'
+compile 'me.yokeyword:fragmentation:1.0.7'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentation-swipeback:1.0.6'
+compile 'me.yokeyword:fragmentation-swipeback:1.0.7'
 ````
 
 **2. Activity继承SupportActivity：**
@@ -71,12 +71,12 @@ public class MainActivity extends SupportActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(...);
-        // 栈视图等功能，建议在Application里初始化
+        // 建议在Application里初始化
         Fragmentation.builder()
              // 显示悬浮球 ; 其他Mode:SHAKE: 摇一摇唤出   NONE：隐藏
              .stackViewMode(Fragmentation.BUBBLE)
              .debug(BuildConfig.DEBUG)
-             ...
+             ... // 更多查看wiki或demo
              .install();
 
         if (findFragment(HomeFragment.class) == null) {
