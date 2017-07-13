@@ -1,9 +1,13 @@
 apply plugin: 'com.android.application'
 
 static def gitLatestTag() {
-    def cmd = 'git describe --abbrev=0 --tags'
-    def result = cmd.execute().text.trim()
-    return result
+    try {
+        def cmd = 'git describe --abbrev=0 --tags'
+        def result = cmd.execute().text.trim()
+        return result
+    } catch (Exception e) {
+        return '1.0.0'
+    }
 }
 
 android {
