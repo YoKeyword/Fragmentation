@@ -529,9 +529,6 @@ class TransactionDelegate {
 
         // Compatible with flicker on pre-L when calling popTo()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            if (afterRunnable) {
-                exitAnim.setDuration(exitAnim.getDuration() + BUFFER_TIME);
-            }
             if (preF != targetF) {
                 if (preF != null && preF.getView() instanceof ViewGroup) {
                     preViewGroup = (ViewGroup) preF.getView();
@@ -547,20 +544,32 @@ class TransactionDelegate {
                 cb.call();
             }
             preViewGroup.removeViewInLayout(fromView);
-            handleMock(exitAnim, null, fromView, container);
+            handleMock(exitAnim, afterRunnable, null, fromView, container);
         } else {
             container.removeViewInLayout(fromView);
-            handleMock(exitAnim, cb, fromView, container);
+            handleMock(exitAnim, afterRunnable, cb, fromView, container);
         }
     }
 
-    private void handleMock(final Animation exitAnim, Callback cb, final View fromView, final ViewGroup container) {
+    private void handleMock(Animation exitAnim, boolean afterRunnable, Callback cb, final View fromView, final ViewGroup container) {
         final ViewGroup mock = addMockView(fromView, container);
 
         if (cb != null) {
             cb.call();
         }
-        exitAnim.setDuration(exitAnim.getDuration() + BUFFER_TIME);
+
+        long delay = exitAnim.getDuration();
+        if (afterRunnable) {
+            long duration = exitAnim.getDuration();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                duration = duration + BUFFER_TIME * 2;
+                delay = duration + BUFFER_TIME;
+            } else {
+                duration = duration + BUFFER_TIME;
+            }
+            exitAnim.setDuration(duration);
+        }
+
         exitAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -582,9 +591,9 @@ class TransactionDelegate {
             @Override
             public void run() {
                 mock.removeViewInLayout(fromView);
-                container.removeView(mock);
+                container.removeViewInLayout(mock);
             }
-        }, exitAnim.getDuration() + BUFFER_TIME);
+        }, delay);
     }
 
     @NonNull
