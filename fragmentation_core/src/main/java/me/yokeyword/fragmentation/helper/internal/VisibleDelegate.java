@@ -93,7 +93,7 @@ public class VisibleDelegate {
     }
 
     public void onHiddenChanged(boolean hidden) {
-        if (hidden) {
+        if (hidden || mFragment.getView() == null) {
             safeDispatchUserVisibleHint(false);
         } else {
             dispatchSupportVisible(true);
