@@ -13,5 +13,6 @@ Before sending pull request to this project, please read and follow guidelines b
 Following information can help us to resolve the issue faster.
 
 * Library version
+* Support-v4 version
 * Logs
 * Screenshots
