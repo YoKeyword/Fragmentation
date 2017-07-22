@@ -14,12 +14,12 @@ Fragmentation is a powerful library managing Fragment for Android.
 It is designed for "Single Activity + Multi-Fragments" and "Multi-FragmentActivities + Multi-Fragments" architecture to simplify development process.
 
 ## Demo
-The first demo shows the basic usage of the library. The second one shows the way to implement an app which is similar to WeChat. Complicated nested fragments' usage demo are also showed.
+The first demo shows the basic usage of the library. The second one shows the way to implement an app which is similar to Instagram. Complicated nested fragments' usage demo are also showed.
 
 [Download APK](https://www.pgyer.com/fragmentation)
 
-<img src="/gif/demo.gif" width="280px"/> <img src="/gif/wechat.gif" width="280px"/>
- <img src="/gif/nested.gif" width="280px"/>
+<img src="/gif/demo1.gif" width="280px"/> <img src="/gif/demo2.gif" width="280px"/>
+ <img src="/gif/demo3.gif" width="280px"/>
 
 ## Feature
 
@@ -39,7 +39,7 @@ The first demo shows the basic usage of the library. The second one shows the wa
 
 **8. Support SwipeBack to pop(Fragmentation_SwipeBack module [README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
-<img src="/gif/log.png" width="400px"/>      <img src="/gif/SwipeBack.jpg" width="150px"/>
+<img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>       <img src="/gif/SwipeBack.png" width="150px"/>
 
 ## How do I use Fragmentation?
 

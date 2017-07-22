@@ -23,8 +23,9 @@ A powerful library that manage Fragment for Android!
 
 [下载APK](https://www.pgyer.com/fragmentation)
 
-<img src="/gif/demo.gif" width="280px"/>&emsp;<img src="/gif/wechat.gif" width="280px"/>
-&emsp;<img src="/gif/nested.gif" width="280px"/>
+
+<img src="/gif/demo1.gif" width="280px"/> <img src="/gif/demo2.gif" width="280px"/>
+ <img src="/gif/demo3.gif" width="280px"/>
 
 # 特性
 
@@ -44,7 +45,7 @@ A powerful library that manage Fragment for Android!
 
 8、**支持SwipeBack滑动边缘退出(需要使用Fragment｀ation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
-<img src="/gif/log.png" width="400px"/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src="/gif/SwipeBack.jpg" width="150px"/>
+<img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>     <img src="/gif/SwipeBack.png" width="150px"/>
 
 # 如何使用
 
