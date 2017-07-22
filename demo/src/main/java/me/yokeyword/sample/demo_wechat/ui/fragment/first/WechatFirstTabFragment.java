@@ -64,7 +64,7 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
 
         EventBus.getDefault().register(this);
 
-        mToolbar.setTitle("首页");
+        mToolbar.setTitle(R.string.home);
     }
 
     @Override
@@ -102,11 +102,11 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
             public void onItemClick(int position, View view, RecyclerView.ViewHolder vh) {
                 // 因为启动的MsgFragment是MainFragment的兄弟Fragment,所以需要MainFragment.start()
 
-                // 这里我使用EventBus通知父MainFragment处理跳转(接耦),
+                // 使用EventBus通知父MainFragment处理跳转(接耦),
                 EventBus.getDefault().post(new StartBrotherEvent(MsgFragment.newInstance(mAdapter.getMsg(position))));
 
-                // 也可以像使用getParentFragment()的方式,拿到父Fragment的引用来操作
-//              ((MainFragment) getParentFragment()).startMsgBrother(MsgFragment.newInstance());
+                // 也可以像使用getParentFragment()的方式,拿到父Fragment来操作
+//              ((MainFragment) getParentFragment()).start(MsgFragment.newInstance(mAdapter.getMsg(position)));
             }
         });
 
@@ -117,8 +117,8 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
     private List<Chat> initDatas() {
         List<Chat> msgList = new ArrayList<>();
 
-        String[] name = new String[]{"小黄", "小李", "小张", "老王", "小马"};
-        String[] chats = new String[]{"小黄的消息", "小李的消息", "小张的消息", "老王的消息", "小马的消息"};
+        String[] name = new String[]{"Jake", "Eric", "Kenny", "Helen", "Carr"};
+        String[] chats = new String[]{"message1", "message2", "message3", "message4", "message5"};
 
         for (int i = 0; i < 15; i++) {
             int index = (int) (Math.random() * 5);

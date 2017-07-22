@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import me.yokeyword.fragmentation.SupportFragmentDelegate;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.base.BaseBackFragment;
 
@@ -97,7 +96,7 @@ public class DetailFragment extends BaseBackFragment {
             mToolbar.setTitle(mTitle);
             // 保存被改变的 title
             getArguments().putString(ARG_TITLE, mTitle);
-            Toast.makeText(_mActivity, "修改标题成功!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_mActivity, R.string.modify_title, Toast.LENGTH_SHORT).show();
         }
     }
 }

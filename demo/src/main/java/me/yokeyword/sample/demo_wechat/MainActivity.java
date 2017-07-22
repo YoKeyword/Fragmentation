@@ -10,7 +10,7 @@ import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.ui.fragment.MainFragment;
 
 /**
- * 仿微信交互方式Demo   tip: 多使用右上角的"查看栈视图"
+ * 仿微信交互方式Demo
  * Created by YoKeyword on 16/6/30.
  */
 public class MainActivity extends SupportActivity {

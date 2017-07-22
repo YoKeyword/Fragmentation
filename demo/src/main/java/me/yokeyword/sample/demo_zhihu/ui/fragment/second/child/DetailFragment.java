@@ -97,7 +97,7 @@ public class DetailFragment extends BaseBackFragment {
             mToolbar.setTitle(mTitle);
             // 保存被改变的 title
             getArguments().putString(ARG_TITLE, mTitle);
-            Toast.makeText(_mActivity, "修改标题成功!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_mActivity, R.string.modify_title, Toast.LENGTH_SHORT).show();
         }
     }
 }

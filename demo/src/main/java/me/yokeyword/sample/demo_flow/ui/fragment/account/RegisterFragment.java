@@ -70,15 +70,11 @@ public class RegisterFragment extends BaseBackFragment {
                 String strPassword = mEtPassword.getText().toString();
                 String strPasswordConfirm = mEtPasswordConfirm.getText().toString();
                 if (TextUtils.isEmpty(strAccount.trim())) {
-                    Toast.makeText(_mActivity, "用户名不能为空!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_mActivity, R.string.error_username, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(strPassword.trim()) || TextUtils.isEmpty(strPasswordConfirm.trim())) {
-                    Toast.makeText(_mActivity, "密码不能为空!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (!strPassword.equals(strPasswordConfirm)) {
-                    Toast.makeText(_mActivity, "两次密码不一致!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_mActivity, R.string.error_pwd, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -90,11 +86,9 @@ public class RegisterFragment extends BaseBackFragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            hideSoftInput();
-        }
+    public void onSupportInvisible() {
+        super.onSupportInvisible();
+        hideSoftInput();
     }
 
     @Override

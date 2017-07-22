@@ -4,6 +4,6 @@
 
     <item
         android:id="@+id/action_anim"
-        android:title="动画"
+        android:title="@string/anim"
         app:showAsAction="ifRoom"/>
 </menu>

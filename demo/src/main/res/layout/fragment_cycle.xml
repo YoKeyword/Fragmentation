@@ -12,21 +12,23 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center_horizontal"
-        android:text="循环Fragment1"
+        android:text="CyclerFragment1"
         android:textSize="30sp"/>
 
     <Button
         android:id="@+id/btn_next_with_finish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAllCaps="false"
         android:layout_marginTop="48dp"
-        android:text="进入循环Fragment,并关闭当前页面"/>
+        android:text="@string/start_with_pop"/>
 
     <Button
         android:id="@+id/btn_next"
         android:layout_width="match_parent"
+        android:textAllCaps="false"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="进入循环Fragment"/>
+        android:text="@string/start_cycler"/>
 
 </LinearLayout>

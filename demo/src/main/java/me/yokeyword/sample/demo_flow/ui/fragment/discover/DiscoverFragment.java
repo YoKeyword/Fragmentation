@@ -38,13 +38,13 @@ public class DiscoverFragment extends BaseMainFragment {
         TabLayout mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         ViewPager mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
-        mToolbar.setTitle("发现");
+        mToolbar.setTitle(R.string.discover);
         initToolbarNav(mToolbar);
 
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.recommend));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.hot));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.favorite));
-        mViewPager.setAdapter(new DiscoverFragmentAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new DiscoverFragmentAdapter(getChildFragmentManager(), getString(R.string.recommend), getString(R.string.hot), getString(R.string.favorite)));
         mTabLayout.setupWithViewPager(mViewPager);
     }
 }

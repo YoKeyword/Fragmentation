@@ -17,12 +17,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="确定修改详情页的标题"/>
+        android:textAllCaps="false"
+        android:text="@string/modify"/>
 
     <Button
         android:id="@+id/btn_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="进入循环Fragment"
+        android:text="@string/start_cycler"
+        android:textAllCaps="false"
         android:layout_marginTop="48dp"/>
 </LinearLayout>

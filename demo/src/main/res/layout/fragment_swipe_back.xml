@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:gravity="center"
-        android:text="我是SwipeBackFragment\n\n边缘右滑退出Fragment"
+        android:text="@string/swipe_back"
         android:textSize="28sp"/>
 
 
@@ -19,6 +19,6 @@
         android:gravity="center"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
-        android:text="通过\nDrawerlayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);\n禁止抽屉菜单的滑动事件"
+        android:text="Drawerlayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);\n"
         android:textSize="13sp"/>
 </LinearLayout>

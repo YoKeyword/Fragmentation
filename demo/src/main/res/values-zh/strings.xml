@@ -4,21 +4,22 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="home">Home</string>
-    <string name="discover">Discover</string>
-    <string name="shop">Shop</string>
-    <string name="login">Sign in</string>
-    <string name="system">Account</string>
-    <string name="swipe">SwipeBack</string>
+    <string name="home">首页</string>
+    <string name="discover">发现</string>
+    <string name="shop">商店</string>
+    <string name="login">登录</string>
+    <string name="system">账户</string>
+    <string name="swipe">侧滑返回</string>
     <string name="go_swipe_back">SwipeBackActivity+Fragment</string>
     <string name="go_swipe_back_f">SwipeBackFragment</string>
 
-    <string name="recommend">Recommend</string>
-    <string name="hot">Hot</string>
-    <string name="favorite">Favorite</string>
+    <string name="recommend">推荐</string>
+    <string name="hot">热门</string>
+    <string name="favorite">收藏</string>
 
-    <string name="password">Password</string>
-    <string name="register">Register</string>
+    <string name="password">密码</string>
+    <string name="register">注册</string>
+
 
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -111,42 +112,45 @@
     </string>
 
     <string name="image_transition">image_transition</string>
-    <string name="press_again_exit">Press again to exit</string>
-    <string name="send">Send</string>
-    <string name="sign_in_success">Sign in successful, NavigationView\'s name has changed</string>
-    <string name="can_swipe">can be swipe-back</string>
-    <string name="upper_process">Passed to the upper processing!</string>
+    <string name="press_again_exit">再按一次退出</string>
+    <string name="send">发送</string>
+    <string name="sign_in_success">登录成功,NavigationView的用户名已经更改!</string>
+    <string name="can_swipe">可侧滑返回</string>
+    <string name="upper_process">传递给上层处理!</string>
 
-    <string name="anim_v">Set animation: Vertical</string>
-    <string name="anim_h">Set animation: Horizontal</string>
-    <string name="anim_none">Set animation: None</string>
-    <string name="anim">anim</string>
-    <string name="account">Username</string>
-    <string name="modify_title">Modify the title successfully</string>
-    <string name="modify_success">Modify successfully!</string>
-    <string name="error_username">This username is invalid</string>
-    <string name="error_pwd">This password is invalid</string>
-    <string name="tip_single_multi">Single Activity + Multi-Fragments:</string>
-    <string name="btn_basic">Demo1: Basic</string>
-    <string name="btn_normal">Demo2: Similar to Instagram</string>
-    <string name="btn_complicated">Demo3: Complicated nested</string>
-    <string name="start_cycler">Start CyclerFragment</string>
-    <string name="start_with_pop">Start CyclerFragment, and finish self</string>
-    <string name="modify">Modify Title</string>
-    <string name="settings">Settings</string>
-    <string name="action_anim_v">Set animation:Vertical(Default)</string>
-    <string name="swipe_back">Swipe back</string>
+    <string name="anim_v">设置全局动画成功! 竖向</string>
+    <string name="anim_h">设置全局动画成功! 横向</string>
+    <string name="anim_none">设置全局动画成功! 无</string>
+    <string name="anim">动画</string>
 
-    <string name="time">2 days ago</string>
-    <string name="msg">Msg</string>
-    <string name="contact">Friends</string>
-    <string name="stranger">Stranger</string>
-    <string name="all">All</string>
+    <string name="account">用户名</string>
+    <string name="modify_title">修改标题成功！</string>
+    <string name="modify_success">修改成功!</string>
+    <string name="error_username">用户名无效</string>
+    <string name="error_pwd">密码无效</string>
 
-    <string name="start_result_test">StartForResult Sample</string>
-    <string name="more">more</string>
-    <string name="me">Me</string>
-    <string name="hot_news">hot</string>
+    <string name="tip_single_multi">以下均为单Activity + 多Fragment:</string>
+    <string name="btn_basic">流式交互Demo (流式栈设计)</string>
+    <string name="btn_normal">仿微信交互Demo (最常用的栈设计)</string>
+    <string name="btn_complicated">仿知乎交互Demo (复杂嵌套栈设计)</string>
+
+    <string name="start_cycler">启动CyclerFragment</string>
+    <string name="start_with_pop">启动启动CyclerFragment，并关闭自己</string>
+    <string name="modify">修改上个页面的标题</string>
+    <string name="settings">设置</string>
+    <string name="action_anim_v">设置全局动画成功! 竖向(默认)</string>
+    <string name="swipe_back">侧滑返回</string>
+
+    <string name="time">前天</string>
+    <string name="msg">消息</string>
+    <string name="contact">联系人</string>
+    <string name="stranger">陌生人</string>
+    <string name="all">全部</string>
+
+    <string name="start_result_test">测试startForResult</string>
+    <string name="more">更多</string>
+    <string name="me">我的</string>
+    <string name="hot_news">热门新闻</string>
 
     <string-array name="array_title">
         <item>Andorid O Developer Preview</item>
@@ -161,20 +165,20 @@
     </string-array>
 
     <string-array name="array_menu">
-        <item>Ranking</item>
-        <item>Menu1</item>
-        <item>Menu2</item>
-        <item>Menu3</item>
-        <item>Menu4</item>
-        <item>Menu5</item>
-        <item>Menu6</item>
-        <item>Menu7</item>
-        <item>Menu8</item>
-        <item>Menu9</item>
-        <item>Menu10</item>
-        <item>Menu11</item>
-        <item>Menu12</item>
-        <item>Menu13</item>
-        <item>Menu14</item>
+        <item>销量排行</item>
+        <item>炒菜</item>
+        <item>汤面类</item>
+        <item>煲类</item>
+        <item>汤</item>
+        <item>小菜</item>
+        <item>酒水饮料</item>
+        <item>盖浇饭类</item>
+        <item>炒面类</item>
+        <item>拉面类</item>
+        <item>盖浇面类</item>
+        <item>特色菜</item>
+        <item>加料</item>
+        <item>馄饨类</item>
+        <item>其他</item>
     </string-array>
 </resources>

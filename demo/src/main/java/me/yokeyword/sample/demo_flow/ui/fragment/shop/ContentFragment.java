@@ -63,7 +63,7 @@ public class ContentFragment extends MySupportFragment {
         mTvContent = (TextView) view.findViewById(R.id.tv_content);
         mBtnNext = (Button) view.findViewById(R.id.btn_next);
 
-        mTvContent.setText("Fragment内容:\n" + mMenu);
+        mTvContent.setText("Content:\n" + mMenu);
 
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override

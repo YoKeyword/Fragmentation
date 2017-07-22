@@ -12,10 +12,11 @@ import me.yokeyword.sample.demo_wechat.ui.fragment.second.OtherPagerFragment;
  * Created by YoKeyword on 16/6/5.
  */
 public class WechatPagerFragmentAdapter extends FragmentPagerAdapter {
-    private String[] mTab = new String[]{"全部", "陌生人"};
+    private String[] mTitles;
 
-    public WechatPagerFragmentAdapter(FragmentManager fm) {
+    public WechatPagerFragmentAdapter(FragmentManager fm, String... titles) {
         super(fm);
+        mTitles = titles;
     }
 
     @Override
@@ -29,11 +30,11 @@ public class WechatPagerFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return mTab.length;
+        return mTitles.length;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mTab[position];
+        return mTitles[position];
     }
 }

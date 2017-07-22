@@ -79,11 +79,11 @@ public class PagerChildFragment extends MySupportFragment {
                 for (int i = 0; i < 20; i++) {
                     String item;
                     if (mFrom == 0) {
-                        item = "推荐 " + i;
+                        item = getString(R.string.recommend) + " " + i;
                     } else if (mFrom == 1) {
-                        item = "热门 " + i;
+                        item = getString(R.string.hot) +" " + i;
                     } else {
-                        item = "收藏 " + i;
+                        item = getString(R.string.favorite) +" " + i;
                     }
                     items.add(item);
                 }

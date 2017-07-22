@@ -23,41 +23,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="以下均为单Activity + 多Fragment:"/>
+        android:text="@string/tip_single_multi"/>
 
-    <TextView
-        android:id="@+id/tv_btn_flow"
+    <Button
+        android:id="@+id/btn_flow"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:background="@drawable/btn"
-        android:gravity="center"
-        android:text="流式交互Demo (简单Fragment嵌套)"
-        android:textColor="@android:color/black"/>
+        android:text="@string/btn_basic"
+        android:textAllCaps="false"/>
 
-    <TextView
-        android:id="@+id/tv_btn_wechat"
+    <Button
+        android:id="@+id/btn_wechat"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/btn"
-        android:gravity="center"
-        android:text="仿微信交互Demo (一般Fragment嵌套)"
-        android:textColor="@android:color/black"/>
+        android:text="@string/btn_normal"
+        android:textAllCaps="false"/>
 
-    <TextView
-        android:id="@+id/tv_btn_zhihu"
+    <Button
+        android:id="@+id/btn_zhihu"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/btn"
-        android:gravity="center"
-        android:text="仿知乎交互Demo (复杂Fragment嵌套)"
-        android:textColor="@android:color/black"/>
+        android:text="@string/btn_complicated"
+        android:textAllCaps="false"/>
 </LinearLayout>

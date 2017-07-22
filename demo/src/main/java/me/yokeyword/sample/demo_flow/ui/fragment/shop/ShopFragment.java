@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseMainFragment;
@@ -41,39 +42,22 @@ public class ShopFragment extends BaseMainFragment {
     private void initView(View view, Bundle savedInstanceState) {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
-        mToolbar.setTitle("商店");
+        mToolbar.setTitle(R.string.shop);
         initToolbarNav(mToolbar);
 
         if (findChildFragment(MenuListFragment.class) == null) {
-            ArrayList<String> listMenus = new ArrayList<>();
-            listMenus.add("销量排行");
-            listMenus.add("当季特选");
-            listMenus.add("炒菜");
-            listMenus.add("汤面类");
-            listMenus.add("煲类");
-            listMenus.add("汤");
-            listMenus.add("小菜");
-            listMenus.add("酒水饮料");
-            listMenus.add("盖浇饭类");
-            listMenus.add("炒面类");
-            listMenus.add("拉面类");
-            listMenus.add("盖浇面类");
-            listMenus.add("特色菜");
-            listMenus.add("加料");
-            listMenus.add("馄饨类");
-            listMenus.add("其他");
-
+            ArrayList<String> listMenus = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.array_menu)));
             MenuListFragment menuListFragment = MenuListFragment.newInstance(listMenus);
             loadRootFragment(R.id.fl_list_container, menuListFragment);
             // false:  不加入回退栈;  false: 不显示动画
-            loadRootFragment(R.id.fl_content_container, ContentFragment.newInstance("销量排行"), false, false);
+            loadRootFragment(R.id.fl_content_container, ContentFragment.newInstance(listMenus.get(0)), false, false);
         }
     }
 
     @Override
     public boolean onBackPressedSupport() {
         // ContentFragment是ShopFragment的栈顶子Fragment,会先调用ContentFragment的onBackPressedSupport方法
-        Toast.makeText(_mActivity, "onBackPressedSupport-->返回false,交给上层处理!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(_mActivity, "onBackPressedSupport-->return false, " + getString(R.string.upper_process), Toast.LENGTH_SHORT).show();
         return false;
     }
 

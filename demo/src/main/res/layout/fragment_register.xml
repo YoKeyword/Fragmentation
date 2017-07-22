@@ -24,7 +24,7 @@
                     android:id="@+id/et_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="用户名"
+                    android:hint="@string/account"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"/>
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/password"
                     android:imeActionId="@+id/login"
-                    android:imeActionLabel="登录"
+                    android:imeActionLabel="@string/login"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
@@ -57,7 +57,7 @@
                     android:id="@+id/et_password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="确认密码"
+                    android:hint="@string/password"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"/>
@@ -67,10 +67,10 @@
 
             <Button
                 android:id="@+id/btn_register"
-                style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:textAllCaps="false"
                 android:text="@string/register"
                 android:textStyle="bold"/>
         </LinearLayout>

@@ -55,12 +55,12 @@ public class CycleFragment extends BaseBackFragment {
         mBtnNext = (Button) view.findViewById(R.id.btn_next);
         mBtnNextWithFinish = (Button) view.findViewById(R.id.btn_next_with_finish);
 
-        String title = "循环Fragment" + mNumber;
+        String title = "CyclerFragment " + mNumber;
 
         mToolbar.setTitle(title);
         initToolbarNav(mToolbar);
 
-        mTvName.setText(title + "\n可滑动返回");
+        mTvName.setText(title + "\n"+getString(R.string.can_swipe));
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

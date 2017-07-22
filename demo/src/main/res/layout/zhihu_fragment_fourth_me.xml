@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center_vertical"
-            android:text="设置"
+            android:text="@string/settings"
             android:drawablePadding="16dp"
             android:textSize="16sp"
             android:background="?attr/selectableItemBackground"

@@ -29,17 +29,9 @@ import me.yokeyword.sample.demo_flow.listener.OnItemClickListener;
 public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItemClickListener {
     private static final String TAG = "Fragmentation";
 
-    private String[] mTitles = new String[]{
-            "航拍“摩托大军”返乡高峰 如蚂蚁搬家（组图）",
-            "苹果因漏电召回部分电源插头",
-            "IS宣称对叙利亚爆炸案负责"
-    };
+    private String[] mTitles;
 
-    private String[] mContents = new String[]{
-            "1月30日，距离春节还有不到十天，“摩托大军”返乡高峰到来。航拍广西梧州市东出口服务站附近的骑行返乡人员，如同蚂蚁搬家一般。",
-            "昨天记者了解到，苹果公司在其官网发出交流电源插头转换器更换计划，召回部分可能存在漏电风险的电源插头。",
-            "极端组织“伊斯兰国”31日在社交媒体上宣称，该组织制造了当天在叙利亚首都大马士革发生的连环爆炸案。"
-    };
+    private String[] mContents;
 
     private Toolbar mToolbar;
     private RecyclerView mRecy;
@@ -54,7 +46,6 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         initView(view);
-
 //        动态改动 当前Fragment的动画
 //        setFragmentAnimator(fragmentAnimator);
         return view;
@@ -72,15 +63,15 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
                         switch (item.getItemId()) {
                             case R.id.action_anim_veritical:
                                 ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultVerticalAnimator());
-                                Toast.makeText(_mActivity, "设置全局动画成功! 竖向", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(_mActivity, R.string.anim_v, Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.action_anim_horizontal:
                                 ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultHorizontalAnimator());
-                                Toast.makeText(_mActivity, "设置全局动画成功! 横向", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(_mActivity, R.string.anim_h, Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.action_anim_none:
                                 ((ISupportActivity) _mActivity).setFragmentAnimator(new DefaultNoAnimator());
-                                Toast.makeText(_mActivity, "设置全局动画成功! 无", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(_mActivity, R.string.anim_none, Toast.LENGTH_SHORT).show();
                                 break;
                         }
                         popupMenu.dismiss();
@@ -96,6 +87,9 @@ public class HomeFragment extends BaseMainFragment implements Toolbar.OnMenuItem
     private void initView(View view) {
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mRecy = (RecyclerView) view.findViewById(R.id.recy);
+
+        mTitles = getResources().getStringArray(R.array.array_title);
+        mContents = getResources().getStringArray(R.array.array_content);
 
         mToolbar.setTitle(R.string.home);
         initToolbarNav(mToolbar, true);

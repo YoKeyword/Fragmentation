@@ -30,10 +30,10 @@ public class FirstSwipeBackFragment extends BaseSwipeBackFragment {
         View view = inflater.inflate(R.layout.fragment_swipe_back_first, container, false);
 
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        mToolbar.setTitle("SwipeBackActivity的Fragment");
+        mToolbar.setTitle("SwipeBackActivity's Fragment");
         _initToolbar(mToolbar);
 
-        view.findViewById(R.id.tv_btn).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start(RecyclerSwipeBackFragment.newInstance());

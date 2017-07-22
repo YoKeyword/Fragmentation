@@ -80,7 +80,7 @@ public class FirstHomeFragment extends SupportFragment implements SwipeRefreshLa
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        mToolbar.setTitle("首页");
+        mToolbar.setTitle(R.string.home);
 
         mRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         mRefreshLayout.setOnRefreshListener(this);
@@ -117,7 +117,7 @@ public class FirstHomeFragment extends SupportFragment implements SwipeRefreshLa
 
         // Init Datas
         List<Article> articleList = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 8; i++) {
             int index = i % 5;
             Article article = new Article(mTitles[index], mImgRes[index]);
             articleList.add(article);

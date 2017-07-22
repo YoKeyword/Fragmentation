@@ -58,7 +58,7 @@ public class ModifyDetailFragment extends BaseBackFragment {
         mBtnModify = (Button) view.findViewById(R.id.btn_modify);
         mBtnNext = (Button) view.findViewById(R.id.btn_next);
 
-        mToolbar.setTitle("测试startForResult");
+        mToolbar.setTitle(R.string.start_result_test);
         initToolbarNav(mToolbar);
 
         mEtModiyTitle.setText(mTitle);
@@ -73,7 +73,7 @@ public class ModifyDetailFragment extends BaseBackFragment {
                 bundle.putString(DetailFragment.KEY_RESULT_TITLE, mEtModiyTitle.getText().toString());
                 setFragmentResult(RESULT_OK, bundle);
 
-                Toast.makeText(_mActivity, "修改成功!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(_mActivity, R.string.modify_success, Toast.LENGTH_SHORT).show();
             }
         });
         mBtnNext.setOnClickListener(new View.OnClickListener() {
@@ -85,10 +85,8 @@ public class ModifyDetailFragment extends BaseBackFragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            hideSoftInput();
-        }
+    public void onSupportInvisible() {
+        super.onSupportInvisible();
+        hideSoftInput();
     }
 }

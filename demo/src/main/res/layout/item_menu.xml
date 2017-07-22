@@ -19,7 +19,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_height="wrap_content"
-        android:text="热销排行"
         android:textColor="@android:color/black"
         android:layout_toRightOf="@id/view_line"/>
 

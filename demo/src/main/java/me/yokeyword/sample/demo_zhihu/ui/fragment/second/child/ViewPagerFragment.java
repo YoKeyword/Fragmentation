@@ -44,7 +44,9 @@ public class ViewPagerFragment extends SupportFragment {
         mTab.addTab(mTab.newTab());
         mTab.addTab(mTab.newTab());
 
-        mViewPager.setAdapter(new ZhihuPagerFragmentAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new ZhihuPagerFragmentAdapter(getChildFragmentManager(),
+                getString(R.string.recommend), getString(R.string.hot), getString(R.string.favorite),
+                getString(R.string.more)));
         mTab.setupWithViewPager(mViewPager);
     }
 }

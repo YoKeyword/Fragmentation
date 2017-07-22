@@ -43,16 +43,17 @@ public class WechatSecondTabFragment extends BaseMainFragment {
         mTab = (TabLayout) view.findViewById(R.id.tab);
         mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
-        mToolbar.setTitle("联系人");
+        mToolbar.setTitle(R.string.contact);
 
-        mTab.addTab(mTab.newTab().setText("全部"));
-        mTab.addTab(mTab.newTab().setText("陌生人"));
+        mTab.addTab(mTab.newTab().setText(R.string.all));
+        mTab.addTab(mTab.newTab().setText(R.string.stranger));
     }
 
     @Override
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         super.onLazyInitView(savedInstanceState);
-        mViewPager.setAdapter(new WechatPagerFragmentAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new WechatPagerFragmentAdapter(getChildFragmentManager()
+                , getString(R.string.all), getString(R.string.stranger)));
         mTab.setupWithViewPager(mViewPager);
     }
 }

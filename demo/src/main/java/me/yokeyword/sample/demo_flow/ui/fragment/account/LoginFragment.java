@@ -70,11 +70,11 @@ public class LoginFragment extends BaseBackFragment {
                 String strAccount = mEtAccount.getText().toString();
                 String strPassword = mEtPassword.getText().toString();
                 if (TextUtils.isEmpty(strAccount.trim())) {
-                    Toast.makeText(_mActivity, "用户名不能为空!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_mActivity, R.string.error_username, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(strPassword.trim())) {
-                    Toast.makeText(_mActivity, "密码不能为空!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_mActivity, R.string.error_pwd, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -103,10 +103,8 @@ public class LoginFragment extends BaseBackFragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(hidden){
-            hideSoftInput();
-        }
+    public void onSupportInvisible() {
+        super.onSupportInvisible();
+        hideSoftInput();
     }
 }

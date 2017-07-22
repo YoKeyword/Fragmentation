@@ -3,14 +3,14 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_anim_veritical"
-        android:title="全局动画:竖向(默认)"
+        android:title="@string/action_anim_v"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_anim_horizontal"
-        android:title="全局动画:横向"
+        android:title="@string/anim_h"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_anim_none"
-        android:title="全局动画:无"
+        android:title="@string/anim_none"
         app:showAsAction="never"/>
 </menu>

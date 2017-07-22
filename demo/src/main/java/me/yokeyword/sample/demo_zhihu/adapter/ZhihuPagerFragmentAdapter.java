@@ -11,10 +11,11 @@ import me.yokeyword.sample.demo_zhihu.ui.fragment.second.child.childpager.OtherP
  * Created by YoKeyword on 16/6/5.
  */
 public class ZhihuPagerFragmentAdapter extends FragmentPagerAdapter {
-    private String[] mTab = new String[]{"推荐", "热门", "收藏", "更多"};
+    private String[] mTitles;
 
-    public ZhihuPagerFragmentAdapter(FragmentManager fm) {
+    public ZhihuPagerFragmentAdapter(FragmentManager fm, String... titles) {
         super(fm);
+        mTitles = titles;
     }
 
     @Override
@@ -22,17 +23,17 @@ public class ZhihuPagerFragmentAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return FirstPagerFragment.newInstance();
         } else {
-            return OtherPagerFragment.newInstance(position);
+            return OtherPagerFragment.newInstance(mTitles[position]);
         }
     }
 
     @Override
     public int getCount() {
-        return mTab.length;
+        return mTitles.length;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mTab[position];
+        return mTitles[position];
     }
 }

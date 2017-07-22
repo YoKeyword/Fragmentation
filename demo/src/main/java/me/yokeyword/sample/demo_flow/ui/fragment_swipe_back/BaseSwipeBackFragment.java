@@ -12,7 +12,7 @@ import me.yokeyword.sample.R;
 public class BaseSwipeBackFragment extends SwipeBackFragment {
 
     void _initToolbar(Toolbar toolbar) {
-        toolbar.setTitle("SwipeBackActivity的Fragment");
+        toolbar.setTitle("SwipeBackActivity's Fragment");
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

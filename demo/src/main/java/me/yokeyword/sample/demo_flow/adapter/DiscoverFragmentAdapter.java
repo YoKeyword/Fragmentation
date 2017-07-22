@@ -10,10 +10,11 @@ import me.yokeyword.sample.demo_flow.ui.fragment.discover.PagerChildFragment;
  * Created by YoKeyword on 16/2/5.
  */
 public class DiscoverFragmentAdapter extends FragmentPagerAdapter {
-    String[] mTitles = new String[]{"推荐", "热门", "收藏"};
+    String[] mTitles;
 
-    public DiscoverFragmentAdapter(FragmentManager fm) {
+    public DiscoverFragmentAdapter(FragmentManager fm, String... titles) {
         super(fm);
+        mTitles = titles;
     }
 
     @Override

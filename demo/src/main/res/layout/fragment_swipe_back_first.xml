@@ -11,16 +11,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:gravity="center"
-        android:text="我是SwipeBackActivity\n里的Fragment\n\n"
+        android:text="SwipeBackActivity's Fragment\n"
         android:textSize="28sp"/>
 
     <TextView
-        android:id="@+id/tv_btn"
         android:layout_width="wrap_content"
-        android:text="点击我跳转\n边缘右滑退出"
-        android:textSize="28sp"
+        android:text="@string/swipe_back"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:text="Start"
+        android:layout_marginTop="48dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
+        android:textAllCaps="false"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>

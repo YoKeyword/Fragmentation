@@ -14,18 +14,14 @@ import me.yokeyword.sample.R;
  * Created by YoKeyword on 16/6/5.
  */
 public class OtherPagerFragment extends SupportFragment {
-    private static final String ARG_TYPE = "arg_pos";
-    public static int TYPE_HOT = 1;
-    public static int TYPE_FAV = 2;
+    private static final String ARG_TYPE = "arg_type";
 
-    private int mType = TYPE_HOT;
+    private String mTitle;
 
-    private TextView mTvTitle;
-
-    public static OtherPagerFragment newInstance(int type) {
+    public static OtherPagerFragment newInstance(String title) {
 
         Bundle args = new Bundle();
-        args.putInt(ARG_TYPE, type);
+        args.putString(ARG_TYPE, title);
         OtherPagerFragment fragment = new OtherPagerFragment();
         fragment.setArguments(args);
         return fragment;
@@ -34,7 +30,7 @@ public class OtherPagerFragment extends SupportFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mType = getArguments().getInt(ARG_TYPE);
+        mTitle = getArguments().getString(ARG_TYPE);
     }
 
     @Nullable
@@ -46,12 +42,7 @@ public class OtherPagerFragment extends SupportFragment {
     }
 
     private void initView(View view) {
-        mTvTitle = (TextView) view.findViewById(R.id.tv_title);
-
-        if (mType == TYPE_HOT) {
-            mTvTitle.setText("热门");
-        } else {
-            mTvTitle.setText("收藏");
-        }
+        TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        tvTitle.setText(mTitle);
     }
 }

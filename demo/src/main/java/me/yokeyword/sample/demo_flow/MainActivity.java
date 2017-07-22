@@ -147,7 +147,7 @@ public class MainActivity extends MySupportActivity
 
                     HomeFragment fragment = findFragment(HomeFragment.class);
                     Bundle newBundle = new Bundle();
-                    newBundle.putString("from", "主页-->来自:" + topFragment.getClass().getSimpleName());
+                    newBundle.putString("from", "From:" + topFragment.getClass().getSimpleName());
                     fragment.putNewBundle(newBundle);
 
                     start(fragment, SupportFragment.SINGLETASK);
@@ -200,7 +200,7 @@ public class MainActivity extends MySupportActivity
     public void onLoginSuccess(String account) {
         mTvName.setText(account);
         mImgNav.setImageResource(R.drawable.ic_account_circle_white_48dp);
-        Toast.makeText(this, "登录成功,NavigationView的用户名已经更改!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.sign_in_success, Toast.LENGTH_SHORT).show();
     }
 
     @Override

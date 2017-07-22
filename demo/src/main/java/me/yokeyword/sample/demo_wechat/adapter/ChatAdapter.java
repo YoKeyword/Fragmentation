@@ -62,7 +62,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.VH> {
 
         holder.tvName.setText(item.name);
         holder.tvMsg.setText(item.message);
-        holder.tvTime.setText("昨天");
+        holder.tvTime.setText(R.string.time);
     }
 
     @Override
