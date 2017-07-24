@@ -3,8 +3,6 @@
 
 Activity内Fragment数大于1时，滑动返回的是Fragment，否则滑动返回的是Activity。
 
-[原理分析](http://www.jianshu.com/p/626229ca4dc2)
-
 # 截图
 <img src="../gif/swipe.gif"/>
 
@@ -12,8 +10,8 @@ Activity内Fragment数大于1时，滑动返回的是Fragment，否则滑动返�
 1、项目下app的build.gradle中依赖：
 ````gradle
 // appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:1.0.7'
-compile 'me.yokeyword:fragmentation-swipeback:1.0.7'
+compile 'me.yokeyword:fragmentation:1.0.8'
+compile 'me.yokeyword:fragmentation-swipeback:1.0.8'
 ````
 2、如果Activity也需要支持SwipeBack，则继承SwipeBackActivity:
 ````java
