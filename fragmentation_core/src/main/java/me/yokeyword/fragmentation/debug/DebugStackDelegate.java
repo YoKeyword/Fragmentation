@@ -103,7 +103,7 @@ public class DebugStackDelegate implements SensorEventListener {
         container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mStackDialog = new AlertDialog.Builder(mActivity)
                 .setView(container)
-                .setPositiveButton("关闭", null)
+                .setPositiveButton(android.R.string.cancel, null)
                 .setCancelable(true)
                 .create();
         mStackDialog.show();
