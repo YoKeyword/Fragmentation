@@ -31,7 +31,7 @@ class TransactionDelegate {
     private static final String TAG = "Fragmentation";
 
     static final String FRAGMENTATION_ARG_RESULT_RECORD = "fragment_arg_result_record";
-    static final String FRAGMENTATION_ARG_ANIM_DISABLE = "fragmentation_arg_anim_disable";
+    static final String FRAGMENTATION_ARG_ROOT_STATUS = "fragmentation_arg_root_status";
     static final String FRAGMENTATION_ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
     static final String FRAGMENTATION_ARG_REPLACE = "fragmentation_arg_replace";
@@ -81,7 +81,7 @@ class TransactionDelegate {
                 args = new Bundle();
                 to.setArguments(args);
             }
-            args.putBoolean(FRAGMENTATION_ARG_ANIM_DISABLE, true);
+            args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
             bindContainerId(containerId, tos[i]);
 
             String toName = to.getClass().getName();
@@ -191,7 +191,7 @@ class TransactionDelegate {
             if (addMode) { // Replace mode forbidden animation, the replace animations exist overlapping Bug on support-v4.
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             } else {
-                bundle.putBoolean(FRAGMENTATION_ARG_ANIM_DISABLE, true);
+                bundle.putInt(FRAGMENTATION_ARG_ROOT_STATUS, SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
             }
         } else {
             bundle.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
@@ -201,7 +201,8 @@ class TransactionDelegate {
         }
         if (from == null) {
             ft.replace(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
-            bundle.putBoolean(FRAGMENTATION_ARG_ANIM_DISABLE, !allowRootFragmentAnim);
+            bundle.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
+                    SupportFragmentDelegate.STATUS_ROOT_ANIM_ENABLE : SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
         } else {
             if (addMode) {
                 ft.add(from.getSupportDelegate().mContainerId, toF, toFragmentTag);

@@ -21,8 +21,12 @@ import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 import me.yokeyword.fragmentation.helper.internal.VisibleDelegate;
 
 public class SupportFragmentDelegate {
-    // Animation
-    private boolean mEnterAnimDisable;
+    static final int STATUS_UN_ROOT = 0;
+    static final int STATUS_ROOT_ANIM_DISABLE = 1;
+    static final int STATUS_ROOT_ANIM_ENABLE = 2;
+
+    private int mRootStatus = STATUS_UN_ROOT;
+
     boolean mIsSharedElement;
     FragmentAnimator mFragmentAnimator;
     AnimatorHelper mAnimHelper;
@@ -81,7 +85,7 @@ public class SupportFragmentDelegate {
 
         Bundle bundle = mFragment.getArguments();
         if (bundle != null) {
-            mEnterAnimDisable = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_ANIM_DISABLE, false);
+            mRootStatus = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_ROOT_STATUS, STATUS_UN_ROOT);
             mIsSharedElement = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
             mReplaceMode = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_REPLACE, false);
@@ -111,7 +115,7 @@ public class SupportFragmentDelegate {
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 Animation enterAnim;
-                if (mEnterAnimDisable) {
+                if (mRootStatus == STATUS_ROOT_ANIM_DISABLE) {
                     enterAnim = mAnimHelper.getNoneAnim();
                 } else {
                     enterAnim = mAnimHelper.enterAnim;
@@ -151,7 +155,7 @@ public class SupportFragmentDelegate {
             setBackground(view);
         }
 
-        if (savedInstanceState != null || mEnterAnimDisable || (mFragment.getTag() != null
+        if (savedInstanceState != null || mRootStatus != STATUS_UN_ROOT || (mFragment.getTag() != null
                 && mFragment.getTag().startsWith("android:switcher:")) || (mReplaceMode && !mFirstCreateView)) {
             notifyEnterAnimEnd();
         }
@@ -532,7 +536,7 @@ public class SupportFragmentDelegate {
 
     public void setBackground(View view) {
         if ((mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:")) ||
-                mEnterAnimDisable ||
+                mRootStatus != STATUS_UN_ROOT ||
                 view.getBackground() != null) {
             return;
         }
