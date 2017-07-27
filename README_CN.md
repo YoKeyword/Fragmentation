@@ -41,9 +41,7 @@ A powerful library that manage Fragment for Android!
 
 6、**提供 Fragment转场动画 系列解决方案，动态更换动画**
 
-7、**更强的兼容性, 解决多点触控、重叠等问题**
-
-8、**支持SwipeBack滑动边缘退出(需要使用Fragment｀ation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
+7、**支持SwipeBack滑动边缘退出(需要使用Fragment｀ation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>     <img src="/gif/SwipeBack.png" width="150px"/>
 
@@ -52,15 +50,15 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat-v7包是必须的
-compile 'me.yokeyword:fragmentation:1.0.8'
+compile 'me.yokeyword:fragmentation:1.0.9'
 
 // 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
-// compile 'me.yokeyword:fragmentation-core:1.0.8'
+// compile 'me.yokeyword:fragmentation-core:1.0.9'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentation:1.0.8'
+compile 'me.yokeyword:fragmentation:1.0.9'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentation-swipeback:1.0.8'
+compile 'me.yokeyword:fragmentation-swipeback:1.0.9'
 ````
 
 **2. Activity继承SupportActivity：**

@@ -35,9 +35,7 @@ The first demo shows the basic usage of the library. The second one shows the wa
 
 **6. Easily manage Fragment transition animations**
 
-**7. More compatibility, solve multi-touch, fragments overlapping problems**
-
-**8. Support SwipeBack to pop(Fragmentation_SwipeBack module [README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
+**7. Support SwipeBack to pop(Fragmentation_SwipeBack module [README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>       <img src="/gif/SwipeBack.png" width="150px"/>
 
@@ -46,15 +44,15 @@ The first demo shows the basic usage of the library. The second one shows the wa
 **1、build.gradle**
 ````gradle
 // appcompat-v7 is required
-compile 'me.yokeyword:fragmentation:1.0.8'
+compile 'me.yokeyword:fragmentation:1.0.9'
 
 // If you don't want to extends SupportActivity/Fragment and would like to customize your own support, just rely on fragmentation-core
-// compile 'me.yokeyword:fragmentation-core:1.0.8'
+// compile 'me.yokeyword:fragmentation-core:1.0.9'
 
 // To get SwipeBack feature, rely on both fragmentation & fragmentation-swipeback
-compile 'me.yokeyword:fragmentation:1.0.8'
+compile 'me.yokeyword:fragmentation:1.0.9'
 // Swipeback is based on fragmentation. Refer to SwipeBackActivity/Fragment for your Customized SupportActivity/Fragment
-compile 'me.yokeyword:fragmentation-swipeback:1.0.8'
+compile 'me.yokeyword:fragmentation-swipeback:1.0.9'
 ````
 
 **2、 Activity extends SupportActivity**
