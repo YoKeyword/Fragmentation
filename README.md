@@ -91,6 +91,11 @@ public class HomeFragment extends SupportFragment {
 }
 ````
 
+**4. Disable multi finger touch**
+````xml
+<item name="android:splitMotionEvents">false</item>
+````
+
 ## [WIKI](https://github.com/YoKeyword/Fragmentation/wiki) , [CHANGELOG](https://github.com/YoKeyword/Fragmentation/blob/master/CHANGELOG.md)
 
 ## Proguard
