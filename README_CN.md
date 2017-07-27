@@ -97,6 +97,11 @@ public class HomeFragment extends SupportFragment {
 }
 ````
 
+**4. theme关闭多点触控**
+````xml
+<item name="android:splitMotionEvents">false</item>
+````
+
 ## [进一步使用、ChangeLog，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
 
 
