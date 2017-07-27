@@ -221,6 +221,20 @@ class TransactionDelegate {
     }
 
     private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to) {
+        if (FragmentationHack.isExecutingActions(fragmentManager)) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    executeStartWithPop(fragmentManager, from, to);
+                }
+            });
+            return;
+        }
+
+        executeStartWithPop(fragmentManager, from, to);
+    }
+
+    private void executeStartWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to) {
         fragmentManager.executePendingTransactions();
         final ISupportFragment preFragment = getPreFragment((Fragment) from);
         final int fromContainerId = from.getSupportDelegate().mContainerId;
@@ -255,7 +269,6 @@ class TransactionDelegate {
             }
             transaction.commitAllowingStateLoss();
         }
-        fragmentManager.executePendingTransactions();
     }
 
     private ISupportFragment getTopFragment(FragmentManager fragmentManager) {
@@ -380,11 +393,11 @@ class TransactionDelegate {
 
         int count = fm.getBackStackEntryCount();
         if (count > 0) {
-            debouncePop(fm);
+            executeDebouncePop(fm);
         }
     }
 
-    private void debouncePop(FragmentManager fm) {
+    private void executeDebouncePop(FragmentManager fm) {
         Fragment popF = fm.findFragmentByTag(fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 1).getName());
         if (popF instanceof ISupportFragment) {
             ISupportFragment supportF = (ISupportFragment) popF;
@@ -398,8 +411,7 @@ class TransactionDelegate {
             mShareElementDebounceTime = System.currentTimeMillis() + supportF.getSupportDelegate().mAnimHelper.exitAnim.getDuration();
         }
 
-        fm.popBackStackImmediate();
-        fm.executePendingTransactions();
+        fm.popBackStack();
     }
 
     /**
@@ -408,10 +420,24 @@ class TransactionDelegate {
      * @param targetFragmentTag     Tag
      * @param includeTargetFragment Whether it includes targetFragment
      */
-    void popTo(final String targetFragmentTag, boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, int popAnim) {
+    void popTo(final String targetFragmentTag, final boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, final int popAnim) {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
 
+        if (FragmentationHack.isExecutingActions(fragmentManager)) {
+            final FragmentManager finalFragmentManager = fragmentManager;
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    executePopTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, finalFragmentManager, popAnim);
+                }
+            });
+            return;
+        }
+        executePopTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, fragmentManager, popAnim);
+    }
+
+    private void executePopTo(final String targetFragmentTag, boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, int popAnim) {
         fragmentManager.executePendingTransactions();
         Fragment targetFragment = fragmentManager.findFragmentByTag(targetFragmentTag);
 

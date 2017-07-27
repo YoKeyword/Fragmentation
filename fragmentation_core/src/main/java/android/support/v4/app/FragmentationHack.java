@@ -26,6 +26,18 @@ public class FragmentationHack {
         }
     }
 
+    public static boolean isExecutingActions(FragmentManager fragmentManager) {
+        if (!(fragmentManager instanceof FragmentManagerImpl))
+            return false;
+        try {
+            FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
+            return fragmentManagerImpl.mExecutingActions;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * To fix the FragmentManagerImpl.mAvailIndices incorrect ordering when pop() multiple Fragments
      * on pre-support-v4-25.4.0
