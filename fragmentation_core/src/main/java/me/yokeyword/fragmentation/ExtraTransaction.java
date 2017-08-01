@@ -31,7 +31,7 @@ public abstract class ExtraTransaction {
      * played when popping the back stack.
      */
     public abstract ExtraTransaction setCustomAnimations(@AnimatorRes @AnimRes int targetFragmentEnter,
-                                                                @AnimatorRes @AnimRes int currentFragmentPopExit);
+                                                         @AnimatorRes @AnimRes int currentFragmentPopExit);
 
     /**
      * Set specific animation resources to run for the fragments that are
@@ -40,9 +40,9 @@ public abstract class ExtraTransaction {
      * operations specifically when popping the back stack.
      */
     public abstract ExtraTransaction setCustomAnimations(@AnimatorRes @AnimRes int targetFragmentEnter,
-                                                                @AnimatorRes @AnimRes int currentFragmentPopExit,
-                                                                @AnimatorRes @AnimRes int currentFragmentPopEnter,
-                                                                @AnimatorRes @AnimRes int targetFragmentExit);
+                                                         @AnimatorRes @AnimRes int currentFragmentPopExit,
+                                                         @AnimatorRes @AnimRes int currentFragmentPopEnter,
+                                                         @AnimatorRes @AnimRes int targetFragmentExit);
 
     /**
      * Used with custom Transitions to map a View from a removed or hidden
@@ -61,9 +61,13 @@ public abstract class ExtraTransaction {
 
     public abstract void start(ISupportFragment toFragment);
 
+    public abstract void startDontHideSelf(ISupportFragment toFragment);
+
     public abstract void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode);
 
     public abstract void startForResult(ISupportFragment toFragment, int requestCode);
+
+    public abstract void startForResultDontHideSelf(ISupportFragment toFragment, int requestCode);
 
     public abstract void startWithPop(ISupportFragment toFragment);
 
@@ -146,9 +150,9 @@ public abstract class ExtraTransaction {
 
         @Override
         public ExtraTransaction setCustomAnimations(@AnimRes int targetFragmentEnter,
-                                                           @AnimRes int currentFragmentPopExit,
-                                                           @AnimRes int currentFragmentPopEnter,
-                                                           @AnimRes int targetFragmentExit) {
+                                                    @AnimRes int currentFragmentPopExit,
+                                                    @AnimRes int currentFragmentPopEnter,
+                                                    @AnimRes int targetFragmentExit) {
             mRecord.targetFragmentEnter = targetFragmentEnter;
             mRecord.currentFragmentPopExit = currentFragmentPopExit;
             mRecord.currentFragmentPopEnter = currentFragmentPopEnter;
@@ -212,9 +216,9 @@ public abstract class ExtraTransaction {
         }
 
         @Override
-        public void replace(ISupportFragment toFragment) {
+        public void startDontHideSelf(ISupportFragment toFragment) {
             toFragment.getSupportDelegate().mTransactionRecord = mRecord;
-            mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_REPLACE);
+            mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
         }
 
         @Override
@@ -230,9 +234,21 @@ public abstract class ExtraTransaction {
         }
 
         @Override
+        public void startForResultDontHideSelf(ISupportFragment toFragment, int requestCode) {
+            toFragment.getSupportDelegate().mTransactionRecord = mRecord;
+            mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, requestCode, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
+        }
+
+        @Override
         public void startWithPop(ISupportFragment toFragment) {
             toFragment.getSupportDelegate().mTransactionRecord = mRecord;
             mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        }
+
+        @Override
+        public void replace(ISupportFragment toFragment) {
+            toFragment.getSupportDelegate().mTransactionRecord = mRecord;
+            mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_REPLACE);
         }
     }
 }
