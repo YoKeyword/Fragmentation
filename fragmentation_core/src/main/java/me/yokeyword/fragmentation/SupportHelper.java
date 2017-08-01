@@ -61,13 +61,22 @@ public class SupportHelper {
      * 获得栈顶SupportFragment
      */
     public static ISupportFragment getTopFragment(FragmentManager fragmentManager) {
+        return getTopFragment(fragmentManager, 0);
+    }
+
+    public static ISupportFragment getTopFragment(FragmentManager fragmentManager, int containerId) {
         List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
         if (fragmentList == null) return null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
             Fragment fragment = fragmentList.get(i);
             if (fragment instanceof ISupportFragment) {
-                return (ISupportFragment) fragment;
+                ISupportFragment iFragment = (ISupportFragment) fragment;
+                if (containerId == 0) return iFragment;
+
+                if (containerId == iFragment.getSupportDelegate().mContainerId) {
+                    return iFragment;
+                }
             }
         }
         return null;

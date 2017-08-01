@@ -105,13 +105,14 @@ class TransactionDelegate {
         checkNotNull(to, "toFragment == null");
 
         if (from != null) {
-            Fragment fromF = (Fragment) from;
             if (from.getSupportDelegate().mContainerId == 0) {
+                Fragment fromF = (Fragment) from;
                 if (fromF.getTag() != null && !fromF.getTag().startsWith("android:switcher:")) {
                     throw new RuntimeException("Can't find container, please call loadRootFragment() first!");
                 }
             }
             bindContainerId(from.getSupportDelegate().mContainerId, to);
+            from = SupportHelper.getTopFragment(fragmentManager, from.getSupportDelegate().mContainerId);
         }
 
         // process SupportTransaction
@@ -135,8 +136,7 @@ class TransactionDelegate {
             saveRequestCode((Fragment) to, requestCode);
         }
 
-        if (handleLaunchMode(fragmentManager, to, toFragmentTag, launchMode))
-            return;
+        if (handleLaunchMode(fragmentManager, from, to, toFragmentTag, launchMode)) return;
 
         if (type == TYPE_ADD_WITH_POP) {
             startWithPop(fragmentManager, from, to);
@@ -300,8 +300,7 @@ class TransactionDelegate {
     /**
      * handle LaunchMode
      */
-    private boolean handleLaunchMode(FragmentManager fragmentManager, final ISupportFragment to, String toFragmentTag, int launchMode) {
-        ISupportFragment topFragment = getTopFragment(fragmentManager);
+    private boolean handleLaunchMode(FragmentManager fragmentManager, ISupportFragment topFragment, final ISupportFragment to, String toFragmentTag, int launchMode) {
         if (topFragment == null) return false;
         final ISupportFragment stackToFragment = SupportHelper.findStackFragment(to.getClass(), toFragmentTag, fragmentManager);
         if (stackToFragment == null) return false;
