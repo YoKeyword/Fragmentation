@@ -1,6 +1,8 @@
 package me.yokeyword.fragmentation;
 
 import android.os.Build;
+import android.support.annotation.AnimRes;
+import android.support.annotation.AnimatorRes;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,7 +23,26 @@ public abstract class ExtraTransaction {
      *            , pop(String)
      *            or FragmentManager.findFragmentByTag(String).
      */
-    public abstract ExtraSupportTransaction setTag(String tag);
+    public abstract ExtraTransaction setTag(String tag);
+
+    /**
+     * Set specific animation resources to run for the fragments that are
+     * entering and exiting in this transaction. These animations will not be
+     * played when popping the back stack.
+     */
+    public abstract ExtraTransaction setCustomAnimations(@AnimatorRes @AnimRes int targetFragmentEnter,
+                                                                @AnimatorRes @AnimRes int currentFragmentPopExit);
+
+    /**
+     * Set specific animation resources to run for the fragments that are
+     * entering and exiting in this transaction. The <code>currentFragmentPopEnter</code>
+     * and <code>targetFragmentExit</code> animations will be played for targetFragmentEnter/currentFragmentPopExit
+     * operations specifically when popping the back stack.
+     */
+    public abstract ExtraTransaction setCustomAnimations(@AnimatorRes @AnimRes int targetFragmentEnter,
+                                                                @AnimatorRes @AnimRes int currentFragmentPopExit,
+                                                                @AnimatorRes @AnimRes int currentFragmentPopEnter,
+                                                                @AnimatorRes @AnimRes int targetFragmentExit);
 
     /**
      * Used with custom Transitions to map a View from a removed or hidden
@@ -36,17 +57,17 @@ public abstract class ExtraTransaction {
      * @see Fragment#setSharedElementEnterTransition(Object)
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
-    public abstract ExtraSupportTransaction addSharedElement(View sharedElement, String sharedName);
+    public abstract ExtraTransaction addSharedElement(View sharedElement, String sharedName);
 
-    /**
-     * Don't add this extraTransaction to the back stack.
-     */
-    public abstract DontAddToBackStackTransaction dontAddToBackStack();
+    public abstract void start(ISupportFragment toFragment);
 
-    /**
-     * 使用dontAddToBackStack() 加载Fragment时， 使用remove()移除Fragment
-     */
-    public abstract void remove(ISupportFragment fragment, boolean showPreFragment);
+    public abstract void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode);
+
+    public abstract void startForResult(ISupportFragment toFragment, int requestCode);
+
+    public abstract void startWithPop(ISupportFragment toFragment);
+
+    public abstract void replace(ISupportFragment toFragment);
 
     /**
      * 使用setTag()自定义Tag时，使用下面popTo()／popToChild()出栈
@@ -61,6 +82,16 @@ public abstract class ExtraTransaction {
     public abstract void popToChild(String targetFragmentTag, boolean includeTargetFragment);
 
     public abstract void popToChild(String targetFragmentTag, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim);
+
+    /**
+     * Don't add this extraTransaction to the back stack.
+     */
+    public abstract DontAddToBackStackTransaction dontAddToBackStack();
+
+    /**
+     * 使用dontAddToBackStack() 加载Fragment时， 使用remove()移除Fragment
+     */
+    public abstract void remove(ISupportFragment fragment, boolean showPreFragment);
 
     public interface DontAddToBackStackTransaction {
         /**
@@ -79,27 +110,10 @@ public abstract class ExtraTransaction {
         void replace(ISupportFragment toFragment);
     }
 
-    public interface ExtraSupportTransaction {
-        ExtraSupportTransaction setTag(String tag);
-
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
-        ExtraSupportTransaction addSharedElement(View sharedElement, String sharedName);
-
-        void start(ISupportFragment toFragment);
-
-        void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode);
-
-        void startForResult(ISupportFragment toFragment, int requestCode);
-
-        void startWithPop(ISupportFragment toFragment);
-
-        void replace(ISupportFragment toFragment);
-    }
-
     /**
      * Impl
      */
-    final static class ExtraTransactionImpl<T extends ISupportFragment> extends ExtraTransaction implements DontAddToBackStackTransaction, ExtraSupportTransaction {
+    final static class ExtraTransactionImpl<T extends ISupportFragment> extends ExtraTransaction implements DontAddToBackStackTransaction {
         private T mSupportF;
         private Fragment mFragment;
         private TransactionDelegate mTransactionDelegate;
@@ -115,13 +129,35 @@ public abstract class ExtraTransaction {
         }
 
         @Override
-        public ExtraSupportTransaction setTag(String tag) {
+        public ExtraTransaction setTag(String tag) {
             mRecord.tag = tag;
             return this;
         }
 
         @Override
-        public ExtraSupportTransaction addSharedElement(View sharedElement, String sharedName) {
+        public ExtraTransaction setCustomAnimations(@AnimRes int targetFragmentEnter
+                , @AnimRes int currentFragmentPopExit) {
+            mRecord.targetFragmentEnter = targetFragmentEnter;
+            mRecord.currentFragmentPopExit = currentFragmentPopExit;
+            mRecord.currentFragmentPopEnter = 0;
+            mRecord.targetFragmentExit = 0;
+            return this;
+        }
+
+        @Override
+        public ExtraTransaction setCustomAnimations(@AnimRes int targetFragmentEnter,
+                                                           @AnimRes int currentFragmentPopExit,
+                                                           @AnimRes int currentFragmentPopEnter,
+                                                           @AnimRes int targetFragmentExit) {
+            mRecord.targetFragmentEnter = targetFragmentEnter;
+            mRecord.currentFragmentPopExit = currentFragmentPopExit;
+            mRecord.currentFragmentPopEnter = currentFragmentPopEnter;
+            mRecord.targetFragmentExit = targetFragmentExit;
+            return this;
+        }
+
+        @Override
+        public ExtraTransaction addSharedElement(View sharedElement, String sharedName) {
             if (mRecord.sharedElementList == null) {
                 mRecord.sharedElementList = new ArrayList<>();
             }

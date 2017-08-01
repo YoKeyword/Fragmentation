@@ -48,8 +48,8 @@ public final class AnimatorHelper {
     }
 
     @Nullable
-    public Animation getViewPagerChildFragmentAnimFixed(Fragment fragment, boolean enter) {
-        if (!enter && fragment.getTag() != null && fragment.getTag().startsWith("android:switcher:")
+    public Animation getViewPagerChildFragmentAnimFixed(Fragment fragment) {
+        if (fragment.getTag() != null && fragment.getTag().startsWith("android:switcher:")
                 && fragment.getUserVisibleHint()) {
             Animation animation = new Animation() {
             };

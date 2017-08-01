@@ -35,6 +35,7 @@ class TransactionDelegate {
     static final String FRAGMENTATION_ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
     static final String FRAGMENTATION_ARG_REPLACE = "fragmentation_arg_replace";
+    static final String FRAGMENTATION_ARG_CUSTOM_END_ANIM = "fragmentation_arg_custom_end_anim";
 
     static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
     static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
@@ -76,11 +77,7 @@ class TransactionDelegate {
         for (int i = 0; i < tos.length; i++) {
             Fragment to = (Fragment) tos[i];
 
-            Bundle args = to.getArguments();
-            if (args == null) {
-                args = new Bundle();
-                to.setArguments(args);
-            }
+            Bundle args = getArguments(to);
             args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
             bindContainerId(containerId, tos[i]);
 
@@ -145,16 +142,6 @@ class TransactionDelegate {
         }
     }
 
-    private void bindContainerId(int containerId, ISupportFragment to) {
-        Fragment toF = (Fragment) to;
-        Bundle args = toF.getArguments();
-        if (args == null) {
-            args = new Bundle();
-            toF.setArguments(args);
-        }
-        args.putInt(FRAGMENTATION_ARG_CONTAINER, containerId);
-    }
-
     void showHideFragment(FragmentManager fragmentManager, ISupportFragment showFragment, ISupportFragment hideFragment) {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
@@ -184,24 +171,32 @@ class TransactionDelegate {
         boolean addMode = (type == TYPE_ADD || type == TYPE_ADD_RESULT || type == TYPE_ADD_WITHOUT_HIDE);
         Fragment fromF = (Fragment) from;
         Fragment toF = (Fragment) to;
-        Bundle bundle = toF.getArguments();
-        bundle.putBoolean(FRAGMENTATION_ARG_REPLACE, !addMode);
+        Bundle args = getArguments(toF);
+        args.putBoolean(FRAGMENTATION_ARG_REPLACE, !addMode);
 
         if (sharedElementList == null) {
             if (addMode) { // Replace mode forbidden animation, the replace animations exist overlapping Bug on support-v4.
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+
+                TransactionRecord record = to.getSupportDelegate().mTransactionRecord;
+                if (record != null && record.targetFragmentEnter != Integer.MIN_VALUE) {
+                    ft.setCustomAnimations(record.targetFragmentEnter, record.currentFragmentPopExit,
+                            record.currentFragmentPopEnter, record.targetFragmentExit);
+                    args.putInt(FRAGMENTATION_ARG_CUSTOM_END_ANIM, record.targetFragmentEnter);
+                } else {
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                }
             } else {
-                bundle.putInt(FRAGMENTATION_ARG_ROOT_STATUS, SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
+                args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
             }
         } else {
-            bundle.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
+            args.putBoolean(FRAGMENTATION_ARG_IS_SHARED_ELEMENT, true);
             for (TransactionRecord.SharedElement item : sharedElementList) {
                 ft.addSharedElement(item.sharedElement, item.sharedName);
             }
         }
         if (from == null) {
-            ft.replace(bundle.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
-            bundle.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
+            ft.replace(args.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
+            args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
                     SupportFragmentDelegate.STATUS_ROOT_ANIM_ENABLE : SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
         } else {
             if (addMode) {
@@ -218,6 +213,20 @@ class TransactionDelegate {
             ft.addToBackStack(toFragmentTag);
         }
         supportCommit(fragmentManager, ft);
+    }
+
+    private void bindContainerId(int containerId, ISupportFragment to) {
+        Bundle args = getArguments((Fragment) to);
+        args.putInt(FRAGMENTATION_ARG_CONTAINER, containerId);
+    }
+
+    private Bundle getArguments(Fragment fragment) {
+        Bundle bundle = fragment.getArguments();
+        if (bundle == null) {
+            bundle = new Bundle();
+            fragment.setArguments(bundle);
+        }
+        return bundle;
     }
 
     private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to) {
@@ -327,7 +336,7 @@ class TransactionDelegate {
     private void handleNewBundle(ISupportFragment toFragment, ISupportFragment stackToFragment) {
         Bundle argsNewBundle = toFragment.getSupportDelegate().mNewBundle;
 
-        Bundle args = ((Fragment) toFragment).getArguments();
+        Bundle args = getArguments((Fragment) toFragment);
         if (args.containsKey(FRAGMENTATION_ARG_CONTAINER)) {
             args.remove(FRAGMENTATION_ARG_CONTAINER);
         }
@@ -343,11 +352,7 @@ class TransactionDelegate {
      * save requestCode
      */
     private void saveRequestCode(Fragment to, int requestCode) {
-        Bundle bundle = to.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-            to.setArguments(bundle);
-        }
+        Bundle bundle = getArguments(to);
         ResultRecord resultRecord = new ResultRecord();
         resultRecord.requestCode = requestCode;
         bundle.putParcelable(FRAGMENTATION_ARG_RESULT_RECORD, resultRecord);

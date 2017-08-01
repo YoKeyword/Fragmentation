@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
@@ -31,6 +32,7 @@ public class SupportFragmentDelegate {
     FragmentAnimator mFragmentAnimator;
     AnimatorHelper mAnimHelper;
     boolean mLockAnim;
+    private int mCustomEnterAnim = Integer.MIN_VALUE;
 
     private Handler mHandler;
     private boolean mFirstCreateView = true;
@@ -89,6 +91,7 @@ public class SupportFragmentDelegate {
             mIsSharedElement = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
             mReplaceMode = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_REPLACE, false);
+            mCustomEnterAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_END_ANIM, Integer.MIN_VALUE);
         }
 
         if (savedInstanceState == null) {
@@ -132,8 +135,9 @@ public class SupportFragmentDelegate {
                 compatSharedElements();
             }
 
-            Animation fixedAnim = mAnimHelper.getViewPagerChildFragmentAnimFixed(mFragment, enter);
-            if (fixedAnim != null) return fixedAnim;
+            if (transit != 0 && !enter) {
+                return mAnimHelper.getViewPagerChildFragmentAnimFixed(mFragment);
+            }
 
             return null;
         }
@@ -155,9 +159,14 @@ public class SupportFragmentDelegate {
             setBackground(view);
         }
 
-        if (savedInstanceState != null || mRootStatus != STATUS_UN_ROOT || (mFragment.getTag() != null
-                && mFragment.getTag().startsWith("android:switcher:")) || (mReplaceMode && !mFirstCreateView)) {
+        if (savedInstanceState != null
+                || mRootStatus != STATUS_UN_ROOT
+                || (mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:"))
+                || (mReplaceMode && !mFirstCreateView)) {
             notifyEnterAnimEnd();
+        } else if (mCustomEnterAnim != Integer.MIN_VALUE) {
+            fixAnimationListener(mCustomEnterAnim == 0 ?
+                    mAnimHelper.getNoneAnim() : AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim));
         }
 
         if (mFirstCreateView) {
