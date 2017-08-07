@@ -68,7 +68,7 @@ public class VisibleDelegate {
             if ((mFragment.getParentFragment() != null && isFragmentVisible(mFragment.getParentFragment()))
                     || mFragment.getParentFragment() == null) {
                 mNeedDispatch = false;
-                dispatchSupportVisible(true);
+                safeDispatchUserVisibleHint(true);
             }
         }
     }
@@ -93,10 +93,10 @@ public class VisibleDelegate {
     }
 
     public void onHiddenChanged(boolean hidden) {
-        if (hidden || mFragment.getView() == null) {
+        if (hidden) {
             safeDispatchUserVisibleHint(false);
         } else {
-            dispatchSupportVisible(true);
+            enqueueDispatch(true);
         }
     }
 
@@ -118,17 +118,22 @@ public class VisibleDelegate {
         }
     }
 
-    private void safeDispatchUserVisibleHint(final boolean visible) {
+    private void safeDispatchUserVisibleHint(boolean visible) {
         if (mIsFirstVisible) {
-            getHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    dispatchSupportVisible(visible);
-                }
-            });
+            enqueueDispatch(visible);
         } else {
             dispatchSupportVisible(visible);
         }
+    }
+
+    private void enqueueDispatch(final boolean visible) {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (!mFragment.isAdded()) return;
+                dispatchSupportVisible(visible);
+            }
+        });
     }
 
     private void dispatchSupportVisible(boolean visible) {
