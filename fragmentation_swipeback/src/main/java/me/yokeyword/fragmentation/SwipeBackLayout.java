@@ -273,10 +273,11 @@ public class SwipeBackLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         mInLayout = true;
-        if (mContentView != null)
+        if (mContentView != null) {
             mContentView.layout(mContentLeft, mContentTop,
                     mContentLeft + mContentView.getMeasuredWidth(),
                     mContentTop + mContentView.getMeasuredHeight());
+        }
         mInLayout = false;
     }
 
@@ -294,14 +295,17 @@ public class SwipeBackLayout extends FrameLayout {
             if (mHelper.continueSettling(true)) {
                 ViewCompat.postInvalidateOnAnimation(this);
             }
-            if (mPreFragment != null && mPreFragment.getView() != null && mHelper.getCapturedView() != null) {
+
+            if (mPreFragment != null && mPreFragment.getView() != null) {
                 if (mCallOnDestroyView) {
                     mPreFragment.getView().setX(0);
                     return;
                 }
 
-                int leftOffset = (int) ((mHelper.getCapturedView().getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
-                mPreFragment.getView().setX(leftOffset > 0 ? 0 : leftOffset);
+                if (mHelper.getCapturedView() != null) {
+                    int leftOffset = (int) ((mHelper.getCapturedView().getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
+                    mPreFragment.getView().setX(leftOffset > 0 ? 0 : leftOffset);
+                }
             }
         }
     }
@@ -435,10 +439,10 @@ public class SwipeBackLayout extends FrameLayout {
                     if (mPreFragment instanceof ISupportFragment) {
                         ((ISupportFragment) mPreFragment).getSupportDelegate().mLockAnim = true;
                     }
-                    if (!((Fragment)mFragment).isDetached()) {
+                    if (!((Fragment) mFragment).isDetached()) {
                         mFragment.getSupportDelegate().mLockAnim = true;
                         mFragment.getSupportDelegate().pop();
-                        ((Fragment)mFragment).getFragmentManager().executePendingTransactions();
+                        ((Fragment) mFragment).getFragmentManager().executePendingTransactions();
                         mFragment.getSupportDelegate().mLockAnim = false;
                     }
                     if (mPreFragment instanceof ISupportFragment) {
