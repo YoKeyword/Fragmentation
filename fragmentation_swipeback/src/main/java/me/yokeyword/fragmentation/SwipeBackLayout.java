@@ -296,12 +296,12 @@ public class SwipeBackLayout extends FrameLayout {
             }
             if (mPreFragment != null && mPreFragment.getView() != null && mHelper.getCapturedView() != null) {
                 if (mCallOnDestroyView) {
-                    mPreFragment.getView().setLeft(0);
+                    mPreFragment.getView().setX(0);
                     return;
                 }
 
                 int leftOffset = (int) ((mHelper.getCapturedView().getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
-                mPreFragment.getView().setLeft(leftOffset > 0 ? 0 : leftOffset);
+                mPreFragment.getView().setX(leftOffset > 0 ? 0 : leftOffset);
             }
         }
     }
