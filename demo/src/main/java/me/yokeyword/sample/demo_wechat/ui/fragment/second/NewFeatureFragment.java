@@ -2,6 +2,7 @@ package me.yokeyword.sample.demo_wechat.ui.fragment.second;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import me.yokeyword.sample.demo_wechat.base.BaseBackFragment;
 import me.yokeyword.sample.demo_wechat.ui.fragment.CycleFragment;
 
 /**
- * 该类是展示 1.0 版本新特性 extraTransaction()
+ * 该类是展示 1.0 版本新特性：拓展事务 extraTransaction()
  * <p>
  * Created by YoKey on 16/11/25.
  */
@@ -25,6 +26,11 @@ public class NewFeatureFragment extends BaseBackFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wechat_fragment_new_feature, container, false);
 
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        initToolbarNav(toolbar);
+        toolbar.setTitle("NewFeatures");
+
+        // 自定义动画启动一个Fragment，并且不隐藏自己
         view.findViewById(R.id.btn_start_dont_hide).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,6 +40,7 @@ public class NewFeatureFragment extends BaseBackFragment {
             }
         });
 
+        // 自定义动画启动一个Fragment
         view.findViewById(R.id.btn_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

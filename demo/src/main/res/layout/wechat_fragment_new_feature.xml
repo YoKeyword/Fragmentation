@@ -4,24 +4,50 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-
     <include layout="@layout/toolbar"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
-        android:text="ExtraTransaction"
-        android:textSize="24sp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="16dp"
-        android:text="extraTransaction()\n.setCustomAnimations()\n.startDontHideSelf()"/>
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="48dp"
+        android:text="@string/new_tip_start"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="extraTransaction()\n.setCustomAnimations(enter,exit...)\n.start()"/>
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="start()"
+        android:textAllCaps="false"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/new_tip_start_dont_hide"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="extraTransaction()\n.setCustomAnimations(enter,exit...)\n.startDontHideSelf()"/>
 
     <Button
         android:id="@+id/btn_start_dont_hide"
@@ -29,21 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:text="startDontHideSelf"/>
+        android:text="startDontHideSelf()"
+        android:textAllCaps="false"/>
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="16dp"
-        android:text="extraTransaction()\n.setCustomAnimations()\n.start())"/>
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:text="start"/>
 </LinearLayout>

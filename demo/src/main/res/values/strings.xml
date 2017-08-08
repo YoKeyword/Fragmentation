@@ -11,7 +11,6 @@
     <string name="system">Account</string>
     <string name="swipe">SwipeBack</string>
     <string name="go_swipe_back">SwipeBackActivity+Fragment</string>
-    <string name="go_swipe_back_f">SwipeBackFragment</string>
 
     <string name="recommend">Recommend</string>
     <string name="hot">Hot</string>
@@ -127,7 +126,7 @@
     <string name="error_username">This username is invalid</string>
     <string name="error_pwd">This password is invalid</string>
     <string name="tip_single_multi">Single Activity + Multi-Fragments:</string>
-    <string name="btn_basic">Demo1: Basic</string>
+    <string name="btn_basic">Demo1: Similar to GooglePlay</string>
     <string name="btn_normal">Demo2: Similar to Instagram</string>
     <string name="btn_complicated">Demo3: Complicated nested</string>
     <string name="start_cycler">Start CyclerFragment</string>
@@ -139,14 +138,14 @@
 
     <string name="time">2 days ago</string>
     <string name="msg">Msg</string>
-    <string name="contact">Friends</string>
-    <string name="stranger">Stranger</string>
     <string name="all">All</string>
 
     <string name="start_result_test">StartForResult Sample</string>
     <string name="more">more</string>
     <string name="me">Me</string>
     <string name="hot_news">hot</string>
+    <string name="new_tip_start_dont_hide">Customize the animation between the Fragments, and do not hide self</string>
+    <string name="new_tip_start">Customize the animation between the Fragments</string>
 
     <string-array name="array_title">
         <item>Andorid O Developer Preview</item>

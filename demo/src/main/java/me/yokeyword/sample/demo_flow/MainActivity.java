@@ -24,7 +24,6 @@ import me.yokeyword.sample.demo_flow.ui.fragment.account.LoginFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.discover.DiscoverFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.home.HomeFragment;
 import me.yokeyword.sample.demo_flow.ui.fragment.shop.ShopFragment;
-import me.yokeyword.sample.demo_flow.ui.fragment_swipe_back.SwipeBackSampleFragment;
 
 /**
  * 流程式demo  tip: 多使用右上角的"查看栈视图"
@@ -32,7 +31,7 @@ import me.yokeyword.sample.demo_flow.ui.fragment_swipe_back.SwipeBackSampleFragm
  */
 public class MainActivity extends MySupportActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseMainFragment.OnFragmentOpenDrawerListener
-        , LoginFragment.OnLoginSuccessListener, SwipeBackSampleFragment.OnLockDrawLayoutListener {
+        , LoginFragment.OnLoginSuccessListener {
     public static final String TAG = MainActivity.class.getSimpleName();
 
     // 再点一次退出程序时间设置
@@ -183,8 +182,6 @@ public class MainActivity extends MySupportActivity
                     goLogin();
                 } else if (id == R.id.nav_swipe_back) {
                     startActivity(new Intent(MainActivity.this, SwipeBackSampleActivity.class));
-                } else if (id == R.id.nav_swipe_back_f) {
-                    start(SwipeBackSampleFragment.newInstance());
                 }
             }
         }, 300);
@@ -201,14 +198,5 @@ public class MainActivity extends MySupportActivity
         mTvName.setText(account);
         mImgNav.setImageResource(R.drawable.ic_account_circle_white_48dp);
         Toast.makeText(this, R.string.sign_in_success, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLockDrawLayout(boolean lock) {
-        if (lock) {
-            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        } else {
-            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        }
     }
 }

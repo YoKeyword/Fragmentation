@@ -89,7 +89,7 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
         // Init Datas
         List<String> items = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            String item = getString(R.string.contact) + " " + i;
+            String item = "New features";
             items.add(item);
         }
         mAdapter.setDatas(items);

@@ -55,7 +55,7 @@ public class WechatThirdTabFragment extends BaseMainFragment {
         mTitles = getResources().getStringArray(R.array.array_title);
         mContents = getResources().getStringArray(R.array.array_content);
 
-        mToolbar.setTitle(R.string.discover);
+        mToolbar.setTitle(R.string.more);
     }
 
 

@@ -31,11 +31,6 @@
                 android:id="@+id/nav_swipe_back"
                 android:icon="@drawable/ic_touch_app_white_24dp"
                 android:title="@string/go_swipe_back"/>
-
-            <item
-                android:id="@+id/nav_swipe_back_f"
-                android:icon="@drawable/ic_touch_app_white_24dp"
-                android:title="@string/go_swipe_back_f"/>
         </menu>
     </item>
 </menu>

@@ -11,7 +11,6 @@
     <string name="system">账户</string>
     <string name="swipe">侧滑返回</string>
     <string name="go_swipe_back">SwipeBackActivity+Fragment</string>
-    <string name="go_swipe_back_f">SwipeBackFragment</string>
 
     <string name="recommend">推荐</string>
     <string name="hot">热门</string>
@@ -130,7 +129,7 @@
     <string name="error_pwd">密码无效</string>
 
     <string name="tip_single_multi">以下均为单Activity + 多Fragment:</string>
-    <string name="btn_basic">流式交互Demo (流式栈设计)</string>
+    <string name="btn_basic">仿GooglePlay交互Demo (流式栈设计)</string>
     <string name="btn_normal">仿微信交互Demo (最常用的栈设计)</string>
     <string name="btn_complicated">仿知乎交互Demo (复杂嵌套栈设计)</string>
 
@@ -143,14 +142,14 @@
 
     <string name="time">前天</string>
     <string name="msg">消息</string>
-    <string name="contact">联系人</string>
-    <string name="stranger">陌生人</string>
     <string name="all">全部</string>
 
     <string name="start_result_test">测试startForResult</string>
     <string name="more">更多</string>
     <string name="me">我的</string>
     <string name="hot_news">热门新闻</string>
+    <string name="new_tip_start_dont_hide">自定义两者之间的动画启动一个Fragment，并且不隐藏自己</string>
+    <string name="new_tip_start">自定义两者之间的动画启动一个Fragment</string>
 
     <string-array name="array_title">
         <item>Andorid O Developer Preview</item>

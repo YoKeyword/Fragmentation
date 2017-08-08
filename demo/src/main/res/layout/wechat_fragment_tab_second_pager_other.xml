@@ -9,6 +9,6 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:textSize="48sp"
-        android:text="@string/stranger"
+        android:text="@string/more"
         android:layout_height="wrap_content"/>
 </LinearLayout>
