@@ -96,7 +96,7 @@ public class VisibleDelegate {
         if (hidden) {
             safeDispatchUserVisibleHint(false);
         } else {
-            enqueueDispatch(true);
+            enqueueDispatchVisible();
         }
     }
 
@@ -120,23 +120,29 @@ public class VisibleDelegate {
 
     private void safeDispatchUserVisibleHint(boolean visible) {
         if (mIsFirstVisible) {
-            enqueueDispatch(visible);
+            if (!visible) return;
+            enqueueDispatchVisible();
         } else {
             dispatchSupportVisible(visible);
         }
     }
 
-    private void enqueueDispatch(final boolean visible) {
+    private void enqueueDispatchVisible() {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (!mFragment.isAdded()) return;
-                dispatchSupportVisible(visible);
+                dispatchSupportVisible(true);
             }
         });
     }
 
     private void dispatchSupportVisible(boolean visible) {
+        if (mIsSupportVisible == visible) {
+            mNeedDispatch = true;
+            return;
+        }
+
         mIsSupportVisible = visible;
 
         if (!mNeedDispatch) {
