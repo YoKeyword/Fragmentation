@@ -46,6 +46,10 @@ public class SwipeBackFragment extends SupportFragment implements ISwipeBackFrag
         return mDelegate.getSwipeBackLayout();
     }
 
+    /**
+     * 是否可滑动
+     * @param enable
+     */
     public void setSwipeBackEnable(boolean enable) {
         mDelegate.setSwipeBackEnable(enable);
     }
