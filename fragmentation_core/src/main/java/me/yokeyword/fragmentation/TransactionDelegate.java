@@ -196,8 +196,10 @@ class TransactionDelegate {
         }
         if (from == null) {
             ft.replace(args.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
-            args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
-                    SupportFragmentDelegate.STATUS_ROOT_ANIM_ENABLE : SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
+            if (!addMode) {
+                args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
+                        SupportFragmentDelegate.STATUS_ROOT_ANIM_ENABLE : SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
+            }
         } else {
             if (addMode) {
                 ft.add(from.getSupportDelegate().mContainerId, toF, toFragmentTag);

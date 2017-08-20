@@ -131,13 +131,14 @@ public class VisibleDelegate {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                if (!mFragment.isAdded()) return;
                 dispatchSupportVisible(true);
             }
         });
     }
 
     private void dispatchSupportVisible(boolean visible) {
+        if (!mFragment.isAdded()) return;
+
         if (mIsSupportVisible == visible) {
             mNeedDispatch = true;
             return;
