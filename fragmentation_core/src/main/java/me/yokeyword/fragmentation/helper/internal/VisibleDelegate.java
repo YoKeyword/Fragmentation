@@ -93,6 +93,11 @@ public class VisibleDelegate {
     }
 
     public void onHiddenChanged(boolean hidden) {
+        if (!hidden && !mFragment.isResumed()) {
+            //if fragment is shown but not resumed, ignore...
+            mInvisibleWhenLeave = false;
+            return;
+        }
         if (hidden) {
             safeDispatchUserVisibleHint(false);
         } else {
