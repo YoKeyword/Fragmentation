@@ -142,8 +142,6 @@ public class VisibleDelegate {
     }
 
     private void dispatchSupportVisible(boolean visible) {
-        if (!mFragment.isAdded()) return;
-
         if (mIsSupportVisible == visible) {
             mNeedDispatch = true;
             return;
@@ -154,6 +152,7 @@ public class VisibleDelegate {
         if (!mNeedDispatch) {
             mNeedDispatch = true;
         } else {
+            if (!mFragment.isAdded()) return;
             FragmentManager fragmentManager = mFragment.getChildFragmentManager();
             if (fragmentManager != null) {
                 List<Fragment> childFragments = FragmentationHack.getActiveFragments(fragmentManager);
