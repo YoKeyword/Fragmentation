@@ -50,15 +50,15 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat-v7包是必须的
-compile 'me.yokeyword:fragmentation:1.1.2'
+compile 'me.yokeyword:fragmentation:1.1.3'
 
 // 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
-// compile 'me.yokeyword:fragmentation-core:1.1.2'
+// compile 'me.yokeyword:fragmentation-core:1.1.3'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentation:1.1.2'
+compile 'me.yokeyword:fragmentation:1.1.3'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentation-swipeback:1.1.2'
+compile 'me.yokeyword:fragmentation-swipeback:1.1.3'
 ````
 
 **2. Activity继承SupportActivity：**
@@ -103,15 +103,6 @@ public class HomeFragment extends SupportFragment {
 ````
 
 ## [进一步使用、ChangeLog，查看wiki](https://github.com/YoKeyword/Fragmentation/wiki)
-
-
-## 混淆规则
-
-v1.0.4及以下，需要添加混淆规则，v1.0.4+ 可不添加
-
-````xml
--keep class * extends android.support.v4.app.FragmentManager{ *; }
-````
 
 ## LICENSE
 ````
