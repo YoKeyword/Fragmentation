@@ -263,7 +263,7 @@ public class SupportActivityDelegate {
      * 如果你想在出栈后, 立刻进行FragmentTransaction操作，请使用该方法
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable) {
-        popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, 0);
+        popTo(targetFragmentClass, includeTargetFragment, afterPopTransactionRunnable, TransactionDelegate.DEFAULT_POPTO_ANIM);
     }
 
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment, Runnable afterPopTransactionRunnable, int popAnim) {

@@ -28,6 +28,8 @@ import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
  * Created by YoKeyword on 16/1/22.
  */
 class TransactionDelegate {
+    static final int DEFAULT_POPTO_ANIM = Integer.MAX_VALUE;
+
     private static final String TAG = "Fragmentation";
 
     static final String FRAGMENTATION_ARG_RESULT_RECORD = "fragment_arg_result_record";
@@ -461,13 +463,16 @@ class TransactionDelegate {
         ISupportFragment fromFragment = getTopFragment(fragmentManager);
         Animation popAnimation;
 
-        if (afterPopTransactionRunnable == null && popAnim == 0) {
+        if (afterPopTransactionRunnable == null && popAnim == TransactionDelegate.DEFAULT_POPTO_ANIM) {
             popAnimation = fromFragment.getSupportDelegate().mAnimHelper.exitAnim;
         } else {
-            if (popAnim == 0) {
+            if (popAnim == TransactionDelegate.DEFAULT_POPTO_ANIM) {
                 popAnimation = new Animation() {
                 };
                 popAnimation.setDuration(fromFragment.getSupportDelegate().mAnimHelper.exitAnim.getDuration());
+            } else if (popAnim == 0) {
+                popAnimation = new Animation() {
+                };
             } else {
                 popAnimation = AnimationUtils.loadAnimation(mActivity, popAnim);
             }

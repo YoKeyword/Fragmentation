@@ -182,7 +182,7 @@ public abstract class ExtraTransaction {
 
         @Override
         public void popTo(String targetFragmentTag, boolean includeTargetFragment) {
-            popTo(targetFragmentTag, includeTargetFragment, null, 0);
+            popTo(targetFragmentTag, includeTargetFragment, null, TransactionDelegate.DEFAULT_POPTO_ANIM);
         }
 
         @Override
@@ -192,7 +192,7 @@ public abstract class ExtraTransaction {
 
         @Override
         public void popToChild(String targetFragmentTag, boolean includeTargetFragment) {
-            popToChild(targetFragmentTag, includeTargetFragment, null, 0);
+            popToChild(targetFragmentTag, includeTargetFragment, null, TransactionDelegate.DEFAULT_POPTO_ANIM);
         }
 
         @Override
