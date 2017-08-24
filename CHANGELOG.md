@@ -20,8 +20,6 @@
 
 9. Further compatible with multi-touch, high-frequency transactions, optimize the problem of excessive drawing
 
-> Note: After 1.0, use `onViewCreated()`,`onActivityCreated()` to manage `loadRootFragment/loadX` transactions instead of  using `onCreateView()`
-
 ## 0.10.0
 
 1. Add a globally configurable `Fragmentation Builder`
