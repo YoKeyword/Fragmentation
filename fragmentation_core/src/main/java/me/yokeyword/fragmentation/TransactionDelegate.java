@@ -199,6 +199,7 @@ class TransactionDelegate {
         if (from == null) {
             ft.replace(args.getInt(FRAGMENTATION_ARG_CONTAINER), toF, toFragmentTag);
             if (!addMode) {
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 args.putInt(FRAGMENTATION_ARG_ROOT_STATUS, allowRootFragmentAnim ?
                         SupportFragmentDelegate.STATUS_ROOT_ANIM_ENABLE : SupportFragmentDelegate.STATUS_ROOT_ANIM_DISABLE);
             }
