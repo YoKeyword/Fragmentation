@@ -18,7 +18,6 @@ import java.util.List;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.PagerAdapter;
-import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_wechat.listener.OnItemClickListener;
 import me.yokeyword.sample.demo_wechat.ui.fragment.MainFragment;
@@ -81,8 +80,8 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
         mAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(int position, View view, RecyclerView.ViewHolder holder) {
-                // 通知MainActivity跳转至CycleFragment
-                EventBus.getDefault().post(new StartBrotherEvent(NewFeatureFragment.newInstance()));
+                // 通知MainFragment跳转至NewFeatureFragment
+                ((MainFragment) getParentFragment()).startBrotherFragment(NewFeatureFragment.newInstance());
             }
         });
 

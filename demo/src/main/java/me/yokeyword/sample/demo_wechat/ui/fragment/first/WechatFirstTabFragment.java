@@ -22,7 +22,6 @@ import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.ChatAdapter;
 import me.yokeyword.sample.demo_wechat.base.BaseMainFragment;
 import me.yokeyword.sample.demo_wechat.entity.Chat;
-import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_wechat.listener.OnItemClickListener;
 import me.yokeyword.sample.demo_wechat.ui.fragment.MainFragment;
@@ -102,11 +101,8 @@ public class WechatFirstTabFragment extends BaseMainFragment implements SwipeRef
             public void onItemClick(int position, View view, RecyclerView.ViewHolder vh) {
                 // 因为启动的MsgFragment是MainFragment的兄弟Fragment,所以需要MainFragment.start()
 
-                // 使用EventBus通知父MainFragment处理跳转(接耦),
-                EventBus.getDefault().post(new StartBrotherEvent(MsgFragment.newInstance(mAdapter.getMsg(position))));
-
                 // 也可以像使用getParentFragment()的方式,拿到父Fragment来操作
-//              ((MainFragment) getParentFragment()).start(MsgFragment.newInstance(mAdapter.getMsg(position)));
+              ((MainFragment) getParentFragment()).startBrotherFragment(MsgFragment.newInstance(mAdapter.getMsg(position)));
             }
         });
 

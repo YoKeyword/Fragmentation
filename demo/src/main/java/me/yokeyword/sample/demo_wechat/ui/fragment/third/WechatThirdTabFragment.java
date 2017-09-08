@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +16,8 @@ import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.HomeAdapter;
 import me.yokeyword.sample.demo_wechat.base.BaseMainFragment;
 import me.yokeyword.sample.demo_wechat.entity.Article;
-import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.listener.OnItemClickListener;
+import me.yokeyword.sample.demo_wechat.ui.fragment.MainFragment;
 
 /**
  * Created by YoKeyword on 16/6/30.
@@ -70,7 +68,7 @@ public class WechatThirdTabFragment extends BaseMainFragment {
         mAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(int position, View view, RecyclerView.ViewHolder vh) {
-                EventBus.getDefault().post(new StartBrotherEvent(DetailFragment.newInstance(mAdapter.getItem(position).getTitle())));
+                ((MainFragment) getParentFragment()).startBrotherFragment(DetailFragment.newInstance(mAdapter.getItem(position).getTitle()));
             }
         });
 

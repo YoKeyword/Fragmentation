@@ -7,11 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
-import me.yokeyword.sample.demo_wechat.event.StartBrotherEvent;
 import me.yokeyword.sample.demo_wechat.event.TabSelectedEvent;
 import me.yokeyword.sample.demo_wechat.ui.fragment.first.WechatFirstTabFragment;
 import me.yokeyword.sample.demo_wechat.ui.fragment.second.WechatSecondTabFragment;
@@ -75,7 +73,6 @@ public class MainFragment extends SupportFragment {
     }
 
     private void initView(View view) {
-        EventBus.getDefault().register(this);
         mBottomBar = (BottomBar) view.findViewById(R.id.bottomBar);
 
         mBottomBar
@@ -124,14 +121,7 @@ public class MainFragment extends SupportFragment {
     /**
      * start other BrotherFragment
      */
-    @Subscribe
-    public void startBrother(StartBrotherEvent event) {
-        start(event.targetFragment);
-    }
-
-    @Override
-    public void onDestroyView() {
-        EventBus.getDefault().unregister(this);
-        super.onDestroyView();
+    public void startBrotherFragment(SupportFragment targetFragment) {
+        start(targetFragment);
     }
 }
