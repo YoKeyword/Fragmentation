@@ -81,7 +81,7 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
             @Override
             public void onItemClick(int position, View view, RecyclerView.ViewHolder holder) {
                 // 通知MainFragment跳转至NewFeatureFragment
-                ((MainFragment) getParentFragment()).startBrotherFragment(NewFeatureFragment.newInstance());
+                ((MainFragment) getParentFragment().getParentFragment()).startBrotherFragment(NewFeatureFragment.newInstance());
             }
         });
 
