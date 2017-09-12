@@ -46,6 +46,7 @@ class TransactionDelegate {
     static final int TYPE_ADD_WITH_POP = 1;
     static final int TYPE_ADD_RESULT = 2;
     static final int TYPE_ADD_WITHOUT_HIDE = 3;
+    static final int TYPE_ADD_RESULT_WITHOUT_HIDE = 4;
     static final int TYPE_REPLACE = 10;
     static final int TYPE_REPLACE_DONT_BACK = 14;
 
@@ -131,7 +132,7 @@ class TransactionDelegate {
             }
         }
 
-        if (type == TYPE_ADD_RESULT) {
+        if (type == TYPE_ADD_RESULT || type == TYPE_ADD_RESULT_WITHOUT_HIDE) {
             saveRequestCode((Fragment) to, requestCode);
         }
 

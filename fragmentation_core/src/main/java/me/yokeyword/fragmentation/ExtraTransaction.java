@@ -236,7 +236,7 @@ public abstract class ExtraTransaction {
         @Override
         public void startForResultDontHideSelf(ISupportFragment toFragment, int requestCode) {
             toFragment.getSupportDelegate().mTransactionRecord = mRecord;
-            mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, requestCode, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
+            mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, requestCode, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_RESULT_WITHOUT_HIDE);
         }
 
         @Override
