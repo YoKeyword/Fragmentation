@@ -136,7 +136,7 @@ public class SupportFragmentDelegate {
             }
 
             if (!enter) {
-                return mAnimHelper.getViewPagerChildFragmentAnimFixed(mFragment);
+                return mAnimHelper.compatChildFragmentExitAnim(mFragment);
             }
 
             return null;

@@ -48,9 +48,9 @@ public final class AnimatorHelper {
     }
 
     @Nullable
-    public Animation getViewPagerChildFragmentAnimFixed(Fragment fragment) {
-        if (fragment.getTag() != null && fragment.getTag().startsWith("android:switcher:")
-                && fragment.getUserVisibleHint()) {
+    public Animation compatChildFragmentExitAnim(Fragment fragment) {
+        if ((fragment.getTag() != null && fragment.getTag().startsWith("android:switcher:") && fragment.getUserVisibleHint()) ||
+                (fragment.getParentFragment() != null && fragment.getParentFragment().isRemoving() && !fragment.isHidden())) {
             Animation animation = new Animation() {
             };
             animation.setDuration(exitAnim.getDuration());
