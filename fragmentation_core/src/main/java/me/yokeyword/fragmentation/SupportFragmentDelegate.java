@@ -122,8 +122,8 @@ public class SupportFragmentDelegate {
                     enterAnim = mAnimHelper.getNoneAnim();
                 } else {
                     enterAnim = mAnimHelper.enterAnim;
+                    fixAnimationListener(enterAnim);
                 }
-                fixAnimationListener(enterAnim);
                 return enterAnim;
             } else {
                 return mAnimHelper.popExitAnim;
@@ -160,7 +160,7 @@ public class SupportFragmentDelegate {
         }
 
         if (savedInstanceState != null
-                || mRootStatus != STATUS_UN_ROOT
+                || mRootStatus == STATUS_ROOT_ANIM_DISABLE
                 || (mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:"))
                 || (mReplaceMode && !mFirstCreateView)) {
             notifyEnterAnimEnd();
