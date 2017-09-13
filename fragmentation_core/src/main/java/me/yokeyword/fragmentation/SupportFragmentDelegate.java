@@ -160,7 +160,6 @@ public class SupportFragmentDelegate {
         }
 
         if (savedInstanceState != null
-                || mRootStatus != STATUS_UN_ROOT
                 || (mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:"))
                 || (mReplaceMode && !mFirstCreateView)) {
             notifyEnterAnimEnd();
