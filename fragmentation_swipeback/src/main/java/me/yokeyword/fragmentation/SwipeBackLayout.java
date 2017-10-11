@@ -509,15 +509,21 @@ public class SwipeBackLayout extends FrameLayout {
         if (!mEnable) return super.onInterceptTouchEvent(ev);
         try {
             return mHelper.shouldInterceptTouchEvent(ev);
-        } catch (Exception e) {
-            return false;
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
+        return false;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mEnable) return super.onTouchEvent(event);
-        mHelper.processTouchEvent(event);
-        return true;
+    	if (!mEnable) return super.onTouchEvent(event);
+        try {
+            mHelper.processTouchEvent(event);
+            return true;
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+        return false;
     }
 }
