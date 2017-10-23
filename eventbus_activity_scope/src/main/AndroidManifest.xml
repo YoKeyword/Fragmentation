@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="me.yokeyword.eventbusactivityscope">
+
+    <application>
+        <provider
+            android:name="me.yokeyword.eventbusactivityscope.RuntimeTrojanProvider"
+            android:authorities="me.yokeyword.eventbusactivityscope.trojan"
+            android:exported="false"
+            android:multiprocess="true"/>
+    </application>
+
+</manifest>
