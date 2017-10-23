@@ -41,7 +41,9 @@ A powerful library that manage Fragment for Android!
 
 6、**提供 Fragment转场动画 系列解决方案，动态更换动画**
 
-7、**支持SwipeBack滑动边缘退出(需要使用Fragment｀ation_SwipeBack库,详情[README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
+7、**提供Activity作用域的EventBus辅助类，Fragment通信更简单、独立(需要使用[EventBusActivityScope库](https://github.com/YoKeyword/Fragmentation/blob/master/eventbus_activity_scope/README.md))**
+
+8、**支持SwipeBack滑动边缘退出(需要使用[Fragmentation_SwipeBack库](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>     <img src="/gif/SwipeBack.png" width="150px"/>
 

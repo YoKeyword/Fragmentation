@@ -35,7 +35,9 @@ The first demo shows the basic usage of the library. The second one shows the wa
 
 **6. Easily manage Fragment transition animations**
 
-**7. Support SwipeBack to pop(Fragmentation_SwipeBack module [README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
+**7. To simplify the communication between Fragment([EventBusActivityScope module](https://github.com/YoKeyword/Fragmentation/blob/master/eventbus_activity_scope/README.md))**
+
+**8. Support SwipeBack to pop(Fragmentation_SwipeBack module [README](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md))**
 
 <img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>       <img src="/gif/SwipeBack.png" width="150px"/>
 
