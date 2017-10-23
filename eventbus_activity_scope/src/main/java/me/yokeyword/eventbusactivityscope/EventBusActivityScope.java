@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -24,8 +25,7 @@ public class EventBusActivityScope {
     private static AtomicBoolean sInitialized = new AtomicBoolean(false);
     private static volatile EventBus sInvalidEventBus;
 
-    private static final ArrayList<Activity> sActivityList = new ArrayList<>();
-    private static final Map<Activity, EventBus> sActivityEventBusScopePool = new ConcurrentHashMap<>();
+    private static final Map<Activity, EventBus> sActivityEventBusScopePool = new HashMap<>();
 
     static void init(Context context) {
         if (sInitialized.getAndSet(true)) {
@@ -34,10 +34,12 @@ public class EventBusActivityScope {
 
         ((Application) context.getApplicationContext())
                 .registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+                    private Handler mainHandler = new Handler(Looper.getMainLooper());
+
                     @Override
                     public void onActivityCreated(Activity activity, Bundle bundle) {
-                        synchronized (sActivityList) {
-                            sActivityList.add(activity);
+                        synchronized (sActivityEventBusScopePool) {
+                            sActivityEventBusScopePool.put(activity, null);
                         }
                     }
 
@@ -62,14 +64,17 @@ public class EventBusActivityScope {
                     }
 
                     @Override
-                    public void onActivityDestroyed(Activity activity) {
-                        synchronized (sActivityList) {
-                            sActivityList.remove(activity);
-                        }
+                    public void onActivityDestroyed(final Activity activity) {
+                        if (!sActivityEventBusScopePool.containsKey(activity)) return;
 
-                        synchronized (sActivityEventBusScopePool) {
-                            sActivityEventBusScopePool.remove(activity);
-                        }
+                        mainHandler.post(new Runnable() { // Make sure Fragment's onDestroy() has been called.
+                            @Override
+                            public void run() {
+                                synchronized (sActivityEventBusScopePool) {
+                                    sActivityEventBusScopePool.remove(activity);
+                                }
+                            }
+                        });
                     }
                 });
     }
@@ -83,25 +88,19 @@ public class EventBusActivityScope {
             return invalidEventBus();
         }
 
-        synchronized (sActivityList) {
-            if (!sActivityList.contains(activity)) {
+        synchronized (sActivityEventBusScopePool) {
+            if (!sActivityEventBusScopePool.containsKey(activity)) {
                 Log.e(TAG, "Can't find the Activity, it has been removed!");
                 return invalidEventBus();
             }
-        }
 
-        EventBus eventBus = sActivityEventBusScopePool.get(activity);
-
-        if (eventBus == null) {
-            synchronized (sActivityEventBusScopePool) {
-                if (sActivityEventBusScopePool.get(activity) == null) {
-                    eventBus = new EventBus();
-                    sActivityEventBusScopePool.put(activity, eventBus);
-                }
+            EventBus eventBus = sActivityEventBusScopePool.get(activity);
+            if (eventBus == null) {
+                eventBus = new EventBus();
+                sActivityEventBusScopePool.put(activity, eventBus);
             }
+            return eventBus;
         }
-
-        return eventBus;
     }
 
     private static EventBus invalidEventBus() {
