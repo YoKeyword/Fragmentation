@@ -9,12 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.eventbusactivityscope.EventBusActivityScope;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.MainActivity;
@@ -49,7 +49,7 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.zhihu_fragment_second_pager_first, container, false);
-        EventBus.getDefault().register(this);
+        EventBusActivityScope.getDefault(_mActivity).register(this);
         initView(view);
         return view;
     }
@@ -133,7 +133,7 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        EventBus.getDefault().unregister(this);
+        EventBusActivityScope.getDefault(_mActivity).unregister(this);
     }
 
 }

@@ -14,12 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.eventbusactivityscope.EventBusActivityScope;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_zhihu.MainActivity;
@@ -69,7 +69,7 @@ public class FirstHomeFragment extends SupportFragment implements SwipeRefreshLa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.zhihu_fragment_first_home, container, false);
-        EventBus.getDefault().register(this);
+        EventBusActivityScope.getDefault(_mActivity).register(this);
         initView(view);
         return view;
     }
@@ -182,6 +182,6 @@ public class FirstHomeFragment extends SupportFragment implements SwipeRefreshLa
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        EventBus.getDefault().unregister(this);
+        EventBusActivityScope.getDefault(_mActivity).unregister(this);
     }
 }

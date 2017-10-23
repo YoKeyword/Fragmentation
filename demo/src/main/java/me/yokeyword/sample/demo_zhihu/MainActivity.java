@@ -4,8 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
-import org.greenrobot.eventbus.EventBus;
-
+import me.yokeyword.eventbusactivityscope.EventBusActivityScope;
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
@@ -40,7 +39,6 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.zhihu_activity_main);
-//        EventBus.getDefault().register(this);
 
         SupportFragment firstFragment = findFragment(ZhihuFirstFragment.class);
         if (firstFragment == null) {
@@ -57,7 +55,7 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
         } else {
             // 这里库已经做了Fragment恢复,所有不需要额外的处理了, 不会出现重叠问题
 
-            // 这里我们需要拿到mFragments的引用,也可以通过getSupportFragmentManager.findFragmentByTag()自行进行判断查找(效率更高些),用下面的方法查找更方便些
+            // 这里我们需要拿到mFragments的引用
             mFragments[FIRST] = firstFragment;
             mFragments[SECOND] = findFragment(ZhihuSecondFragment.class);
             mFragments[THIRD] = findFragment(ZhihuThirdFragment.class);
@@ -110,7 +108,7 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
                 if (count == 1) {
                     // 在FirstPagerFragment中接收, 因为是嵌套的孙子Fragment 所以用EventBus比较方便
                     // 主要为了交互: 重选tab 如果列表不在顶部则移动到顶部,如果已经在顶部,则刷新
-                    EventBus.getDefault().post(new TabSelectedEvent(position));
+                    EventBusActivityScope.getDefault(MainActivity.this).post(new TabSelectedEvent(position));
                 }
             }
         });
@@ -141,9 +139,4 @@ public class MainActivity extends SupportActivity implements BaseMainFragment.On
 //            mBottomBar.show();
 //        }
 //    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        EventBus.getDefault().unregister(this);
-    }
 }

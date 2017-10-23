@@ -9,12 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.yokeyword.eventbusactivityscope.EventBusActivityScope;
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_wechat.adapter.PagerAdapter;
@@ -51,7 +51,7 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
     }
 
     private void initView(View view) {
-        EventBus.getDefault().register(this);
+        EventBusActivityScope.getDefault(_mActivity).register(this);
 
         mRecy = (RecyclerView) view.findViewById(R.id.recy);
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
@@ -126,6 +126,6 @@ public class FirstPagerFragment extends SupportFragment implements SwipeRefreshL
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        EventBus.getDefault().unregister(this);
+        EventBusActivityScope.getDefault(_mActivity).unregister(this);
     }
 }

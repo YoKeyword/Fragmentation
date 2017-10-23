@@ -69,6 +69,8 @@ public class WechatThirdTabFragment extends BaseMainFragment {
             @Override
             public void onItemClick(int position, View view, RecyclerView.ViewHolder vh) {
                 ((MainFragment) getParentFragment()).startBrotherFragment(DetailFragment.newInstance(mAdapter.getItem(position).getTitle()));
+                // 或者使用EventBus
+//                EventBusActivityScope.getDefault(_mActivity).post(new StartBrotherEvent(DetailFragment.newInstance(mAdapter.getItem(position).getTitle())));
             }
         });
 
