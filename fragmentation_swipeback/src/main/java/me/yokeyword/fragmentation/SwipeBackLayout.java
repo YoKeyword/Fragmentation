@@ -12,13 +12,16 @@ import android.support.v4.app.FragmentationHack;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +103,12 @@ public class SwipeBackLayout extends FrameLayout {
      */
     private List<OnSwipeListener> mListeners;
 
+    private Context mContext;
+
+    public enum EdgeLevel {
+        MAX, MIN, MED
+    }
+
     public SwipeBackLayout(Context context) {
         this(context, null);
     }
@@ -110,6 +119,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     public SwipeBackLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.mContext = context;
         init();
     }
 
@@ -358,6 +368,39 @@ public class SwipeBackLayout extends FrameLayout {
         mEnable = enable;
     }
 
+    public void setEdgeLevel(EdgeLevel edgeLevel) {
+        validateEdgeLevel(-1, edgeLevel);
+    }
+
+    public void setEdgeLevel(int widthPixel) {
+        validateEdgeLevel(widthPixel, null);
+    }
+
+    private void validateEdgeLevel(int widthPixel, EdgeLevel edgeLevel) {
+        try {
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            Field mEdgeSize = mHelper.getClass().getDeclaredField("mEdgeSize");
+            mEdgeSize.setAccessible(true);
+            if (widthPixel >= 0) {
+                mEdgeSize.setInt(mHelper, widthPixel);
+            } else {
+                if (edgeLevel == EdgeLevel.MAX) {
+                    mEdgeSize.setInt(mHelper, metrics.widthPixels);
+                } else if (edgeLevel == EdgeLevel.MED) {
+                    mEdgeSize.setInt(mHelper, metrics.widthPixels / 2);
+                } else {
+                    mEdgeSize.setInt(mHelper, ((int) (20 * metrics.density + 0.5f)));
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class ViewDragCallback extends ViewDragHelper.Callback {
 
         @Override
@@ -517,7 +560,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-    	if (!mEnable) return super.onTouchEvent(event);
+        if (!mEnable) return super.onTouchEvent(event);
         try {
             mHelper.processTouchEvent(event);
             return true;

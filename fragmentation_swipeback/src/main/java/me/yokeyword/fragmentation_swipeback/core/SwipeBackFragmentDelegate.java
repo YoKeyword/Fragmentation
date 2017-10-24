@@ -45,6 +45,14 @@ public class SwipeBackFragmentDelegate {
         return mSwipeBackLayout;
     }
 
+    public void setEdgeLevel(SwipeBackLayout.EdgeLevel edgeLevel) {
+        mSwipeBackLayout.setEdgeLevel(edgeLevel);
+    }
+
+    public void setEdgeLevel(int widthPixel) {
+        mSwipeBackLayout.setEdgeLevel(widthPixel);
+    }
+
     public void onHiddenChanged(boolean hidden) {
         if (hidden && mSwipeBackLayout != null) {
             mSwipeBackLayout.hiddenFragment();

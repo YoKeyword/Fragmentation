@@ -16,7 +16,7 @@ import me.yokeyword.fragmentation_swipeback.core.SwipeBackFragmentDelegate;
  * <p>
  * Created by YoKey on 16/4/19.
  */
-public class SwipeBackFragment extends SupportFragment implements ISwipeBackFragment{
+public class SwipeBackFragment extends SupportFragment implements ISwipeBackFragment {
     final SwipeBackFragmentDelegate mDelegate = new SwipeBackFragmentDelegate(this);
 
     @Override
@@ -48,10 +48,21 @@ public class SwipeBackFragment extends SupportFragment implements ISwipeBackFrag
 
     /**
      * 是否可滑动
+     *
      * @param enable
      */
     public void setSwipeBackEnable(boolean enable) {
         mDelegate.setSwipeBackEnable(enable);
+    }
+
+    @Override
+    public void setEdgeLevel(SwipeBackLayout.EdgeLevel edgeLevel) {
+        mDelegate.setEdgeLevel(edgeLevel);
+    }
+
+    @Override
+    public void setEdgeLevel(int widthPixel) {
+        mDelegate.setEdgeLevel(widthPixel);
     }
 
     /**

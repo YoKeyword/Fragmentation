@@ -44,6 +44,16 @@ public class SwipeBackActivity extends SupportActivity implements ISwipeBackActi
         mDelegate.setSwipeBackEnable(enable);
     }
 
+    @Override
+    public void setEdgeLevel(SwipeBackLayout.EdgeLevel edgeLevel) {
+        mDelegate.setEdgeLevel(edgeLevel);
+    }
+
+    @Override
+    public void setEdgeLevel(int widthPixel) {
+        mDelegate.setEdgeLevel(widthPixel);
+    }
+
     /**
      * 限制SwipeBack的条件,默认栈内Fragment数 <= 1时 , 优先滑动退出Activity , 而不是Fragment
      *

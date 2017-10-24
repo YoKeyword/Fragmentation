@@ -39,6 +39,14 @@ public class SwipeBackActivityDelegate {
         mSwipeBackLayout.setEnableGesture(enable);
     }
 
+    public void setEdgeLevel(SwipeBackLayout.EdgeLevel edgeLevel) {
+        mSwipeBackLayout.setEdgeLevel(edgeLevel);
+    }
+
+    public void setEdgeLevel(int widthPixel) {
+        mSwipeBackLayout.setEdgeLevel(widthPixel);
+    }
+
     /**
      * 限制SwipeBack的条件,默认栈内Fragment数 <= 1时 , 优先滑动退出Activity , 而不是Fragment
      *

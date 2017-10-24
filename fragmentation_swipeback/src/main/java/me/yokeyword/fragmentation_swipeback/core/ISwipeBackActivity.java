@@ -11,6 +11,10 @@ public interface ISwipeBackActivity {
 
     void setSwipeBackEnable(boolean enable);
 
+    void setEdgeLevel(SwipeBackLayout.EdgeLevel edgeLevel);
+
+    void setEdgeLevel(int widthPixel);
+
     /**
      * 限制SwipeBack的条件,默认栈内Fragment数 <= 1时 , 优先滑动退出Activity , 而不是Fragment
      *

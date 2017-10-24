@@ -17,6 +17,10 @@ public interface ISwipeBackFragment {
 
     void setSwipeBackEnable(boolean enable);
 
+    void setEdgeLevel(SwipeBackLayout.EdgeLevel edgeLevel);
+
+    void setEdgeLevel(int widthPixel);
+
     /**
      * Set the offset of the parallax slip.
      */
