@@ -354,7 +354,10 @@ public class SupportFragmentDelegate {
      * 隐藏软键盘
      */
     public void hideSoftInput() {
-        SupportHelper.hideSoftInput(mFragment.getView());
+        Activity activity = mFragment.getActivity();
+        if (activity == null) return;
+        View view = activity.getWindow().getDecorView();
+        SupportHelper.hideSoftInput(view);
     }
 
     /**
