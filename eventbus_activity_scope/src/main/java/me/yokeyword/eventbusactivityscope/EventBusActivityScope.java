@@ -10,8 +10,8 @@ import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -25,7 +25,7 @@ public class EventBusActivityScope {
     private static AtomicBoolean sInitialized = new AtomicBoolean(false);
     private static volatile EventBus sInvalidEventBus;
 
-    private static final Map<Activity, EventBus> sActivityEventBusScopePool = new HashMap<>();
+    private static final Map<Activity, LazyEventBusInstance> sActivityEventBusScopePool = new ConcurrentHashMap<>();
 
     static void init(Context context) {
         if (sInitialized.getAndSet(true)) {
@@ -38,9 +38,7 @@ public class EventBusActivityScope {
 
                     @Override
                     public void onActivityCreated(Activity activity, Bundle bundle) {
-                        synchronized (sActivityEventBusScopePool) {
-                            sActivityEventBusScopePool.put(activity, null);
-                        }
+                        sActivityEventBusScopePool.put(activity, new LazyEventBusInstance());
                     }
 
                     @Override
@@ -70,9 +68,7 @@ public class EventBusActivityScope {
                         mainHandler.post(new Runnable() { // Make sure Fragment's onDestroy() has been called.
                             @Override
                             public void run() {
-                                synchronized (sActivityEventBusScopePool) {
-                                    sActivityEventBusScopePool.remove(activity);
-                                }
+                                sActivityEventBusScopePool.remove(activity);
                             }
                         });
                     }
@@ -88,19 +84,14 @@ public class EventBusActivityScope {
             return invalidEventBus();
         }
 
-        synchronized (sActivityEventBusScopePool) {
-            if (!sActivityEventBusScopePool.containsKey(activity)) {
-                Log.e(TAG, "Can't find the Activity, it has been removed!");
-                return invalidEventBus();
-            }
+        LazyEventBusInstance lazyEventBusInstance = sActivityEventBusScopePool.get(activity);
 
-            EventBus eventBus = sActivityEventBusScopePool.get(activity);
-            if (eventBus == null) {
-                eventBus = new EventBus();
-                sActivityEventBusScopePool.put(activity, eventBus);
-            }
-            return eventBus;
+        if (lazyEventBusInstance == null) {
+            Log.e(TAG, "Can't find the Activity, it has been removed!");
+            return invalidEventBus();
         }
+
+        return lazyEventBusInstance.getInstance();
     }
 
     private static EventBus invalidEventBus() {
@@ -113,5 +104,20 @@ public class EventBusActivityScope {
             }
         }
         return sInvalidEventBus;
+    }
+
+    static class LazyEventBusInstance {
+        private volatile EventBus eventBus;
+
+        EventBus getInstance() {
+            if (eventBus == null) {
+                synchronized (this) {
+                    if (eventBus == null) {
+                        eventBus = new EventBus();
+                    }
+                }
+            }
+            return eventBus;
+        }
     }
 }
