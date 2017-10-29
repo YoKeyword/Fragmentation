@@ -6,7 +6,7 @@ To simplify the communication between Fragments. / Activity作用域的EventBus�
 1、build.gradle：
 
 ````gradle
-compile 'me.yokeyword:eventbus-activity-scope:1.0.1'
+compile 'me.yokeyword:eventbus-activity-scope:1.0.2'
 // Your EventBus's version
 compile 'org.greenrobot:eventbus:{version}'
 ````

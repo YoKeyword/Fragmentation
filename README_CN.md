@@ -63,7 +63,7 @@ compile 'me.yokeyword:fragmentation:1.1.7'
 compile 'me.yokeyword:fragmentation-swipeback:1.1.7'
 
 // Activity作用域的EventBus，更安全，可有效避免after onSavenInstanceState()异常
-compile 'me.yokeyword:eventbus-activity-scope:1.0.1'
+compile 'me.yokeyword:eventbus-activity-scope:1.0.2'
 // Your EventBus's version
 compile 'org.greenrobot:eventbus:{version}'
 ````
