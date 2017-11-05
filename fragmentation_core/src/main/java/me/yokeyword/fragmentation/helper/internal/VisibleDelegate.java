@@ -152,7 +152,7 @@ public class VisibleDelegate {
         if (!mNeedDispatch) {
             mNeedDispatch = true;
         } else {
-            if (!mFragment.isAdded()) return;
+            if (checkAddState()) return;
             FragmentManager fragmentManager = mFragment.getChildFragmentManager();
             if (fragmentManager != null) {
                 List<Fragment> childFragments = FragmentationHack.getActiveFragments(fragmentManager);
@@ -167,7 +167,7 @@ public class VisibleDelegate {
         }
 
         if (visible) {
-            if (!mFragment.isAdded()) return;
+            if (checkAddState()) return;
             mSupportF.onSupportVisible();
 
             if (mIsFirstVisible) {
@@ -177,6 +177,14 @@ public class VisibleDelegate {
         } else {
             mSupportF.onSupportInvisible();
         }
+    }
+
+    private boolean checkAddState() {
+        if (!mFragment.isAdded()) {
+            mIsSupportVisible = !mIsSupportVisible;
+            return true;
+        }
+        return false;
     }
 
     private boolean isFragmentVisible(Fragment fragment) {
