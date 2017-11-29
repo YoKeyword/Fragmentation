@@ -256,15 +256,26 @@ class TransactionDelegate {
 
         mockStartWithPopAnim(from, to, from.getSupportDelegate().mAnimHelper.popExitAnim);
         fragmentManager.popBackStackImmediate();
+
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                FragmentationHack.reorderIndices(fragmentManager);
-                if (preFragment != null && preFragment.getSupportDelegate().mContainerId == fromContainerId) {
-                    preFragment.getSupportDelegate().start(to);
-                } else {
-                    dispatchStartTransaction(fragmentManager, from, to, 0, ISupportFragment.STANDARD, TYPE_ADD);
-                }
+                /**
+                 * This `post` is for compatibility with v4-27.0.0
+                 * @see android.support.v4.app.FragmentManagerImpl#animateRemoveFragment
+                 */
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        fragmentManager.executePendingTransactions();
+                        FragmentationHack.reorderIndices(fragmentManager);
+                        if (preFragment != null && preFragment.getSupportDelegate().mContainerId == fromContainerId) {
+                            preFragment.getSupportDelegate().start(to);
+                        } else {
+                            dispatchStartTransaction(fragmentManager, from, to, 0, ISupportFragment.STANDARD, TYPE_ADD);
+                        }
+                    }
+                });
             }
         });
     }
@@ -326,7 +337,7 @@ class TransactionDelegate {
                 return true;
             }
         } else if (launchMode == ISupportFragment.SINGLETASK) {
-            popTo(toFragmentTag, false, null, fragmentManager, 0);
+            popTo(toFragmentTag, false, null, fragmentManager, DEFAULT_POPTO_ANIM);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -465,10 +476,10 @@ class TransactionDelegate {
         ISupportFragment fromFragment = getTopFragment(fragmentManager);
         Animation popAnimation;
 
-        if (afterPopTransactionRunnable == null && popAnim == TransactionDelegate.DEFAULT_POPTO_ANIM) {
+        if (afterPopTransactionRunnable == null && popAnim == DEFAULT_POPTO_ANIM) {
             popAnimation = fromFragment.getSupportDelegate().mAnimHelper.exitAnim;
         } else {
-            if (popAnim == TransactionDelegate.DEFAULT_POPTO_ANIM) {
+            if (popAnim == DEFAULT_POPTO_ANIM) {
                 popAnimation = new Animation() {
                 };
                 popAnimation.setDuration(fromFragment.getSupportDelegate().mAnimHelper.exitAnim.getDuration());
@@ -491,9 +502,18 @@ class TransactionDelegate {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            mPopToTempFragmentManager = finalFragmentManager;
-                            afterPopTransactionRunnable.run();
-                            mPopToTempFragmentManager = null;
+                            /**
+                             * This `post` is for compatibility with v4-27.0.0
+                             * @see android.support.v4.app.FragmentManagerImpl#animateRemoveFragment
+                             */
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mPopToTempFragmentManager = finalFragmentManager;
+                                    afterPopTransactionRunnable.run();
+                                    mPopToTempFragmentManager = null;
+                                }
+                            });
                         }
                     });
                 }
@@ -606,6 +626,7 @@ class TransactionDelegate {
                 delay = duration + BUFFER_TIME;
             } else {
                 duration = duration + BUFFER_TIME;
+                delay = duration;
             }
             exitAnim.setDuration(duration);
         }

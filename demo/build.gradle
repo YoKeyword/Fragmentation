@@ -57,10 +57,10 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile "com.android.support:appcompat-v7:$rootProject.v4Version"
+    compile "com.android.support:design:$rootProject.v4Version"
+    compile "com.android.support:cardview-v7:$rootProject.v4Version"
+    compile "com.android.support:recyclerview-v7:$rootProject.v4Version"
     compile project(':fragmentation')
     compile project(':fragmentation_swipeback')
     // EventBus
