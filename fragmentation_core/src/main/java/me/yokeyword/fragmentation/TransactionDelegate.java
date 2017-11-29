@@ -337,7 +337,7 @@ class TransactionDelegate {
                 return true;
             }
         } else if (launchMode == ISupportFragment.SINGLETASK) {
-            popTo(toFragmentTag, false, null, fragmentManager, 0);
+            popTo(toFragmentTag, false, null, fragmentManager, DEFAULT_POPTO_ANIM);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -476,10 +476,10 @@ class TransactionDelegate {
         ISupportFragment fromFragment = getTopFragment(fragmentManager);
         Animation popAnimation;
 
-        if (afterPopTransactionRunnable == null && popAnim == TransactionDelegate.DEFAULT_POPTO_ANIM) {
+        if (afterPopTransactionRunnable == null && popAnim == DEFAULT_POPTO_ANIM) {
             popAnimation = fromFragment.getSupportDelegate().mAnimHelper.exitAnim;
         } else {
-            if (popAnim == TransactionDelegate.DEFAULT_POPTO_ANIM) {
+            if (popAnim == DEFAULT_POPTO_ANIM) {
                 popAnimation = new Animation() {
                 };
                 popAnimation.setDuration(fromFragment.getSupportDelegate().mAnimHelper.exitAnim.getDuration());
