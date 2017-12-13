@@ -41,14 +41,11 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        if (variant.buildType.name == 'release') {
-            variant.outputs.each { output ->
-                def outputFile = output.outputFile
-                if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                    def fileName = "fragmentation.apk"
-                    output.outputFile = new File(outputFile.parent, fileName)
-                }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            if (variant.buildType.name == 'release') {
+                outputFileName = "fragmentation.apk"
             }
         }
     }
