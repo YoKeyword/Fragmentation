@@ -21,7 +21,7 @@ A powerful library that manage Fragment for Android!
 # Demo演示：
 均为单Activity + 多Fragment，第一个为简单流式demo，第二个为仿微信交互的demo(全页面支持滑动退出)，第三个为仿知乎交互的复杂嵌套demo
 
-[下载APK](https://www.pgyer.com/fragmentation)
+## [下载APK](https://www.pgyer.com/fragmentation)
 
 
 <img src="/gif/demo1.gif" width="280px"/> <img src="/gif/demo2.gif" width="280px"/>
@@ -29,15 +29,15 @@ A powerful library that manage Fragment for Android!
 
 # 特性
 
-1、**可以快速开发出各种嵌套设计的Fragment App**
+1、**快速开发出各种嵌套设计的Fragment App**
 
-2、**悬浮球／摇一摇实时查看Fragment的栈视图Dialog，降低开发难度**
+2、**悬浮球／摇一摇实时查看Fragment的栈视图，降低开发难度**
 
-3、**增加启动模式、startForResult等类似Activity方法**
+3、**增加启动模式、startForResult等类Activity方法**
 
-4、**类似Android事件分发机制的Fragment回退方法：onBackPressedSupport()，轻松为每个Fragment实现Back按键事件**
+4、**类Android事件分发机制的Fragment BACK键机制：onBackPressedSupport()**
 
-5、**提供onSupportVisible()等生命周期方法，简化嵌套Fragment的开发过程； 提供统一的onLazyInitView()懒加载方法**
+5、**提供onSupportVisible()、懒加载onLazyInitView()等生命周期方法，简化嵌套Fragment的开发过程**
 
 6、**提供 Fragment转场动画 系列解决方案，动态更换动画**
 
@@ -68,7 +68,7 @@ compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
 compile 'org.greenrobot:eventbus:{version}'
 ````
 
-**2. Activity继承SupportActivity：**
+**2. Activity `extends` SupportActivity或者 `implements` ISupportActivity：(实现方式可参考[MySupportActivity](https://github.com/YoKeyword/Fragmentation/blob/master/demo/src/main/java/me/yokeyword/sample/demo_flow/base/MySupportActivity.java))**
 ````java
 // v1.0.0开始，不强制继承SupportActivity，可使用接口＋委托形式来实现自己的SupportActivity
 public class MainActivity extends SupportActivity {
@@ -91,7 +91,7 @@ public class MainActivity extends SupportActivity {
     }
 ````
 
-**3. Fragment继承SupportFragment：**
+**3. Fragment `extends` SupportFragment或者 `implements` ISupportFragment：(实现方式可参考[MySupportFragment](https://github.com/YoKeyword/Fragmentation/blob/master/demo/src/main/java/me/yokeyword/sample/demo_flow/base/MySupportFragment.java))：**
 ````java
 // v1.0.0开始，不强制继承SupportFragment，可使用接口＋委托形式来实现自己的SupportFragment
 public class HomeFragment extends SupportFragment {

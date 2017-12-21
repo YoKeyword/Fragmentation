@@ -16,7 +16,7 @@ It is designed for "Single Activity + Multi-Fragments" and "Multi-FragmentActivi
 ## Demo
 The first demo shows the basic usage of the library. The second one shows the way to implement an app which is similar to Instagram. Complicated nested fragments' usage demo are also showed.
 
-[Download APK](https://www.pgyer.com/fragmentation)
+## [Download APK](https://www.pgyer.com/fragmentation)
 
 <img src="/gif/demo1.gif" width="280px"/> <img src="/gif/demo2.gif" width="280px"/>
  <img src="/gif/demo3.gif" width="280px"/>
@@ -62,7 +62,7 @@ compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
 compile 'org.greenrobot:eventbus:{version}'
 ````
 
-**2、 Activity extends SupportActivity**
+**2. Activity `extends` SupportActivity or `implements` ISupportActivity：(refer to [MySupportActivity](https://github.com/YoKeyword/Fragmentation/blob/master/demo/src/main/java/me/yokeyword/sample/demo_flow/base/MySupportActivity.java))**
 ````java
 // since v1.0.0, forced extends of SupportActivity is not required, you can use interface + delegate to implement your own SupportActivity 
 public class MainActivity extends SupportActivity {
@@ -85,7 +85,7 @@ public class MainActivity extends SupportActivity {
     }
 ````
 
-**3、 Fragment extends SupportFragment**
+**3. Fragment `extends` SupportFragment or `implements` ISupportFragment：(refer to [MySupportFragment](https://github.com/YoKeyword/Fragmentation/blob/master/demo/src/main/java/me/yokeyword/sample/demo_flow/base/MySupportFragment.java))：**
 ````java
 // since v1.0.0, forced extends of SupportActivity is not required, you can use interface + delegate to implement your own SupportActivity
 public class HomeFragment extends SupportFragment {
