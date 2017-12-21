@@ -30,4 +30,4 @@ deploy:
     tags: true
 
 after_deploy:
-- curl -F "file=@./demo/build/outputs/apk/fragmentation.apk" -F "uKey=$UKEY" -F "_api_key=$API_KEY" https://qiniu-storage.pgyer.com/apiv1/app/upload
+- curl -F "file=@./demo/build/outputs/apk/release/fragmentation.apk" -F "uKey=$UKEY" -F "_api_key=$API_KEY" https://qiniu-storage.pgyer.com/apiv1/app/upload
