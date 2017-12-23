@@ -171,7 +171,7 @@ class TransactionDelegate {
     private void start(FragmentManager fragmentManager, final ISupportFragment from, ISupportFragment to, String toFragmentTag,
                        boolean dontAddToBackStack, ArrayList<TransactionRecord.SharedElement> sharedElementList, boolean allowRootFragmentAnim, int type) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        boolean addMode = (type == TYPE_ADD || type == TYPE_ADD_RESULT || type == TYPE_ADD_WITHOUT_HIDE);
+        boolean addMode = (type == TYPE_ADD || type == TYPE_ADD_RESULT || type == TYPE_ADD_WITHOUT_HIDE || type == TYPE_ADD_RESULT_WITHOUT_HIDE);
         Fragment fromF = (Fragment) from;
         Fragment toF = (Fragment) to;
         Bundle args = getArguments(toF);
@@ -207,7 +207,7 @@ class TransactionDelegate {
         } else {
             if (addMode) {
                 ft.add(from.getSupportDelegate().mContainerId, toF, toFragmentTag);
-                if (type != TYPE_ADD_WITHOUT_HIDE) {
+                if (type != TYPE_ADD_WITHOUT_HIDE && type != TYPE_ADD_RESULT_WITHOUT_HIDE) {
                     ft.hide(fromF);
                 }
             } else {
