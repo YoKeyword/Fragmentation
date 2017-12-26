@@ -474,7 +474,6 @@ public class SupportFragmentDelegate {
      * @param includeTargetFragment 是否包含该fragment
      */
     public void popTo(Class<?> targetFragmentClass, boolean includeTargetFragment) {
-        getChildFragmentManager().popBackStack();
         popTo(targetFragmentClass, includeTargetFragment, null);
     }
 
