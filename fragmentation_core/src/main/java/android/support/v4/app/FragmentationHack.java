@@ -74,6 +74,61 @@ public class FragmentationHack {
     }
 
     /**
+     * Like {@link FragmentManager#popBackStack()}} but allows the commit to be executed after an
+     * activity's state is saved.  This is dangerous because the action can
+     * be lost if the activity needs to later be restored from its state, so
+     * this should only be used for cases where it is okay for the UI state
+     * to change unexpectedly on the user.
+     */
+    public static void popBackStackAllowingStateLoss(final FragmentManager fragmentManager) {
+        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+            @Override
+            public void run() {
+                fragmentManager.popBackStack();
+            }
+        });
+    }
+
+    /**
+     * Like {@link FragmentManager#popBackStackImmediate()}} but allows the commit to be executed after an
+     * activity's state is saved.
+     */
+    public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager) {
+        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+            @Override
+            public void run() {
+                fragmentManager.popBackStackImmediate();
+            }
+        });
+    }
+
+    /**
+     * Like {@link FragmentManager#popBackStackImmediate(String, int)}} but allows the commit to be executed after an
+     * activity's state is saved.
+     */
+    public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager, final String name, final int flags) {
+        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+            @Override
+            public void run() {
+                fragmentManager.popBackStackImmediate(name, flags);
+            }
+        });
+    }
+
+    /**
+     * Like {@link FragmentManager#executePendingTransactions()} but allows the commit to be executed after an
+     * activity's state is saved.
+     */
+    public static void executePendingTransactionsAllowingStateLoss(final FragmentManager fragmentManager) {
+        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+            @Override
+            public void run() {
+                fragmentManager.executePendingTransactions();
+            }
+        });
+    }
+
+    /**
      * On 25.4.0+，fragmentManager.getFragments () returns mAdd, instead of the mActive on 25.4.0-
      */
     @SuppressWarnings("unchecked")
@@ -117,5 +172,22 @@ public class FragmentationHack {
         } catch (Exception e) {
         }
         return null;
+    }
+
+    private static void hookStateSaved(FragmentManager fragmentManager, Runnable runnable) {
+        if (!(fragmentManager instanceof FragmentManagerImpl)) return;
+        try {
+            FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
+
+            if (isStateSaved(fragmentManager)) {
+                fragmentManagerImpl.mStateSaved = false;
+                runnable.run();
+                fragmentManagerImpl.mStateSaved = true;
+            } else {
+                runnable.run();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

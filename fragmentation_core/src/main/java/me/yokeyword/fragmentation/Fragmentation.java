@@ -35,7 +35,7 @@ public class Fragmentation {
     @interface StackViewMode {
     }
 
-    static Fragmentation getDefault() {
+    public static Fragmentation getDefault() {
         if (INSTANCE == null) {
             synchronized (Fragmentation.class) {
                 if (INSTANCE == null) {
