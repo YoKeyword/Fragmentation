@@ -73,7 +73,16 @@ class TransactionDelegate {
         if (fragmentManager == null) return;
 
         bindContainerId(containerId, to);
-        start(fragmentManager, null, to, to.getClass().getName(), !addToBackStack, null, allowAnimation, TYPE_REPLACE);
+
+        String toFragmentTag = to.getClass().getName();
+        TransactionRecord transactionRecord = to.getSupportDelegate().mTransactionRecord;
+        if (transactionRecord != null) {
+            if (transactionRecord.tag != null) {
+                toFragmentTag = transactionRecord.tag;
+            }
+        }
+
+        start(fragmentManager, null, to, toFragmentTag, !addToBackStack, null, allowAnimation, TYPE_REPLACE);
     }
 
     void loadMultipleRootTransaction(FragmentManager fragmentManager, int containerId, int showPosition, ISupportFragment... tos) {

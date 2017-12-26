@@ -1,6 +1,5 @@
 package me.yokeyword.fragmentation;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -28,7 +27,7 @@ public class SupportActivityDelegate {
     private DebugStackDelegate mDebugStackDelegate;
 
     public SupportActivityDelegate(ISupportActivity support) {
-        if (!(support instanceof Activity))
+        if (!(support instanceof FragmentActivity))
             throw new RuntimeException("Must extends FragmentActivity/AppCompatActivity");
         this.mSupport = support;
         this.mActivity = (FragmentActivity) support;
@@ -39,7 +38,7 @@ public class SupportActivityDelegate {
      * 额外的事务：自定义Tag，添加SharedElement动画，操作非回退栈Fragment
      */
     public ExtraTransaction extraTransaction() {
-        return new ExtraTransaction.ExtraTransactionImpl<>(getTopFragment(), getTransactionDelegate(), true);
+        return new ExtraTransaction.ExtraTransactionImpl<>((FragmentActivity) mSupport, getTopFragment(), getTransactionDelegate(), true);
     }
 
     public void onCreate(@Nullable Bundle savedInstanceState) {

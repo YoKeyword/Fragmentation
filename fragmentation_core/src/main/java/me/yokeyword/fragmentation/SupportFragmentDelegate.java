@@ -70,7 +70,7 @@ public class SupportFragmentDelegate {
         if (mTransactionDelegate == null)
             throw new RuntimeException(mFragment.getClass().getSimpleName() + " not attach!");
 
-        return new ExtraTransaction.ExtraTransactionImpl<>(mSupportF, mTransactionDelegate, false);
+        return new ExtraTransaction.ExtraTransactionImpl<>((FragmentActivity) mSupport, mSupportF, mTransactionDelegate, false);
     }
 
     public void onAttach(Activity activity) {
