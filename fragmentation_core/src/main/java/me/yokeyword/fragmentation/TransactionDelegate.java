@@ -570,7 +570,10 @@ class TransactionDelegate {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        container.removeView(mock);
+                        try {
+                            container.removeView(mock);
+                        } catch (Exception ignored) {
+                        }
                     }
                 }, exitAnim.getDuration() + BUFFER_TIME);
             }
@@ -661,8 +664,11 @@ class TransactionDelegate {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mock.removeViewInLayout(fromView);
-                container.removeViewInLayout(mock);
+                try {
+                    mock.removeViewInLayout(fromView);
+                    container.removeViewInLayout(mock);
+                } catch (Exception ignored) {
+                }
             }
         }, delay);
     }
