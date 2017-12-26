@@ -8,7 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentationHack;
+import android.support.v4.app.FragmentationHacker;
 import android.view.MotionEvent;
 
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
@@ -77,7 +77,7 @@ public class SupportActivityDelegate {
     public void setFragmentAnimator(FragmentAnimator fragmentAnimator) {
         this.mFragmentAnimator = fragmentAnimator;
 
-        for (Fragment fragment : FragmentationHack.getActiveFragments(getSupportFragmentManager())) {
+        for (Fragment fragment : FragmentationHacker.getActiveFragments(getSupportFragmentManager())) {
             if (fragment instanceof ISupportFragment) {
                 ISupportFragment iF = (ISupportFragment) fragment;
                 SupportFragmentDelegate delegate = iF.getSupportDelegate();
@@ -242,7 +242,7 @@ public class SupportActivityDelegate {
      * Pop the child fragment.
      */
     public void pop() {
-        mTransactionDelegate.back(getSupportFragmentManager());
+        mTransactionDelegate.pop(getSupportFragmentManager());
     }
 
     /**

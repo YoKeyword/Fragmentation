@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentationHack;
+import android.support.v4.app.FragmentationHacker;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,7 +135,7 @@ class TransactionDelegate {
             if (transactionRecord.sharedElementList != null) {
                 sharedElementList = transactionRecord.sharedElementList;
                 // Compat SharedElement
-                FragmentationHack.reorderIndices(fragmentManager);
+                FragmentationHacker.reorderIndices(fragmentManager);
             }
         }
 
@@ -157,7 +157,7 @@ class TransactionDelegate {
         FragmentTransaction ft = fragmentManager.beginTransaction().show((Fragment) showFragment);
 
         if (hideFragment == null) {
-            List<Fragment> fragmentList = FragmentationHack.getActiveFragments(fragmentManager);
+            List<Fragment> fragmentList = FragmentationHacker.getActiveFragments(fragmentManager);
             if (fragmentList != null) {
                 for (Fragment fragment : fragmentList) {
                     if (fragment != null && fragment != showFragment) {
@@ -239,7 +239,7 @@ class TransactionDelegate {
     }
 
     private void startWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to) {
-        if (FragmentationHack.isExecutingActions(fragmentManager)) {
+        if (FragmentationHacker.isExecutingActions(fragmentManager)) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -255,15 +255,15 @@ class TransactionDelegate {
     private void executeStartWithPop(final FragmentManager fragmentManager, final ISupportFragment from, final ISupportFragment to) {
         handleAfterSaveInStateTransactionException(fragmentManager, "startWithPop()");
 
-        FragmentationHack.executePendingTransactionsAllowingStateLoss(fragmentManager);
-        final ISupportFragment preFragment = getPreFragment((Fragment) from);
+        FragmentationHacker.executePendingTransactionsAllowingStateLoss(fragmentManager);
+        final ISupportFragment preFragment = SupportHelper.getPreFragment((Fragment) from);
         final int fromContainerId = from.getSupportDelegate().mContainerId;
 
         from.getSupportDelegate().mLockAnim = true;
-        if (!FragmentationHack.isStateSaved(fragmentManager)) {
+        if (!FragmentationHacker.isStateSaved(fragmentManager)) {
             mockStartWithPopAnim(from, to, from.getSupportDelegate().mAnimHelper.popExitAnim);
         }
-        FragmentationHack.popBackStackImmediateAllowingStateLoss(fragmentManager);
+        FragmentationHacker.popBackStackImmediateAllowingStateLoss(fragmentManager);
 
         mHandler.post(new Runnable() {
             @Override
@@ -275,8 +275,8 @@ class TransactionDelegate {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        FragmentationHack.executePendingTransactionsAllowingStateLoss(fragmentManager);
-                        FragmentationHack.reorderIndices(fragmentManager);
+                        FragmentationHacker.executePendingTransactionsAllowingStateLoss(fragmentManager);
+                        FragmentationHacker.reorderIndices(fragmentManager);
                         if (preFragment != null && preFragment.getSupportDelegate().mContainerId == fromContainerId) {
                             preFragment.getSupportDelegate().start(to);
                         } else {
@@ -293,16 +293,8 @@ class TransactionDelegate {
         transaction.commitAllowingStateLoss();
     }
 
-    private ISupportFragment getTopFragment(FragmentManager fragmentManager) {
-        return SupportHelper.getTopFragment(fragmentManager);
-    }
-
-    private ISupportFragment getPreFragment(Fragment fragment) {
-        return SupportHelper.getPreFragment(fragment);
-    }
-
     /**
-     * Dispatch the back-event. Priority of the top of the stack of Fragment
+     * Dispatch the pop-event. Priority of the top of the stack of Fragment
      */
     boolean dispatchBackPressedEvent(ISupportFragment activeFragment) {
         if (activeFragment != null) {
@@ -408,7 +400,7 @@ class TransactionDelegate {
     /**
      * Pop
      */
-    void back(FragmentManager fm) {
+    void pop(FragmentManager fm) {
         fm = checkFragmentManager(fm, null);
         if (fm == null) return;
 
@@ -435,17 +427,17 @@ class TransactionDelegate {
             mShareElementDebounceTime = System.currentTimeMillis() + supportF.getSupportDelegate().mAnimHelper.exitAnim.getDuration();
         }
 
-        if (FragmentationHack.isStateSaved(fm)) {
-            ISupportFragment popFragment = getTopFragment(fm);
+        if (FragmentationHacker.isStateSaved(fm)) {
+            ISupportFragment popFragment = SupportHelper.getTopFragment(fm);
             if (popFragment != null) {
                 popFragment.getSupportDelegate().mLockAnim = true;
             }
         }
-        FragmentationHack.popBackStackAllowingStateLoss(fm);
+        FragmentationHacker.popBackStackAllowingStateLoss(fm);
     }
 
     /**
-     * Pop the last fragment transition from the manager's fragment back stack.
+     * Pop the last fragment transition from the manager's fragment pop stack.
      *
      * @param targetFragmentTag     Tag
      * @param includeTargetFragment Whether it includes targetFragment
@@ -454,7 +446,7 @@ class TransactionDelegate {
         fragmentManager = checkFragmentManager(fragmentManager, null);
         if (fragmentManager == null) return;
 
-        if (FragmentationHack.isExecutingActions(fragmentManager)) {
+        if (FragmentationHacker.isExecutingActions(fragmentManager)) {
             final FragmentManager finalFragmentManager = fragmentManager;
             mHandler.post(new Runnable() {
                 @Override
@@ -470,7 +462,7 @@ class TransactionDelegate {
     private void executePopTo(final String targetFragmentTag, boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, FragmentManager fragmentManager, int popAnim) {
         handleAfterSaveInStateTransactionException(fragmentManager, "popTo()");
 
-        FragmentationHack.executePendingTransactionsAllowingStateLoss(fragmentManager);
+        FragmentationHacker.executePendingTransactionsAllowingStateLoss(fragmentManager);
         Fragment targetFragment = fragmentManager.findFragmentByTag(targetFragmentTag);
 
         if (targetFragment == null) {
@@ -481,10 +473,10 @@ class TransactionDelegate {
         int flag = 0;
         if (includeTargetFragment) {
             flag = FragmentManager.POP_BACK_STACK_INCLUSIVE;
-            targetFragment = (Fragment) getPreFragment(targetFragment);
+            targetFragment = (Fragment) SupportHelper.getPreFragment(targetFragment);
         }
 
-        ISupportFragment fromFragment = getTopFragment(fragmentManager);
+        ISupportFragment fromFragment = SupportHelper.getTopFragment(fragmentManager);
         Animation popAnimation;
 
         if (afterPopTransactionRunnable == null && popAnim == DEFAULT_POPTO_ANIM) {
@@ -537,17 +529,17 @@ class TransactionDelegate {
      * on pre-support-v4-25.4.0
      */
     private void popToFix(String fragmentTag, int flag, final FragmentManager fragmentManager) {
-        if (FragmentationHack.getActiveFragments(fragmentManager) == null) return;
+        if (FragmentationHacker.getActiveFragments(fragmentManager) == null) return;
 
         mSupport.getSupportDelegate().mPopMultipleNoAnim = true;
-        FragmentationHack.popBackStackImmediateAllowingStateLoss(fragmentManager, fragmentTag, flag);
-        FragmentationHack.executePendingTransactionsAllowingStateLoss(fragmentManager);
+        FragmentationHacker.popBackStackImmediateAllowingStateLoss(fragmentManager, fragmentTag, flag);
+        FragmentationHacker.executePendingTransactionsAllowingStateLoss(fragmentManager);
         mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
 
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                FragmentationHack.reorderIndices(fragmentManager);
+                FragmentationHacker.reorderIndices(fragmentManager);
             }
         });
     }
@@ -584,7 +576,7 @@ class TransactionDelegate {
      * Hack startWithPop/popTo anim
      */
     private void mockPopAnim(FragmentManager fm, ISupportFragment from, ISupportFragment targetF, Animation exitAnim, boolean afterRunnable, final Callback cb) {
-        if (from == targetF || FragmentationHack.isStateSaved(fm)) {
+        if (from == targetF || FragmentationHacker.isStateSaved(fm)) {
             if (cb != null) {
                 cb.call();
             }
@@ -596,7 +588,7 @@ class TransactionDelegate {
         if (container == null) return;
 
         View fromView = fromF.getView();
-        Fragment preF = (Fragment) getPreFragment(fromF);
+        Fragment preF = (Fragment) SupportHelper.getPreFragment(fromF);
         ViewGroup preViewGroup = null;
         from.getSupportDelegate().mLockAnim = true;
 
@@ -714,11 +706,10 @@ class TransactionDelegate {
         }
     }
 
-    private static <T> T checkNotNull(T value, String message) {
+    private static <T> void checkNotNull(T value, String message) {
         if (value == null) {
             throw new NullPointerException(message);
         }
-        return value;
     }
 
     private FragmentManager checkFragmentManager(FragmentManager fragmentManager, ISupportFragment from) {
@@ -734,7 +725,7 @@ class TransactionDelegate {
     }
 
     private void handleAfterSaveInStateTransactionException(FragmentManager fragmentManager, String action) {
-        boolean stateSaved = FragmentationHack.isStateSaved(fragmentManager);
+        boolean stateSaved = FragmentationHacker.isStateSaved(fragmentManager);
         if (stateSaved) {
             AfterSaveStateTransactionException e = new AfterSaveStateTransactionException(action);
             if (Fragmentation.getDefault().getHandler() != null) {

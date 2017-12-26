@@ -11,7 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentationHack;
+import android.support.v4.app.FragmentationHacker;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -105,7 +105,7 @@ public class SupportFragmentDelegate {
 
             // RootFragment
             if (mRootStatus != STATUS_UN_ROOT) {
-                FragmentationHack.reorderIndices(mFragment.getFragmentManager());
+                FragmentationHacker.reorderIndices(mFragment.getFragmentManager());
             }
         }
 
@@ -460,14 +460,14 @@ public class SupportFragmentDelegate {
     }
 
     public void pop() {
-        mTransactionDelegate.back(mFragment.getFragmentManager());
+        mTransactionDelegate.pop(mFragment.getFragmentManager());
     }
 
     /**
      * Pop the child fragment.
      */
     public void popChild() {
-        mTransactionDelegate.back(getChildFragmentManager());
+        mTransactionDelegate.pop(getChildFragmentManager());
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.List;
  * <p>
  * Created by YoKey on 16/1/22.
  */
-public class FragmentationHack {
+public class FragmentationHacker {
     private static boolean sSupportLessThan25dot4 = false;
 
     static {
@@ -81,7 +81,7 @@ public class FragmentationHack {
      * to change unexpectedly on the user.
      */
     public static void popBackStackAllowingStateLoss(final FragmentManager fragmentManager) {
-        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.popBackStack();
@@ -94,7 +94,7 @@ public class FragmentationHack {
      * activity's state is saved.
      */
     public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager) {
-        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.popBackStackImmediate();
@@ -107,7 +107,7 @@ public class FragmentationHack {
      * activity's state is saved.
      */
     public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager, final String name, final int flags) {
-        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.popBackStackImmediate(name, flags);
@@ -120,7 +120,7 @@ public class FragmentationHack {
      * activity's state is saved.
      */
     public static void executePendingTransactionsAllowingStateLoss(final FragmentManager fragmentManager) {
-        FragmentationHack.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.executePendingTransactions();
@@ -176,18 +176,14 @@ public class FragmentationHack {
 
     private static void hookStateSaved(FragmentManager fragmentManager, Runnable runnable) {
         if (!(fragmentManager instanceof FragmentManagerImpl)) return;
-        try {
-            FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
 
-            if (isStateSaved(fragmentManager)) {
-                fragmentManagerImpl.mStateSaved = false;
-                runnable.run();
-                fragmentManagerImpl.mStateSaved = true;
-            } else {
-                runnable.run();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
+        if (isStateSaved(fragmentManager)) {
+            fragmentManagerImpl.mStateSaved = false;
+            runnable.run();
+            fragmentManagerImpl.mStateSaved = true;
+        } else {
+            runnable.run();
         }
     }
 }
