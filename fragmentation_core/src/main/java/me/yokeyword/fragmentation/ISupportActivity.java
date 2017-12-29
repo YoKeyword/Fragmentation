@@ -19,6 +19,8 @@ public interface ISupportActivity {
 
     FragmentAnimator onCreateFragmentAnimator();
 
+    void post(Runnable runnable);
+
     void onBackPressed();
 
     void onBackPressedSupport();
