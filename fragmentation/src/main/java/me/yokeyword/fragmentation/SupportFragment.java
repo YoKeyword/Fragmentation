@@ -102,16 +102,30 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * If you want to call the start()/pop()/showHideFragment() on the onCreateXX/onActivityCreated,
-     * call this method to deliver the transaction to the queue.
+     * Causes the Runnable r to be added to the action queue.
      *
-     * 在onCreate/onCreateView/onActivityCreated中使用 start()/pop()/showHideFragment(),请使用该方法把你的任务入队
+     * The runnable will be run after all the previous action has been run.
      *
-     * @param runnable start() , pop() or showHideFragment()
+     * 前面的事务全部执行后 执行该Action
+     *
+     * @deprecated Use {@link #post(Runnable)} instead.
      */
+    @Deprecated
     @Override
     public void enqueueAction(Runnable runnable) {
         mDelegate.enqueueAction(runnable);
+    }
+
+    /**
+     * Causes the Runnable r to be added to the action queue.
+     *
+     * The runnable will be run after all the previous action has been run.
+     *
+     * 前面的事务全部执行后 执行该Action
+     */
+    @Override
+    public void post(Runnable runnable) {
+        mDelegate.post(runnable);
     }
 
     /**
@@ -325,7 +339,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * Launch a fragment while poping self.
+     * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);

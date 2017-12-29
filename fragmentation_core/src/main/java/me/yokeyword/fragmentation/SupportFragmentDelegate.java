@@ -212,6 +212,20 @@ public class SupportFragmentDelegate {
      * The runnable will be run after all the previous action has been run.
      *
      * 前面的事务全部执行后 执行该Action
+     *
+     * @deprecated Use {@link #post(Runnable)} instead.
+     */
+    @Deprecated
+    public void enqueueAction(Runnable runnable) {
+        post(runnable);
+    }
+
+    /**
+     * Causes the Runnable r to be added to the action queue.
+     * <p>
+     * The runnable will be run after all the previous action has been run.
+     * <p>
+     * 前面的事务全部执行后 执行该Action
      */
     public void post(final Runnable runnable) {
         mTransactionDelegate.post(runnable);

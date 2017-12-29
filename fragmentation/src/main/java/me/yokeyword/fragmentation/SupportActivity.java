@@ -109,6 +109,11 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
         return mDelegate.onCreateFragmentAnimator();
     }
 
+    @Override
+    public void post(Runnable runnable) {
+        mDelegate.post(runnable);
+    }
+
     /****************************************以下为可选方法(Optional methods)******************************************************/
 
     /**
@@ -177,7 +182,7 @@ public class SupportActivity extends AppCompatActivity implements ISupportActivi
 
     /**
      * It is recommended to use {@link SupportFragment#startWithPop(ISupportFragment)}.
-     * Launch a fragment while poping self.
+     * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);
