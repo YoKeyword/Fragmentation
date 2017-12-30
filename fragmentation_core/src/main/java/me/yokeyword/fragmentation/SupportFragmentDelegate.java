@@ -208,9 +208,9 @@ public class SupportFragmentDelegate {
 
     /**
      * Causes the Runnable r to be added to the action queue.
-     *
+     * <p>
      * The runnable will be run after all the previous action has been run.
-     *
+     * <p>
      * 前面的事务全部执行后 执行该Action
      *
      * @deprecated Use {@link #post(Runnable)} instead.
@@ -442,10 +442,10 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * Launch a fragment while poping self.
+     * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        mTransactionDelegate.startWithPop(mFragment.getFragmentManager(), mSupportF, toFragment);
     }
 
     public void replaceFragment(ISupportFragment toFragment, boolean addToBackStack) {
@@ -465,7 +465,7 @@ public class SupportFragmentDelegate {
     }
 
     public void startChildWithPop(ISupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(getChildFragmentManager(), getTopFragment(), toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        mTransactionDelegate.startWithPop(getChildFragmentManager(), getTopFragment(), toFragment);
     }
 
     public void replaceChildFragment(ISupportFragment toFragment, boolean addToBackStack) {

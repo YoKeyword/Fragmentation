@@ -260,7 +260,7 @@ public abstract class ExtraTransaction {
         @Override
         public void startWithPop(ISupportFragment toFragment) {
             toFragment.getSupportDelegate().mTransactionRecord = mRecord;
-            mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+            mTransactionDelegate.startWithPop(getFragmentManager(), mSupportF, toFragment);
         }
 
         @Override

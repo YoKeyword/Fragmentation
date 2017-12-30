@@ -244,10 +244,10 @@ public class SupportActivityDelegate {
     }
 
     /**
-     * Launch a fragment while poping self.
+     * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(getSupportFragmentManager(), getTopFragment(), toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        mTransactionDelegate.startWithPop(getSupportFragmentManager(), getTopFragment(), toFragment);
     }
 
     public void replaceFragment(ISupportFragment toFragment, boolean addToBackStack) {

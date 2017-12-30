@@ -106,11 +106,11 @@ public class FragmentationHacker {
      * Like {@link FragmentManager#popBackStackImmediate(String, int)}} but allows the commit to be executed after an
      * activity's state is saved.
      */
-    public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager, final String name, final int flags) {
+    public static void popBackStackAllowingStateLoss(final FragmentManager fragmentManager, final String name, final int flags) {
         FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
-                fragmentManager.popBackStackImmediate(name, flags);
+                fragmentManager.popBackStack(name, flags);
             }
         });
     }
