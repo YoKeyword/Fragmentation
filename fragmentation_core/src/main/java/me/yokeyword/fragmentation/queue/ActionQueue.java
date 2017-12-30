@@ -53,10 +53,9 @@ public class ActionQueue {
 
     private boolean isThrottleBACK(Action action) {
         if (action.action == Action.ACTION_BACK) {
-            for (Action item : mQueue) {
-                if (item.action == Action.ACTION_BACK) {
-                    return true;
-                }
+            Action head = mQueue.peek();
+            if (head != null && head.action == Action.ACTION_POP) {
+                return true;
             }
         }
         return false;
