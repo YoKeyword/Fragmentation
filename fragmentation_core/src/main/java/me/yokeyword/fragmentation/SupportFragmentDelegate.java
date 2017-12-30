@@ -11,7 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentationHacker;
+import android.support.v4.app.FragmentationMagician;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -108,7 +108,7 @@ public class SupportFragmentDelegate {
 
             // RootFragment
             if (mRootStatus != STATUS_UN_ROOT) {
-                FragmentationHacker.reorderIndices(mFragment.getFragmentManager());
+                FragmentationMagician.reorderIndices(mFragment.getFragmentManager());
             }
         }
 

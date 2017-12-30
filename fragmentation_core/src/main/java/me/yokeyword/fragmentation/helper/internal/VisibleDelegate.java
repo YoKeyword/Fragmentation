@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentationHacker;
+import android.support.v4.app.FragmentationMagician;
 
 import java.util.List;
 
@@ -155,7 +155,7 @@ public class VisibleDelegate {
             if (checkAddState()) return;
             FragmentManager fragmentManager = mFragment.getChildFragmentManager();
             if (fragmentManager != null) {
-                List<Fragment> childFragments = FragmentationHacker.getActiveFragments(fragmentManager);
+                List<Fragment> childFragments = FragmentationMagician.getActiveFragments(fragmentManager);
                 if (childFragments != null) {
                     for (Fragment child : childFragments) {
                         if (child instanceof ISupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
