@@ -40,7 +40,8 @@ class TransactionDelegate {
     static final String FRAGMENTATION_ARG_IS_SHARED_ELEMENT = "fragmentation_arg_is_shared_element";
     static final String FRAGMENTATION_ARG_CONTAINER = "fragmentation_arg_container";
     static final String FRAGMENTATION_ARG_REPLACE = "fragmentation_arg_replace";
-    static final String FRAGMENTATION_ARG_CUSTOM_END_ANIM = "fragmentation_arg_custom_end_anim";
+    static final String FRAGMENTATION_ARG_CUSTOM_ENTER_ANIM = "fragmentation_arg_custom_enter_anim";
+    static final String FRAGMENTATION_ARG_CUSTOM_EXIT_ANIM = "fragmentation_arg_custom_exit_anim";
 
     static final String FRAGMENTATION_STATE_SAVE_ANIMATOR = "fragmentation_state_save_animator";
     static final String FRAGMENTATION_STATE_SAVE_IS_HIDDEN = "fragmentation_state_save_status";
@@ -53,8 +54,6 @@ class TransactionDelegate {
     static final int TYPE_ADD_RESULT_WITHOUT_HIDE = 3;
     static final int TYPE_REPLACE = 10;
     static final int TYPE_REPLACE_DONT_BACK = 11;
-
-    final static long BUFFER_TIME = 60L;
 
     private ISupportActivity mSupport;
     private FragmentActivity mActivity;
@@ -80,7 +79,7 @@ class TransactionDelegate {
     }
 
     void loadRootTransaction(final FragmentManager fm, final int containerId, final ISupportFragment to, final boolean addToBackStack, final boolean allowAnimation) {
-        mActionQueue.enqueue(new Action() {
+        mActionQueue.enqueue(new Action(Action.ACTION_LOAD, fm) {
             @Override
             public void run() {
                 bindContainerId(containerId, to);
@@ -151,27 +150,35 @@ class TransactionDelegate {
      * Start the target Fragment and pop itself
      */
     void startWithPop(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to) {
-        // TODO: 17/12/30 delay
-        mActionQueue.enqueue(new Action() {
+        mActionQueue.enqueue(new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
-                from.getSupportDelegate().mLockAnim = true;
+                handleAfterSaveInStateTransactionException(fm, "popTo()");
+                FragmentationHacker.executePendingTransactionsAllowingStateLoss(fm);
+                ISupportFragment currentFrom = SupportHelper.getTopFragment(fm);
+                currentFrom.getSupportDelegate().mLockAnim = true;
                 if (!FragmentationHacker.isStateSaved(fm)) {
-                    mockStartWithPopAnim(SupportHelper.getTopFragment(fm), to, from.getSupportDelegate().mAnimHelper.popExitAnim);
+                    mockStartWithPopAnim(SupportHelper.getTopFragment(fm), to, currentFrom.getSupportDelegate().mAnimHelper.popExitAnim);
                 }
                 FragmentationHacker.popBackStackAllowingStateLoss(fm);
+                FragmentationHacker.executePendingTransactionsAllowingStateLoss(fm);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        FragmentationHacker.reorderIndices(fm);
+                    }
+                });
             }
         });
 
-        from.getSupportDelegate().start(to);
+        dispatchStartTransaction(fm, from, to, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD);
     }
 
     /**
      * Remove
      */
     void remove(final FragmentManager fm, final Fragment fragment, final boolean showPreFragment) {
-        long duration = ((ISupportFragment) fragment).getSupportDelegate().mAnimHelper.exitAnim.getDuration() + BUFFER_TIME;
-        mActionQueue.enqueue(new Action(Action.ACTION_POP, duration) {
+        mActionQueue.enqueue(new Action(Action.ACTION_POP, fm) {
             @Override
             public void run() {
                 FragmentTransaction ft = fm.beginTransaction()
@@ -193,12 +200,7 @@ class TransactionDelegate {
      * Pop
      */
     void pop(final FragmentManager fm) {
-        long duration = BUFFER_TIME;
-        ISupportFragment top = SupportHelper.getTopFragment(fm);
-        if (top != null) {
-            duration = top.getSupportDelegate().mAnimHelper.exitAnim.getDuration() + BUFFER_TIME;
-        }
-        mActionQueue.enqueue(new Action(Action.ACTION_POP, duration) {
+        mActionQueue.enqueue(new Action(Action.ACTION_POP, fm) {
             @Override
             public void run() {
                 handleAfterSaveInStateTransactionException(fm, "pop()");
@@ -214,8 +216,7 @@ class TransactionDelegate {
      * @param includeTargetFragment Whether it includes targetFragment
      */
     void popTo(final String targetFragmentTag, final boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, final FragmentManager fm, final int popAnim) {
-        // TODO: 17/12/30 delay
-        mActionQueue.enqueue(new Action() {
+        mActionQueue.enqueue(new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
                 doPopTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, fm, popAnim);
@@ -282,11 +283,13 @@ class TransactionDelegate {
                     throw new IllegalStateException("Can't find container, please call loadRootFragment() first!");
                 }
             }
-            bindContainerId(from.getSupportDelegate().mContainerId, to);
             from = SupportHelper.getTopFragment(fm, from.getSupportDelegate().mContainerId);
+        } else { // compat Activity
+            from = SupportHelper.getTopFragment(fm);
         }
+        bindContainerId(from.getSupportDelegate().mContainerId, to);
 
-        // process SupportTransaction
+        // process ExtraTransaction
         String toFragmentTag = to.getClass().getName();
         boolean dontAddToBackStack = false;
         ArrayList<TransactionRecord.SharedElement> sharedElementList = null;
@@ -319,12 +322,12 @@ class TransactionDelegate {
 
         if (sharedElementList == null) {
             if (addMode) { // Replace mode forbidden animation, the replace animations exist overlapping Bug on support-v4.
-
                 TransactionRecord record = to.getSupportDelegate().mTransactionRecord;
                 if (record != null && record.targetFragmentEnter != Integer.MIN_VALUE) {
                     ft.setCustomAnimations(record.targetFragmentEnter, record.currentFragmentPopExit,
                             record.currentFragmentPopEnter, record.targetFragmentExit);
-                    args.putInt(FRAGMENTATION_ARG_CUSTOM_END_ANIM, record.targetFragmentEnter);
+                    args.putInt(FRAGMENTATION_ARG_CUSTOM_ENTER_ANIM, record.targetFragmentEnter);
+                    args.putInt(FRAGMENTATION_ARG_CUSTOM_EXIT_ANIM, record.targetFragmentExit);
                 } else {
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 }
@@ -516,7 +519,6 @@ class TransactionDelegate {
     }
 
     private void mockStartWithPopAnim(ISupportFragment from, ISupportFragment to, final Animation exitAnim) {
-
         final Fragment fromF = (Fragment) from;
         final ViewGroup container = findContainerById(fromF, from.getSupportDelegate().mContainerId);
         if (container == null) return;
@@ -540,7 +542,7 @@ class TransactionDelegate {
                         } catch (Exception ignored) {
                         }
                     }
-                }, exitAnim.getDuration() + BUFFER_TIME);
+                }, exitAnim.getDuration() + Action.BUFFER_TIME);
             }
         };
     }
@@ -596,7 +598,7 @@ class TransactionDelegate {
             cb.call();
         }
 
-        long delay = exitAnim.getDuration() + BUFFER_TIME;
+        long delay = exitAnim.getDuration() + Action.BUFFER_TIME;
 
         exitAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -618,7 +620,7 @@ class TransactionDelegate {
             public void run() {
                 mock.startAnimation(exitAnim);
             }
-        }, BUFFER_TIME);
+        }, Action.BUFFER_TIME);
 
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -629,7 +631,7 @@ class TransactionDelegate {
                 } catch (Exception ignored) {
                 }
             }
-        }, delay + BUFFER_TIME);
+        }, delay + Action.BUFFER_TIME);
     }
 
     @NonNull
