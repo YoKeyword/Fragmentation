@@ -79,7 +79,7 @@ class TransactionDelegate {
     }
 
     void loadRootTransaction(final FragmentManager fm, final int containerId, final ISupportFragment to, final boolean addToBackStack, final boolean allowAnimation) {
-        mActionQueue.enqueue(new Action(Action.ACTION_LOAD, fm) {
+        enqueue(fm, new Action(Action.ACTION_LOAD, fm) {
             @Override
             public void run() {
                 bindContainerId(containerId, to);
@@ -98,7 +98,7 @@ class TransactionDelegate {
     }
 
     void loadMultipleRootTransaction(final FragmentManager fm, final int containerId, final int showPosition, final ISupportFragment... tos) {
-        mActionQueue.enqueue(new Action() {
+        enqueue(fm, new Action() {
             @Override
             public void run() {
                 FragmentTransaction ft = fm.beginTransaction();
@@ -126,7 +126,7 @@ class TransactionDelegate {
      * Dispatch the start transaction.
      */
     void dispatchStartTransaction(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to, final int requestCode, final int launchMode, final int type) {
-        mActionQueue.enqueue(new Action() {
+        enqueue(fm, new Action() {
             @Override
             public void run() {
                 doDispatchStartTransaction(fm, from, to, requestCode, launchMode, type);
@@ -138,7 +138,7 @@ class TransactionDelegate {
      * Show showFragment then hide hideFragment
      */
     void showHideFragment(final FragmentManager fm, final ISupportFragment showFragment, final ISupportFragment hideFragment) {
-        mActionQueue.enqueue(new Action() {
+        enqueue(fm, new Action() {
             @Override
             public void run() {
                 doShowHideFragment(fm, showFragment, hideFragment);
@@ -150,7 +150,7 @@ class TransactionDelegate {
      * Start the target Fragment and pop itself
      */
     void startWithPop(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to) {
-        mActionQueue.enqueue(new Action(Action.ACTION_POP_MOCK) {
+        enqueue(fm, new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
                 handleAfterSaveInStateTransactionException(fm, "popTo()");
@@ -178,7 +178,7 @@ class TransactionDelegate {
      * Remove
      */
     void remove(final FragmentManager fm, final Fragment fragment, final boolean showPreFragment) {
-        mActionQueue.enqueue(new Action(Action.ACTION_POP, fm) {
+        enqueue(fm, new Action(Action.ACTION_POP, fm) {
             @Override
             public void run() {
                 FragmentTransaction ft = fm.beginTransaction()
@@ -200,7 +200,7 @@ class TransactionDelegate {
      * Pop
      */
     void pop(final FragmentManager fm) {
-        mActionQueue.enqueue(new Action(Action.ACTION_POP, fm) {
+        enqueue(fm, new Action(Action.ACTION_POP, fm) {
             @Override
             public void run() {
                 handleAfterSaveInStateTransactionException(fm, "pop()");
@@ -216,7 +216,7 @@ class TransactionDelegate {
      * @param includeTargetFragment Whether it includes targetFragment
      */
     void popTo(final String targetFragmentTag, final boolean includeTargetFragment, final Runnable afterPopTransactionRunnable, final FragmentManager fm, final int popAnim) {
-        mActionQueue.enqueue(new Action(Action.ACTION_POP_MOCK) {
+        enqueue(fm, new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
                 doPopTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, fm, popAnim);
@@ -263,6 +263,14 @@ class TransactionDelegate {
         } catch (IllegalStateException ignored) {
             // Fragment no longer exists
         }
+    }
+
+    private void enqueue(FragmentManager fm, Action action) {
+        if (fm == null) {
+            Log.w(TAG, "FragmentManager is null, skip the action!");
+            return;
+        }
+        mActionQueue.enqueue(action);
     }
 
     private void doDispatchStartTransaction(FragmentManager fm, ISupportFragment from, ISupportFragment to, int requestCode, int launchMode, int type) {
