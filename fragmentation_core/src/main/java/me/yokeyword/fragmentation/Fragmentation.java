@@ -27,7 +27,7 @@ public class Fragmentation {
     static volatile Fragmentation INSTANCE;
 
     private boolean debug;
-    private int mode = NONE;
+    private int mode = BUBBLE;
     private ExceptionHandler handler;
 
     @IntDef({NONE, SHAKE, BUBBLE})
