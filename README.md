@@ -45,16 +45,16 @@ The first demo shows the basic usage of the library. The second one shows the wa
 
 **1、build.gradle**
 ````gradle
-// appcompat-v7 is required, ，v1.1.9 compat v4-27.0.0+
-compile 'me.yokeyword:fragmentation:1.1.10'
+// appcompat-v7 is required
+compile 'me.yokeyword:fragmentation:1.2.0'
 
 // If you don't want to extends SupportActivity/Fragment and would like to customize your own support, just rely on fragmentation-core
-// compile 'me.yokeyword:fragmentation-core:1.1.10'
+// compile 'me.yokeyword:fragmentation-core:1.2.0'
 
 // To get SwipeBack feature, rely on both fragmentation & fragmentation-swipeback
-compile 'me.yokeyword:fragmentation:1.1.10'
+compile 'me.yokeyword:fragmentation:1.2.0'
 // Swipeback is based on fragmentation. Refer to SwipeBackActivity/Fragment for your Customized SupportActivity/Fragment
-compile 'me.yokeyword:fragmentation-swipeback:1.1.10'
+compile 'me.yokeyword:fragmentation-swipeback:1.2.0'
 
 // To simplify the communication between Fragments.
 compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
@@ -96,11 +96,6 @@ public class HomeFragment extends SupportFragment {
       	// check wiki for other pop, find and animation setting related API
     }
 }
-````
-
-**4. On pages that do not require multi-touch, disable multi finger touch**
-````xml
-<item name="android:splitMotionEvents">false</item>
 ````
 
 ## [WIKI](https://github.com/YoKeyword/Fragmentation/wiki) , [CHANGELOG](https://github.com/YoKeyword/Fragmentation/blob/master/CHANGELOG.md)
