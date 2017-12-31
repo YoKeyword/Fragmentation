@@ -13,7 +13,7 @@ import java.util.List;
  * <p>
  * Created by YoKey on 16/1/22.
  */
-public class FragmentationHacker {
+public class FragmentationMagician {
     private static boolean sSupportLessThan25dot4 = false;
 
     static {
@@ -81,7 +81,7 @@ public class FragmentationHacker {
      * to change unexpectedly on the user.
      */
     public static void popBackStackAllowingStateLoss(final FragmentManager fragmentManager) {
-        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationMagician.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.popBackStack();
@@ -94,7 +94,7 @@ public class FragmentationHacker {
      * activity's state is saved.
      */
     public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager) {
-        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationMagician.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.popBackStackImmediate();
@@ -106,11 +106,11 @@ public class FragmentationHacker {
      * Like {@link FragmentManager#popBackStackImmediate(String, int)}} but allows the commit to be executed after an
      * activity's state is saved.
      */
-    public static void popBackStackImmediateAllowingStateLoss(final FragmentManager fragmentManager, final String name, final int flags) {
-        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
+    public static void popBackStackAllowingStateLoss(final FragmentManager fragmentManager, final String name, final int flags) {
+        FragmentationMagician.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
-                fragmentManager.popBackStackImmediate(name, flags);
+                fragmentManager.popBackStack(name, flags);
             }
         });
     }
@@ -120,7 +120,7 @@ public class FragmentationHacker {
      * activity's state is saved.
      */
     public static void executePendingTransactionsAllowingStateLoss(final FragmentManager fragmentManager) {
-        FragmentationHacker.hookStateSaved(fragmentManager, new Runnable() {
+        FragmentationMagician.hookStateSaved(fragmentManager, new Runnable() {
             @Override
             public void run() {
                 fragmentManager.executePendingTransactions();

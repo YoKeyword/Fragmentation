@@ -11,7 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentationHacker;
+import android.support.v4.app.FragmentationMagician;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -23,17 +23,19 @@ import me.yokeyword.fragmentation.helper.internal.TransactionRecord;
 import me.yokeyword.fragmentation.helper.internal.VisibleDelegate;
 
 public class SupportFragmentDelegate {
+    private static final long NOT_FOUND_ANIM_TIME = 300L;
+
     static final int STATUS_UN_ROOT = 0;
     static final int STATUS_ROOT_ANIM_DISABLE = 1;
     static final int STATUS_ROOT_ANIM_ENABLE = 2;
 
     private int mRootStatus = STATUS_UN_ROOT;
 
-    boolean mIsSharedElement;
+    private boolean mIsSharedElement;
     FragmentAnimator mFragmentAnimator;
     AnimatorHelper mAnimHelper;
     boolean mLockAnim;
-    private int mCustomEnterAnim = Integer.MIN_VALUE;
+    private int mCustomEnterAnim = Integer.MIN_VALUE, mCustomExitAnim = Integer.MIN_VALUE;
 
     private Handler mHandler;
     private boolean mFirstCreateView = true;
@@ -92,7 +94,8 @@ public class SupportFragmentDelegate {
             mIsSharedElement = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_IS_SHARED_ELEMENT, false);
             mContainerId = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
             mReplaceMode = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_REPLACE, false);
-            mCustomEnterAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_END_ANIM, Integer.MIN_VALUE);
+            mCustomEnterAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_ENTER_ANIM, Integer.MIN_VALUE);
+            mCustomExitAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_EXIT_ANIM, Integer.MIN_VALUE);
         }
 
         if (savedInstanceState == null) {
@@ -105,7 +108,7 @@ public class SupportFragmentDelegate {
 
             // RootFragment
             if (mRootStatus != STATUS_UN_ROOT) {
-                FragmentationHacker.reorderIndices(mFragment.getFragmentManager());
+                FragmentationMagician.reorderIndices(mFragment.getFragmentManager());
             }
         }
 
@@ -207,15 +210,28 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * If you want to call the start()/pop()/showHideFragment() on the onCreateXX/onActivityCreated,
-     * call this method to deliver the transaction to the queue.
+     * Causes the Runnable r to be added to the action queue.
      * <p>
-     * 在onCreate/onCreateView/onActivityCreated中使用 start()/pop()/showHideFragment(),请使用该方法把你的任务入队
+     * The runnable will be run after all the previous action has been run.
+     * <p>
+     * 前面的事务全部执行后 执行该Action
      *
-     * @param runnable start() , pop() or showHideFragment()
+     * @deprecated Use {@link #post(Runnable)} instead.
      */
+    @Deprecated
     public void enqueueAction(Runnable runnable) {
-        getHandler().postDelayed(runnable, mAnimHelper == null ? 0 : mAnimHelper.enterAnim.getDuration());
+        post(runnable);
+    }
+
+    /**
+     * Causes the Runnable r to be added to the action queue.
+     * <p>
+     * The runnable will be run after all the previous action has been run.
+     * <p>
+     * 前面的事务全部执行后 执行该Action
+     */
+    public void post(final Runnable runnable) {
+        mTransactionDelegate.post(runnable);
     }
 
     /**
@@ -429,10 +445,10 @@ public class SupportFragmentDelegate {
     }
 
     /**
-     * Launch a fragment while poping self.
+     * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        mTransactionDelegate.startWithPop(mFragment.getFragmentManager(), mSupportF, toFragment);
     }
 
     public void replaceFragment(ISupportFragment toFragment, boolean addToBackStack) {
@@ -452,7 +468,7 @@ public class SupportFragmentDelegate {
     }
 
     public void startChildWithPop(ISupportFragment toFragment) {
-        mTransactionDelegate.dispatchStartTransaction(getChildFragmentManager(), getTopFragment(), toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITH_POP);
+        mTransactionDelegate.startWithPop(getChildFragmentManager(), getTopFragment(), toFragment);
     }
 
     public void replaceChildFragment(ISupportFragment toFragment, boolean addToBackStack) {
@@ -606,6 +622,22 @@ public class SupportFragmentDelegate {
 
     public FragmentActivity getActivity() {
         return _mActivity;
+    }
+
+    public long getExitAnimDuration() {
+        if (mCustomExitAnim == Integer.MIN_VALUE) {
+            if (mAnimHelper != null && mAnimHelper.exitAnim != null) {
+                return mAnimHelper.exitAnim.getDuration();
+            }
+        } else {
+            try {
+                return AnimationUtils.loadAnimation(_mActivity, mCustomExitAnim).getDuration();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return NOT_FOUND_ANIM_TIME;
     }
 
     interface EnterAnimListener {

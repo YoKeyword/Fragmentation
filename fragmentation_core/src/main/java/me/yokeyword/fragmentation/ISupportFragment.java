@@ -34,6 +34,8 @@ public interface ISupportFragment {
 
     void enqueueAction(Runnable runnable);
 
+    void post(Runnable runnable);
+
     void onEnterAnimationEnd(@Nullable Bundle savedInstanceState);
 
     void onLazyInitView(@Nullable Bundle savedInstanceState);

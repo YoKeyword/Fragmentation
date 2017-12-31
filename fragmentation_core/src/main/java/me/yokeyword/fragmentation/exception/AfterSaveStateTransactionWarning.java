@@ -32,9 +32,9 @@ import android.util.Log;
  * <p>
  * Created by YoKey on 17/12/26.
  */
-public class AfterSaveStateTransactionException extends RuntimeException {
+public class AfterSaveStateTransactionWarning extends RuntimeException {
 
-    public AfterSaveStateTransactionException(String action) {
+    public AfterSaveStateTransactionWarning(String action) {
         super("Warning: Perform this " + action + " action after onSaveInstanceState!");
         Log.w("Fragmentation", getMessage());
     }

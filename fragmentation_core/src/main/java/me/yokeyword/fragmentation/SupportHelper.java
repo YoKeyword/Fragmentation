@@ -3,7 +3,7 @@ package me.yokeyword.fragmentation;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentationHacker;
+import android.support.v4.app.FragmentationMagician;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -65,7 +65,7 @@ public class SupportHelper {
     }
 
     public static ISupportFragment getTopFragment(FragmentManager fragmentManager, int containerId) {
-        List<Fragment> fragmentList = FragmentationHacker.getActiveFragments(fragmentManager);
+        List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fragmentManager);
         if (fragmentList == null) return null;
 
         for (int i = fragmentList.size() - 1; i >= 0; i--) {
@@ -91,7 +91,7 @@ public class SupportHelper {
         FragmentManager fragmentManager = fragment.getFragmentManager();
         if (fragmentManager == null) return null;
 
-        List<Fragment> fragmentList = FragmentationHacker.getActiveFragments(fragmentManager);
+        List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fragmentManager);
         if (fragmentList == null) return null;
 
         int index = fragmentList.indexOf(fragment);
@@ -135,7 +135,7 @@ public class SupportHelper {
         Fragment fragment = null;
 
         if (toFragmentTag == null) {
-            List<Fragment> fragmentList = FragmentationHacker.getActiveFragments(fragmentManager);
+            List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fragmentManager);
             if (fragmentList == null) return null;
 
             int sizeChildFrgList = fragmentList.size();
@@ -155,7 +155,7 @@ public class SupportHelper {
     }
 
     private static ISupportFragment getActiveFragment(FragmentManager fragmentManager, ISupportFragment parentFragment) {
-        List<Fragment> fragmentList = FragmentationHacker.getActiveFragments(fragmentManager);
+        List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fragmentManager);
         if (fragmentList == null) {
             return parentFragment;
         }
