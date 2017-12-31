@@ -10,10 +10,9 @@ public abstract class Action {
     public static final int BUFFER_TIME = 60;
 
     public static final int ACTION_NORMAL = 0;
-    public static final int ACTION_LOAD = 1;
-    public static final int ACTION_POP = 2;
-    public static final int ACTION_POP_MOCK = 3;
-    public static final int ACTION_BACK = 4;
+    public static final int ACTION_POP = 1;
+    public static final int ACTION_POP_MOCK = 2;
+    public static final int ACTION_BACK = 3;
 
     public FragmentManager fragmentManager;
     public int action = ACTION_NORMAL;

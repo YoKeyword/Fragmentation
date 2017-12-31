@@ -79,7 +79,7 @@ class TransactionDelegate {
     }
 
     void loadRootTransaction(final FragmentManager fm, final int containerId, final ISupportFragment to, final boolean addToBackStack, final boolean allowAnimation) {
-        enqueue(fm, new Action(Action.ACTION_LOAD, fm) {
+        enqueue(fm, new Action() {
             @Override
             public void run() {
                 bindContainerId(containerId, to);

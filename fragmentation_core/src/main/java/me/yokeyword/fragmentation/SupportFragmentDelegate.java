@@ -624,22 +624,6 @@ public class SupportFragmentDelegate {
         return _mActivity;
     }
 
-    public long getEnterAnimDuration() {
-        if (mCustomEnterAnim == Integer.MIN_VALUE) {
-            if (mAnimHelper != null && mAnimHelper.enterAnim != null) {
-                return mAnimHelper.enterAnim.getDuration();
-            }
-        } else {
-            try {
-                return AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim).getDuration();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-        return NOT_FOUND_ANIM_TIME;
-    }
-
     public long getExitAnimDuration() {
         if (mCustomExitAnim == Integer.MIN_VALUE) {
             if (mAnimHelper != null && mAnimHelper.exitAnim != null) {

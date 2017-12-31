@@ -45,28 +45,14 @@ public class ActionQueue {
         Action action = mQueue.peek();
         action.run();
 
-        handleNextAction(action);
-    }
-
-    private void handleNextAction(final Action action) {
-        if (action.action == Action.ACTION_LOAD) {
-            mMainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    executeNextAction(action);
-                }
-            });
-        } else {
-            executeNextAction(action);
-        }
+        executeNextAction(action);
     }
 
     private void executeNextAction(Action action) {
-        if (action.action == Action.ACTION_LOAD || action.action == Action.ACTION_POP) {
+        if (action.action == Action.ACTION_POP) {
             ISupportFragment top = SupportHelper.getTopFragment(action.fragmentManager);
             if (top == null) return;
-            long duration = action.action == Action.ACTION_LOAD ?
-                    top.getSupportDelegate().getEnterAnimDuration() : top.getSupportDelegate().getExitAnimDuration();
+            long duration = top.getSupportDelegate().getExitAnimDuration();
             action.duration = duration + Action.BUFFER_TIME;
         }
 
