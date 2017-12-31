@@ -110,6 +110,18 @@ public class MySupportActivity extends AppCompatActivity implements ISupportActi
         return mDelegate.onCreateFragmentAnimator();
     }
 
+    /**
+     * Causes the Runnable r to be added to the action queue.
+     * <p>
+     * The runnable will be run after all the previous action has been run.
+     * <p>
+     * 前面的事务全部执行后 执行该Action
+     */
+    @Override
+    public void post(Runnable runnable) {
+        mDelegate.post(runnable);
+    }
+
     /****************************************以下为可选方法(Optional methods)******************************************************/
 
     // 选择性拓展其他方法

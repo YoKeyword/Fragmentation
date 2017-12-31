@@ -104,16 +104,30 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * If you want to call the start()/pop()/showHideFragment() on the onCreateXX/onActivityCreated,
-     * call this method to deliver the transaction to the queue.
+     * Causes the Runnable r to be added to the action queue.
+     * <p>
+     * The runnable will be run after all the previous action has been run.
+     * <p>
+     * 前面的事务全部执行后 执行该Action
      *
-     * 在onCreate/onCreateView/onActivityCreated中使用 start()/pop()/showHideFragment(),请使用该方法把你的任务入队
-     *
-     * @param runnable start() , pop() or showHideFragment()
+     * @deprecated Use {@link #post(Runnable)} instead.
      */
+    @Deprecated
     @Override
     public void enqueueAction(Runnable runnable) {
         mDelegate.enqueueAction(runnable);
+    }
+
+    /**
+     * Causes the Runnable r to be added to the action queue.
+     * <p>
+     * The runnable will be run after all the previous action has been run.
+     * <p>
+     * 前面的事务全部执行后 执行该Action
+     */
+    @Override
+    public void post(Runnable runnable) {
+        mDelegate.post(runnable);
     }
 
     /**
@@ -204,7 +218,7 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 类似 {@link Activity#setResult(int, Intent)}
-     *
+     * <p>
      * Similar to {@link Activity#setResult(int, Intent)}
      *
      * @see #startForResult(ISupportFragment, int)
@@ -216,7 +230,7 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
 
     /**
      * 类似  {@link Activity#onActivityResult(int, int, Intent)}
-     *
+     * <p>
      * Similar to {@link Activity#onActivityResult(int, int, Intent)}
      *
      * @see #startForResult(ISupportFragment, int)
@@ -229,12 +243,11 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
     /**
      * 在start(TargetFragment,LaunchMode)时,启动模式为SingleTask/SingleTop, 回调TargetFragment的该方法
      * 类似 {@link Activity#onNewIntent(Intent)}
-     *
+     * <p>
      * Similar to {@link Activity#onNewIntent(Intent)}
      *
-     * @see #start(ISupportFragment, int)
-     *
      * @param args putNewBundle(Bundle newBundle)
+     * @see #start(ISupportFragment, int)
      */
     @Override
     public void onNewBundle(Bundle args) {
@@ -302,7 +315,7 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
     }
 
     /**
-     * Launch a fragment while poping self.
+     * Start the target Fragment and pop itself
      */
     public void startWithPop(ISupportFragment toFragment) {
         mDelegate.startWithPop(toFragment);
@@ -319,7 +332,7 @@ public class MySupportFragment extends Fragment implements ISupportFragment {
     /**
      * Pop the last fragment transition from the manager's fragment
      * back stack.
-     *
+     * <p>
      * 出栈到目标fragment
      *
      * @param targetFragmentClass   目标fragment
