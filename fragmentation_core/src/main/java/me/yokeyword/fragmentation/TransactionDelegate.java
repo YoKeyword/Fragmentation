@@ -295,6 +295,7 @@ class TransactionDelegate {
         } else { // compat Activity
             from = SupportHelper.getTopFragment(fm);
         }
+        if (from == null) return;
         bindContainerId(from.getSupportDelegate().mContainerId, to);
 
         // process ExtraTransaction
@@ -498,7 +499,7 @@ class TransactionDelegate {
         final int finalFlag = flag;
         final FragmentManager finalFragmentManager = fm;
 
-        mockPopAnim(fm, fromFragment, (ISupportFragment) targetFragment, popAnimation, new Callback() {
+        mockPopAnim(fm, fromFragment, (ISupportFragment) targetFragment, popAnimation, afterPopTransactionRunnable != null, new Callback() {
             @Override
             public void call() {
                 popToFix(targetFragmentTag, finalFlag, finalFragmentManager);
@@ -532,14 +533,15 @@ class TransactionDelegate {
         if (container == null) return;
 
         final View fromView = fromF.getView();
-        container.removeViewInLayout(fromView);
+        if (fromView == null) return;
 
+        container.removeViewInLayout(fromView);
         final ViewGroup mock = addMockView(fromView, container);
 
         to.getSupportDelegate().mEnterAnimListener = new SupportFragmentDelegate.EnterAnimListener() {
             @Override
             public void onEnterAnimStart() {
-                mock.startAnimation(exitAnim);
+                fromView.startAnimation(exitAnim);
 
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -550,7 +552,7 @@ class TransactionDelegate {
                         } catch (Exception ignored) {
                         }
                     }
-                }, exitAnim.getDuration() + Action.BUFFER_TIME);
+                }, exitAnim.getDuration());
             }
         };
     }
@@ -558,19 +560,20 @@ class TransactionDelegate {
     /**
      * Hack startWithPop/popTo anim
      */
-    private void mockPopAnim(FragmentManager fm, ISupportFragment from, ISupportFragment targetF, Animation exitAnim, final Callback cb) {
-        if (from == targetF || FragmentationMagician.isStateSaved(fm)) {
+    private void mockPopAnim(FragmentManager fm, ISupportFragment from, ISupportFragment targetF, Animation exitAnim, boolean afterRunnable, final Callback cb) {
+        Fragment fromF = (Fragment) from;
+        View fromView = fromF.getView();
+
+        if (from == targetF || FragmentationMagician.isStateSaved(fm) || fromView == null) {
             if (cb != null) {
                 cb.call();
             }
             return;
         }
 
-        Fragment fromF = (Fragment) from;
         final ViewGroup container = findContainerById(fromF, from.getSupportDelegate().mContainerId);
         if (container == null) return;
 
-        View fromView = fromF.getView();
         Fragment preF = (Fragment) SupportHelper.getPreFragment(fromF);
         ViewGroup preViewGroup = null;
         from.getSupportDelegate().mLockAnim = true;
@@ -592,21 +595,24 @@ class TransactionDelegate {
                 cb.call();
             }
             preViewGroup.removeViewInLayout(fromView);
-            handleMock(exitAnim, null, fromView, container);
+            handleMock(exitAnim, null, fromView, container, afterRunnable);
         } else {
             container.removeViewInLayout(fromView);
-            handleMock(exitAnim, cb, fromView, container);
+            handleMock(exitAnim, cb, fromView, container, afterRunnable);
         }
     }
 
-    private void handleMock(final Animation exitAnim, Callback cb, final View fromView, final ViewGroup container) {
+    private void handleMock(final Animation exitAnim, Callback cb, final View fromView, final ViewGroup container, boolean afterRunnable) {
         final ViewGroup mock = addMockView(fromView, container);
 
         if (cb != null) {
             cb.call();
         }
 
-        long delay = exitAnim.getDuration() + Action.BUFFER_TIME;
+        long delay = 0;
+        if (afterRunnable) {
+            delay = Action.BUFFER_TIME * 2;
+        }
 
         exitAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -626,9 +632,9 @@ class TransactionDelegate {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mock.startAnimation(exitAnim);
+                fromView.startAnimation(exitAnim);
             }
-        }, Action.BUFFER_TIME);
+        }, delay);
 
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -639,7 +645,7 @@ class TransactionDelegate {
                 } catch (Exception ignored) {
                 }
             }
-        }, delay + Action.BUFFER_TIME);
+        }, exitAnim.getDuration() + delay);
     }
 
     @NonNull
