@@ -209,7 +209,7 @@ class TransactionDelegate {
         });
     }
 
-    void popForSwipeBack(final FragmentManager fm){
+    void popQuiet(final FragmentManager fm) {
         enqueue(fm, new Action(Action.ACTION_POP_MOCK, fm) {
             @Override
             public void run() {

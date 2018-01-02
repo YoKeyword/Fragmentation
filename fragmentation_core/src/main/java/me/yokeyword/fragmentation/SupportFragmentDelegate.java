@@ -523,6 +523,10 @@ public class SupportFragmentDelegate {
         mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager(), popAnim);
     }
 
+    public void popQuiet() {
+        mTransactionDelegate.popQuiet(mFragment.getFragmentManager());
+    }
+
     private FragmentManager getChildFragmentManager() {
         return mFragment.getChildFragmentManager();
     }
@@ -611,10 +615,6 @@ public class SupportFragmentDelegate {
             mHandler = new Handler(Looper.getMainLooper());
         }
         return mHandler;
-    }
-
-    void popForSwipeBack() {
-        mTransactionDelegate.popForSwipeBack(mFragment.getFragmentManager());
     }
 
     public VisibleDelegate getVisibleDelegate() {
