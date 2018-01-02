@@ -613,6 +613,10 @@ public class SupportFragmentDelegate {
         return mHandler;
     }
 
+    void popForSwipeBack() {
+        mTransactionDelegate.popForSwipeBack(mFragment.getFragmentManager());
+    }
+
     public VisibleDelegate getVisibleDelegate() {
         if (mVisibleDelegate == null) {
             mVisibleDelegate = new VisibleDelegate(mSupportF);

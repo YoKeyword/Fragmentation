@@ -209,6 +209,18 @@ class TransactionDelegate {
         });
     }
 
+    void popForSwipeBack(final FragmentManager fm){
+        enqueue(fm, new Action(Action.ACTION_POP_MOCK, fm) {
+            @Override
+            public void run() {
+                mSupport.getSupportDelegate().mPopMultipleNoAnim = true;
+                FragmentationMagician.popBackStackAllowingStateLoss(fm);
+                FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
+                mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
+            }
+        });
+    }
+
     /**
      * Pop the last fragment transition from the manager's fragment pop stack.
      *
