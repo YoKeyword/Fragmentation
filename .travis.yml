@@ -12,6 +12,7 @@ android:
   - extra-android-support
 
 before_install:
+- yes | sdkmanager "platforms;android-27"
 - openssl aes-256-cbc -K $encrypted_e460bf741e28_key -iv $encrypted_e460bf741e28_iv
   -in demo/fragmentation.jks.enc -out demo/fragmentation.jks -d
 
