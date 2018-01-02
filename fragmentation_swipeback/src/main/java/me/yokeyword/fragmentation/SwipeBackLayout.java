@@ -483,7 +483,7 @@ public class SwipeBackLayout extends FrameLayout {
                         ((ISupportFragment) mPreFragment).getSupportDelegate().mLockAnim = true;
                     }
                     if (!((Fragment) mFragment).isDetached()) {
-                        mFragment.getSupportDelegate().popTo(mFragment.getClass(), true, null, 0);
+                        mFragment.getSupportDelegate().popForSwipeBack();
                     }
                     if (mPreFragment instanceof ISupportFragment) {
                         ((ISupportFragment) mPreFragment).getSupportDelegate().mLockAnim = false;
