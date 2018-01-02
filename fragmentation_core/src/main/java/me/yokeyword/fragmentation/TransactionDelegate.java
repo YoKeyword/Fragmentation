@@ -150,6 +150,9 @@ class TransactionDelegate {
      * Start the target Fragment and pop itself
      */
     void startWithPop(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to) {
+        int containerId = from.getSupportDelegate().mContainerId;
+        bindContainerId(containerId, to);
+
         enqueue(fm, new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
@@ -307,8 +310,16 @@ class TransactionDelegate {
         } else { // compat Activity
             from = SupportHelper.getTopFragment(fm);
         }
-        if (from == null) return;
-        bindContainerId(from.getSupportDelegate().mContainerId, to);
+
+        int containerId = getArguments((Fragment) to).getInt(FRAGMENTATION_ARG_CONTAINER, 0);
+        if (from == null && containerId == 0) {
+            Log.e(TAG, "There is no Fragment in the FragmentManager, maybe you should use loadRootFragment()!");
+            return;
+        }
+
+        if (from != null && containerId == 0) {
+            bindContainerId(from.getSupportDelegate().mContainerId, to);
+        }
 
         // process ExtraTransaction
         String toFragmentTag = to.getClass().getName();
