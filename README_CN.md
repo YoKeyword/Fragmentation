@@ -31,7 +31,7 @@ A powerful library that manage Fragment for Android!
 
 1、**悬浮球／摇一摇实时查看Fragment的栈视图，降低开发难度**
 
-2、**内部的队列机制 解决Fragment多点触控、事务提交异常等问题**
+2、**内部队列机制 解决Fragment多点触控、事务高频次提交异常等问题**
 
 3、**增加启动模式、startForResult等类Activity方法**
 
@@ -52,15 +52,15 @@ A powerful library that manage Fragment for Android!
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // appcompat-v7包是必须的
-compile 'me.yokeyword:fragmentation:1.2.3'
+compile 'me.yokeyword:fragmentation:1.2.4'
 
 // 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
-// compile 'me.yokeyword:fragmentation-core:1.2.3'
+// compile 'me.yokeyword:fragmentation-core:1.2.4'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentation:1.2.3'
+compile 'me.yokeyword:fragmentation:1.2.4'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentation-swipeback:1.2.3'
+compile 'me.yokeyword:fragmentation-swipeback:1.2.4'
 
 // Activity作用域的EventBus，更安全，可有效避免after onSavenInstanceState()异常
 compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
