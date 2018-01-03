@@ -50,6 +50,8 @@ public class Fragmentation {
         debug = builder.debug;
         if (debug) {
             mode = builder.mode;
+        } else {
+            mode = NONE;
         }
         handler = builder.handler;
     }
