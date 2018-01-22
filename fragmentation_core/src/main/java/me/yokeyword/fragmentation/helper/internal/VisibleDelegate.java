@@ -151,23 +151,6 @@ public class VisibleDelegate {
 
         mIsSupportVisible = visible;
 
-        if (!mNeedDispatch) {
-            mNeedDispatch = true;
-        } else {
-            if (checkAddState()) return;
-            FragmentManager fragmentManager = mFragment.getChildFragmentManager();
-            if (fragmentManager != null) {
-                List<Fragment> childFragments = FragmentationMagician.getActiveFragments(fragmentManager);
-                if (childFragments != null) {
-                    for (Fragment child : childFragments) {
-                        if (child instanceof ISupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
-                            ((ISupportFragment) child).getSupportDelegate().getVisibleDelegate().dispatchSupportVisible(visible);
-                        }
-                    }
-                }
-            }
-        }
-
         if (visible) {
             if (checkAddState()) return;
             mSupportF.onSupportVisible();
@@ -176,8 +159,27 @@ public class VisibleDelegate {
                 mIsFirstVisible = false;
                 mSupportF.onLazyInitView(mSaveInstanceState);
             }
+            dispatchChild(true);
         } else {
+            dispatchChild(false);
             mSupportF.onSupportInvisible();
+        }
+    }
+
+    private void dispatchChild(boolean visible) {
+        if (!mNeedDispatch) {
+            mNeedDispatch = true;
+        } else {
+            if (checkAddState()) return;
+            FragmentManager fragmentManager = mFragment.getChildFragmentManager();
+            List<Fragment> childFragments = FragmentationMagician.getActiveFragments(fragmentManager);
+            if (childFragments != null) {
+                for (Fragment child : childFragments) {
+                    if (child instanceof ISupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
+                        ((ISupportFragment) child).getSupportDelegate().getVisibleDelegate().dispatchSupportVisible(visible);
+                    }
+                }
+            }
         }
     }
 
