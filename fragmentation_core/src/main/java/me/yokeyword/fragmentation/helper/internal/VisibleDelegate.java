@@ -142,6 +142,8 @@ public class VisibleDelegate {
     }
 
     private void dispatchSupportVisible(boolean visible) {
+        if (visible && isParentInvisible()) return;
+
         if (mIsSupportVisible == visible) {
             mNeedDispatch = true;
             return;
@@ -177,6 +179,11 @@ public class VisibleDelegate {
         } else {
             mSupportF.onSupportInvisible();
         }
+    }
+
+    private boolean isParentInvisible() {
+        ISupportFragment fragment = (ISupportFragment) mFragment.getParentFragment();
+        return fragment != null && !fragment.isSupportVisible();
     }
 
     private boolean checkAddState() {
