@@ -79,7 +79,7 @@ class TransactionDelegate {
     }
 
     void loadRootTransaction(final FragmentManager fm, final int containerId, final ISupportFragment to, final boolean addToBackStack, final boolean allowAnimation) {
-        enqueue(fm, new Action() {
+        enqueue(fm, new Action(Action.ACTION_LOAD) {
             @Override
             public void run() {
                 bindContainerId(containerId, to);
@@ -98,7 +98,7 @@ class TransactionDelegate {
     }
 
     void loadMultipleRootTransaction(final FragmentManager fm, final int containerId, final int showPosition, final ISupportFragment... tos) {
-        enqueue(fm, new Action() {
+        enqueue(fm, new Action(Action.ACTION_LOAD) {
             @Override
             public void run() {
                 FragmentTransaction ft = fm.beginTransaction();

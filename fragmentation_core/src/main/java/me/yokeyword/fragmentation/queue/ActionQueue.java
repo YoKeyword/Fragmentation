@@ -1,6 +1,7 @@
 package me.yokeyword.fragmentation.queue;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -23,6 +24,12 @@ public class ActionQueue {
 
     public void enqueue(final Action action) {
         if (isThrottleBACK(action)) return;
+
+        if (action.action == Action.ACTION_LOAD && mQueue.isEmpty()
+                && Thread.currentThread() == Looper.getMainLooper().getThread()) {
+            action.run();
+            return;
+        }
 
         mMainHandler.post(new Runnable() {
             @Override
