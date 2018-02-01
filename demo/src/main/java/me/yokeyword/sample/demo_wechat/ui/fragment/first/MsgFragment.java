@@ -96,6 +96,7 @@ public class MsgFragment extends BaseBackFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mRecy = null;
         _mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         hideSoftInput();
     }
