@@ -13,6 +13,7 @@ public abstract class Action {
     public static final int ACTION_POP = 1;
     public static final int ACTION_POP_MOCK = 2;
     public static final int ACTION_BACK = 3;
+    public static final int ACTION_LOAD = 4;
 
     public FragmentManager fragmentManager;
     public int action = ACTION_NORMAL;

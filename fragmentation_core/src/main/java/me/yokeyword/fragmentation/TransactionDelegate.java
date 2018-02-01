@@ -79,7 +79,7 @@ class TransactionDelegate {
     }
 
     void loadRootTransaction(final FragmentManager fm, final int containerId, final ISupportFragment to, final boolean addToBackStack, final boolean allowAnimation) {
-        enqueue(fm, new Action() {
+        enqueue(fm, new Action(Action.ACTION_LOAD) {
             @Override
             public void run() {
                 bindContainerId(containerId, to);
@@ -98,7 +98,7 @@ class TransactionDelegate {
     }
 
     void loadMultipleRootTransaction(final FragmentManager fm, final int containerId, final int showPosition, final ISupportFragment... tos) {
-        enqueue(fm, new Action() {
+        enqueue(fm, new Action(Action.ACTION_LOAD) {
             @Override
             public void run() {
                 FragmentTransaction ft = fm.beginTransaction();
@@ -153,12 +153,18 @@ class TransactionDelegate {
         enqueue(fm, new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
+                ISupportFragment top = getTopFragmentForStart(from, fm);
+                if (top == null)
+                    throw new NullPointerException("There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment() first!");
+
+                int containerId = top.getSupportDelegate().mContainerId;
+                bindContainerId(containerId, to);
+
                 handleAfterSaveInStateTransactionException(fm, "popTo()");
                 FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
-                ISupportFragment currentFrom = SupportHelper.getTopFragment(fm);
-                currentFrom.getSupportDelegate().mLockAnim = true;
+                top.getSupportDelegate().mLockAnim = true;
                 if (!FragmentationMagician.isStateSaved(fm)) {
-                    mockStartWithPopAnim(SupportHelper.getTopFragment(fm), to, currentFrom.getSupportDelegate().mAnimHelper.popExitAnim);
+                    mockStartWithPopAnim(SupportHelper.getTopFragment(fm), to, top.getSupportDelegate().mAnimHelper.popExitAnim);
                 }
                 FragmentationMagician.popBackStackAllowingStateLoss(fm);
                 FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
@@ -205,6 +211,18 @@ class TransactionDelegate {
             public void run() {
                 handleAfterSaveInStateTransactionException(fm, "pop()");
                 FragmentationMagician.popBackStackAllowingStateLoss(fm);
+            }
+        });
+    }
+
+    void popQuiet(final FragmentManager fm) {
+        enqueue(fm, new Action(Action.ACTION_POP_MOCK, fm) {
+            @Override
+            public void run() {
+                mSupport.getSupportDelegate().mPopMultipleNoAnim = true;
+                FragmentationMagician.popBackStackAllowingStateLoss(fm);
+                FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
+                mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
             }
         });
     }
@@ -284,19 +302,17 @@ class TransactionDelegate {
             }
         }
 
-        if (from != null) {
-            if (from.getSupportDelegate().mContainerId == 0) {
-                Fragment fromF = (Fragment) from;
-                if (fromF.getTag() != null && !fromF.getTag().startsWith("android:switcher:")) {
-                    throw new IllegalStateException("Can't find container, please call loadRootFragment() first!");
-                }
-            }
-            from = SupportHelper.getTopFragment(fm, from.getSupportDelegate().mContainerId);
-        } else { // compat Activity
-            from = SupportHelper.getTopFragment(fm);
+        from = getTopFragmentForStart(from, fm);
+
+        int containerId = getArguments((Fragment) to).getInt(FRAGMENTATION_ARG_CONTAINER, 0);
+        if (from == null && containerId == 0) {
+            Log.e(TAG, "There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment()!");
+            return;
         }
-        if (from == null) return;
-        bindContainerId(from.getSupportDelegate().mContainerId, to);
+
+        if (from != null && containerId == 0) {
+            bindContainerId(from.getSupportDelegate().mContainerId, to);
+        }
 
         // process ExtraTransaction
         String toFragmentTag = to.getClass().getName();
@@ -318,6 +334,22 @@ class TransactionDelegate {
         if (handleLaunchMode(fm, from, to, toFragmentTag, launchMode)) return;
 
         start(fm, from, to, toFragmentTag, dontAddToBackStack, sharedElementList, false, type);
+    }
+
+    private ISupportFragment getTopFragmentForStart(ISupportFragment from, FragmentManager fm) {
+        ISupportFragment top;
+        if (from == null) {
+            top = SupportHelper.getTopFragment(fm);
+        } else {
+            if (from.getSupportDelegate().mContainerId == 0) {
+                Fragment fromF = (Fragment) from;
+                if (fromF.getTag() != null && !fromF.getTag().startsWith("android:switcher:")) {
+                    throw new IllegalStateException("Can't find container, please call loadRootFragment() first!");
+                }
+            }
+            top = SupportHelper.getTopFragment(fm, from.getSupportDelegate().mContainerId);
+        }
+        return top;
     }
 
     private void start(FragmentManager fm, final ISupportFragment from, ISupportFragment to, String toFragmentTag,

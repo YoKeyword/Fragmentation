@@ -523,6 +523,10 @@ public class SupportFragmentDelegate {
         mTransactionDelegate.popTo(targetFragmentClass.getName(), includeTargetFragment, afterPopTransactionRunnable, getChildFragmentManager(), popAnim);
     }
 
+    public void popQuiet() {
+        mTransactionDelegate.popQuiet(mFragment.getFragmentManager());
+    }
+
     private FragmentManager getChildFragmentManager() {
         return mFragment.getChildFragmentManager();
     }
