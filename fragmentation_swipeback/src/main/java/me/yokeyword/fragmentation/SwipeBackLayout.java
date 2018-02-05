@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentationMagician;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -63,6 +62,11 @@ public class SwipeBackLayout extends FrameLayout {
      * predefined non-interactive motion.
      */
     public static final int STATE_SETTLING = ViewDragHelper.STATE_SETTLING;
+
+    /**
+     * A view is currently drag finished.
+     */
+    public static final int STATE_FINISHED = 3;
 
     private static final int DEFAULT_SCRIM_COLOR = 0x99000000;
     private static final float DEFAULT_PARALLAX = 0.33f;
@@ -127,6 +131,13 @@ public class SwipeBackLayout extends FrameLayout {
         mHelper = ViewDragHelper.create(this, new ViewDragCallback());
         setShadow(me.yokeyword.fragmentation_swipeback.R.drawable.shadow_left, EDGE_LEFT);
         setEdgeOrientation(EDGE_LEFT);
+    }
+
+    /**
+     * Get ViewDragHelper
+     */
+    public ViewDragHelper getViewDragHelper() {
+        return mHelper;
     }
 
     /**
@@ -221,6 +232,7 @@ public class SwipeBackLayout extends FrameLayout {
          * @see #STATE_IDLE
          * @see #STATE_DRAGGING
          * @see #STATE_SETTLING
+         * @see #STATE_FINISHED
          */
         void onDragStateChange(int state);
 
@@ -413,7 +425,7 @@ public class SwipeBackLayout extends FrameLayout {
                     mCurrentSwipeOrientation = EDGE_RIGHT;
                 }
 
-                if (mListeners != null && !mListeners.isEmpty()) {
+                if (mListeners != null) {
                     for (OnSwipeListener listener : mListeners) {
                         listener.onEdgeTouch(mCurrentSwipeOrientation);
                     }
@@ -468,8 +480,7 @@ public class SwipeBackLayout extends FrameLayout {
             mContentTop = top;
             invalidate();
 
-            if (mListeners != null && !mListeners.isEmpty()
-                    && mHelper.getViewDragState() == STATE_DRAGGING && mScrollPercent <= 1 && mScrollPercent > 0) {
+            if (mListeners != null && mHelper.getViewDragState() == STATE_DRAGGING && mScrollPercent <= 1 && mScrollPercent > 0) {
                 for (OnSwipeListener listener : mListeners) {
                     listener.onDragScrolled(mScrollPercent);
                 }
@@ -480,10 +491,12 @@ public class SwipeBackLayout extends FrameLayout {
                     if (mCallOnDestroyView) return;
 
                     if (!((Fragment) mFragment).isDetached()) {
+                        onDragFinished();
                         mFragment.getSupportDelegate().popQuiet();
                     }
                 } else {
                     if (!mActivity.isFinishing()) {
+                        onDragFinished();
                         mActivity.finish();
                         mActivity.overridePendingTransition(0, 0);
                     }
@@ -522,7 +535,7 @@ public class SwipeBackLayout extends FrameLayout {
         @Override
         public void onViewDragStateChanged(int state) {
             super.onViewDragStateChanged(state);
-            if (mListeners != null && !mListeners.isEmpty()) {
+            if (mListeners != null) {
                 for (OnSwipeListener listener : mListeners) {
                     listener.onDragStateChange(state);
                 }
@@ -534,6 +547,14 @@ public class SwipeBackLayout extends FrameLayout {
             super.onEdgeTouched(edgeFlags, pointerId);
             if ((mEdgeFlag & edgeFlags) != 0) {
                 mCurrentSwipeOrientation = edgeFlags;
+            }
+        }
+    }
+
+    private void onDragFinished() {
+        if (mListeners != null) {
+            for (OnSwipeListener listener : mListeners) {
+                listener.onDragStateChange(STATE_FINISHED);
             }
         }
     }

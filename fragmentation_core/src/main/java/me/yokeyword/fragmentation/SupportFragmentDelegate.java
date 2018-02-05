@@ -194,7 +194,7 @@ public class SupportFragmentDelegate {
     public void onDestroyView() {
         mSupport.getSupportDelegate().mFragmentClickable = true;
         getVisibleDelegate().onDestroyView();
-        getHandler().removeCallbacksAndMessages(null);
+        getHandler().removeCallbacks(mNotifyEnterAnimEndRunnable);
     }
 
     public void onDestroy() {
@@ -551,6 +551,7 @@ public class SupportFragmentDelegate {
         mSupport.getSupportDelegate().mFragmentClickable = false;
         // AnimationListener is not reliable.
         getHandler().postDelayed(mNotifyEnterAnimEndRunnable, enterAnim.getDuration());
+        mSupport.getSupportDelegate().mFragmentClickable = true;
 
         if (mEnterAnimListener != null) {
             getHandler().post(new Runnable() {
@@ -566,7 +567,8 @@ public class SupportFragmentDelegate {
     private Runnable mNotifyEnterAnimEndRunnable = new Runnable() {
         @Override
         public void run() {
-            notifyEnterAnimEnd();
+            if (mFragment == null) return;
+            mSupportF.onEnterAnimationEnd(mSaveInstanceState);
         }
     };
 
@@ -600,13 +602,7 @@ public class SupportFragmentDelegate {
     }
 
     private void notifyEnterAnimEnd() {
-        getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (mFragment == null) return;
-                mSupportF.onEnterAnimationEnd(mSaveInstanceState);
-            }
-        });
+        getHandler().post(mNotifyEnterAnimEndRunnable);
         mSupport.getSupportDelegate().mFragmentClickable = true;
     }
 
