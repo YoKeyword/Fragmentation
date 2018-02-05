@@ -129,6 +129,13 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
     /**
+     * Get ViewDragHelper
+     */
+    public ViewDragHelper getViewDragHelper(){
+        return mHelper;
+    }
+
+    /**
      * Set scroll threshold, we will close the activity, when scrollPercent over
      * this value
      *
