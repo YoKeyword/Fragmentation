@@ -194,7 +194,7 @@ public class SupportFragmentDelegate {
     public void onDestroyView() {
         mSupport.getSupportDelegate().mFragmentClickable = true;
         getVisibleDelegate().onDestroyView();
-        getHandler().removeCallbacks(mNotifyEnterAnimEndRunnable);
+        getHandler().removeCallbacksAndMessages(null);
     }
 
     public void onDestroy() {
