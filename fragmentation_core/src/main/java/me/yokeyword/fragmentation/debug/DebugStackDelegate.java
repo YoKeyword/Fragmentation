@@ -200,7 +200,8 @@ public class DebugStackDelegate implements SensorEventListener {
             } else {
                 for (int j = 0; j < backStackCount; j++) {
                     FragmentManager.BackStackEntry entry = fragment.getFragmentManager().getBackStackEntryAt(j);
-                    if (entry.getName().equals(fragment.getTag())) {
+                    if ((entry.getName() != null && entry.getName().equals(fragment.getTag()))
+                            || (entry.getName() == null && fragment.getTag() == null)) {
                         break;
                     }
                     if (j == backStackCount - 1) {
