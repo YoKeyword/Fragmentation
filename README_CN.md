@@ -58,9 +58,9 @@ compile 'me.yokeyword:fragmentation:1.2.5'
 // compile 'me.yokeyword:fragmentation-core:1.2.5'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentation:1.2.5'
+compile 'me.yokeyword:fragmentation:1.2.6'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentation-swipeback:1.2.5'
+compile 'me.yokeyword:fragmentation-swipeback:1.2.6'
 
 // Activity作用域的EventBus，更安全，可有效避免after onSavenInstanceState()异常
 compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
