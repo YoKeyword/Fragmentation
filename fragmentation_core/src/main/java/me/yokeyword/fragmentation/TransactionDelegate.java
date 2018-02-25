@@ -238,12 +238,12 @@ class TransactionDelegate {
             @Override
             public void run() {
                 doPopTo(targetFragmentTag, includeTargetFragment, afterPopTransactionRunnable, fm, popAnim);
+                
+                if (afterPopTransactionRunnable != null) {
+                    afterPopTransactionRunnable.run();
+                }
             }
         });
-
-        if (afterPopTransactionRunnable != null) {
-            afterPopTransactionRunnable.run();
-        }
     }
 
     /**
