@@ -24,9 +24,6 @@ public abstract class Action {
 
     public Action(int action) {
         this.action = action;
-        if (action == ACTION_POP_MOCK) {
-            duration = BUFFER_TIME;
-        }
     }
 
     public Action(int action, FragmentManager fragmentManager) {
