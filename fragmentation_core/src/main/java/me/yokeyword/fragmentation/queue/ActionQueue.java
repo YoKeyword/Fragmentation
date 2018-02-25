@@ -59,15 +59,26 @@ public class ActionQueue {
         if (action.action == Action.ACTION_POP) {
             ISupportFragment top = SupportHelper.getTopFragment(action.fragmentManager);
             if (top == null) return;
-            long duration = top.getSupportDelegate().getExitAnimDuration();
-            action.duration = duration + Action.BUFFER_TIME;
+            action.duration = top.getSupportDelegate().getExitAnimDuration() + Action.BUFFER_TIME;
         }
 
+        final int currentAction = action.action;
         mMainHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mQueue.poll();
-                handleAction();
+                if (currentAction == Action.ACTION_POP || currentAction == Action.ACTION_POP_MOCK) {
+                    // For compatibility with v4-27+, see #653
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mQueue.poll();
+                            handleAction();
+                        }
+                    });
+                } else {
+                    mQueue.poll();
+                    handleAction();
+                }
             }
         }, action.duration);
     }
