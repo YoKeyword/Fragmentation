@@ -35,7 +35,7 @@ public class SupportFragmentDelegate {
     FragmentAnimator mFragmentAnimator;
     AnimatorHelper mAnimHelper;
     boolean mLockAnim;
-    private int mCustomEnterAnim = Integer.MIN_VALUE, mCustomExitAnim = Integer.MIN_VALUE;
+    private int mCustomEnterAnim = Integer.MIN_VALUE, mCustomExitAnim = Integer.MIN_VALUE, mCustomPopExitAnim = Integer.MIN_VALUE;
 
     private Handler mHandler;
     private boolean mFirstCreateView = true;
@@ -56,6 +56,8 @@ public class SupportFragmentDelegate {
     private ISupportActivity mSupport;
     boolean mAnimByActivity = true;
     EnterAnimListener mEnterAnimListener;
+
+    private boolean mRootViewClickable;
 
     public SupportFragmentDelegate(ISupportFragment support) {
         if (!(support instanceof Fragment))
@@ -96,6 +98,7 @@ public class SupportFragmentDelegate {
             mReplaceMode = bundle.getBoolean(TransactionDelegate.FRAGMENTATION_ARG_REPLACE, false);
             mCustomEnterAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_ENTER_ANIM, Integer.MIN_VALUE);
             mCustomExitAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_EXIT_ANIM, Integer.MIN_VALUE);
+            mCustomPopExitAnim = bundle.getInt(TransactionDelegate.FRAGMENTATION_ARG_CUSTOM_POP_EXIT_ANIM, Integer.MIN_VALUE);
         }
 
         if (savedInstanceState == null) {
@@ -164,18 +167,17 @@ public class SupportFragmentDelegate {
 
         View view = mFragment.getView();
         if (view != null) {
+            mRootViewClickable = view.isClickable();
             view.setClickable(true);
             setBackground(view);
         }
+
 
         if (savedInstanceState != null
                 || mRootStatus == STATUS_ROOT_ANIM_DISABLE
                 || (mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:"))
                 || (mReplaceMode && !mFirstCreateView)) {
             notifyEnterAnimEnd();
-        } else if (mCustomEnterAnim != Integer.MIN_VALUE) {
-            fixAnimationListener(mCustomEnterAnim == 0 ?
-                    mAnimHelper.getNoneAnim() : AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim));
         }
 
         if (mFirstCreateView) {
@@ -569,6 +571,22 @@ public class SupportFragmentDelegate {
         public void run() {
             if (mFragment == null) return;
             mSupportF.onEnterAnimationEnd(mSaveInstanceState);
+
+            if (mRootViewClickable) return;
+            final View view = mFragment.getView();
+            if (view == null) return;
+            ISupportFragment preFragment = SupportHelper.getPreFragment(mFragment);
+            if (preFragment == null) return;
+
+            long prePopExitDuration = preFragment.getSupportDelegate().getPopExitAnimDuration();
+            long enterDuration = getEnterAnimDuration();
+
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    view.setClickable(false);
+                }
+            }, prePopExitDuration - enterDuration);
         }
     };
 
@@ -624,6 +642,22 @@ public class SupportFragmentDelegate {
         return _mActivity;
     }
 
+    public long getEnterAnimDuration() {
+        if (mCustomEnterAnim == Integer.MIN_VALUE) {
+            if (mAnimHelper != null && mAnimHelper.enterAnim != null) {
+                return mAnimHelper.enterAnim.getDuration();
+            }
+        } else {
+            try {
+                return AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim).getDuration();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return NOT_FOUND_ANIM_TIME;
+    }
+
     public long getExitAnimDuration() {
         if (mCustomExitAnim == Integer.MIN_VALUE) {
             if (mAnimHelper != null && mAnimHelper.exitAnim != null) {
@@ -632,6 +666,22 @@ public class SupportFragmentDelegate {
         } else {
             try {
                 return AnimationUtils.loadAnimation(_mActivity, mCustomExitAnim).getDuration();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return NOT_FOUND_ANIM_TIME;
+    }
+
+    public long getPopExitAnimDuration() {
+        if (mCustomPopExitAnim == Integer.MIN_VALUE) {
+            if (mAnimHelper != null && mAnimHelper.popExitAnim != null) {
+                return mAnimHelper.popExitAnim.getDuration();
+            }
+        } else {
+            try {
+                return AnimationUtils.loadAnimation(_mActivity, mCustomPopExitAnim).getDuration();
             } catch (Exception e) {
                 e.printStackTrace();
             }
