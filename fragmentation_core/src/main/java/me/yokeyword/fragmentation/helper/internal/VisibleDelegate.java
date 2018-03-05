@@ -25,7 +25,6 @@ public class VisibleDelegate {
     private boolean mNeedDispatch = true;
     private boolean mInvisibleWhenLeave;
     private boolean mIsFirstVisible = true;
-    private boolean mFixStatePagerAdapter;
     private boolean mFirstCreateViewCompatReplace = true;
 
     private Handler mHandler;
@@ -42,10 +41,9 @@ public class VisibleDelegate {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mSaveInstanceState = savedInstanceState;
-            if (!mFixStatePagerAdapter) { // setUserVisibleHint() may be called before onCreate()
-                mInvisibleWhenLeave = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
-                mFirstCreateViewCompatReplace = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_COMPAT_REPLACE);
-            }
+            // setUserVisibleHint() may be called before onCreate()
+            mInvisibleWhenLeave = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_IS_INVISIBLE_WHEN_LEAVE);
+            mFirstCreateViewCompatReplace = savedInstanceState.getBoolean(FRAGMENTATION_STATE_SAVE_COMPAT_REPLACE);
         }
     }
 
@@ -63,8 +61,7 @@ public class VisibleDelegate {
             mFirstCreateViewCompatReplace = false;
         }
 
-        if (!mInvisibleWhenLeave && !mFragment.isHidden() &&
-                (mFragment.getUserVisibleHint() || mFixStatePagerAdapter)) {
+        if (!mInvisibleWhenLeave && !mFragment.isHidden() && mFragment.getUserVisibleHint()) {
             if ((mFragment.getParentFragment() != null && isFragmentVisible(mFragment.getParentFragment()))
                     || mFragment.getParentFragment() == null) {
                 mNeedDispatch = false;
@@ -107,19 +104,15 @@ public class VisibleDelegate {
 
     public void onDestroyView() {
         mIsFirstVisible = true;
-        mFixStatePagerAdapter = false;
     }
 
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (mFragment.isResumed() || (mFragment.isDetached() && isVisibleToUser)) {
+        if (mFragment.isResumed() || (!mFragment.isAdded() && isVisibleToUser)) {
             if (!mIsSupportVisible && isVisibleToUser) {
                 safeDispatchUserVisibleHint(true);
             } else if (mIsSupportVisible && !isVisibleToUser) {
                 dispatchSupportVisible(false);
             }
-        } else if (isVisibleToUser) {
-            mInvisibleWhenLeave = false;
-            mFixStatePagerAdapter = true;
         }
     }
 
