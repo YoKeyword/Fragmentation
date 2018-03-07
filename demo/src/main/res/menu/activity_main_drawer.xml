@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_discover_white_24dp"
             android:title="@string/discover"/>
         <item
-            android:id="@+id/nav_msg"
+            android:id="@+id/nav_shop"
             android:icon="@drawable/ic_message_white_24dp"
             android:title="@string/shop"/>
     </group>
