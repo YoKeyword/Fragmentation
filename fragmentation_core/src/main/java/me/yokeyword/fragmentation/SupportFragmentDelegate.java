@@ -480,6 +480,10 @@ public class SupportFragmentDelegate {
         mTransactionDelegate.startWithPop(mFragment.getFragmentManager(), mSupportF, toFragment);
     }
 
+    public void startWithPopTo(ISupportFragment toFragment, Class<?> targetFragmentClass, boolean includeTargetFragment) {
+        mTransactionDelegate.startWithPopTo(mFragment.getFragmentManager(), mSupportF, toFragment, targetFragmentClass.getName(), includeTargetFragment);
+    }
+
     public void replaceFragment(ISupportFragment toFragment, boolean addToBackStack) {
         mTransactionDelegate.dispatchStartTransaction(mFragment.getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, addToBackStack ? TransactionDelegate.TYPE_REPLACE : TransactionDelegate.TYPE_REPLACE_DONT_BACK);
     }

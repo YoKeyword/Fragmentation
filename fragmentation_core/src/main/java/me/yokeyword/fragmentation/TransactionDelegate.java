@@ -182,6 +182,41 @@ class TransactionDelegate {
         dispatchStartTransaction(fm, from, to, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD);
     }
 
+    void startWithPopTo(final FragmentManager fm, final ISupportFragment from, final ISupportFragment to, final String fragmentTag, final boolean includeTargetFragment) {
+        enqueue(fm, new Action(Action.ACTION_POP_MOCK) {
+            @Override
+            public void run() {
+                int flag = 0;
+                if (includeTargetFragment) {
+                    flag = FragmentManager.POP_BACK_STACK_INCLUSIVE;
+                }
+
+                List<Fragment> willPopFragments = SupportHelper.getWillPopFragments(fm, fragmentTag, includeTargetFragment);
+
+                final ISupportFragment top = getTopFragmentForStart(from, fm);
+                if (top == null)
+                    throw new NullPointerException("There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment() first!");
+
+                int containerId = top.getSupportDelegate().mContainerId;
+                bindContainerId(containerId, to);
+
+                if (willPopFragments.size() <= 0) return;
+
+                handleAfterSaveInStateTransactionException(fm, "startWithPopTo()");
+                FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
+                if (!FragmentationMagician.isStateSaved(fm)) {
+                    mockStartWithPopAnim(SupportHelper.getTopFragment(fm), to, top.getSupportDelegate().mAnimHelper.popExitAnim);
+                }
+
+                safePopTo(fragmentTag, fm, flag, willPopFragments);
+            }
+
+        });
+
+        dispatchStartTransaction(fm, from, to, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD);
+    }
+
+
     /**
      * Remove
      */
