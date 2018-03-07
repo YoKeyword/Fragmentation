@@ -118,6 +118,33 @@ public class SupportFragmentDelegate {
         // Fix the overlapping BUG on pre-24.0.0
         processRestoreInstanceState(savedInstanceState);
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
+
+        final Animation enter = getEnterAnim();
+        if (enter == null) return;
+
+        getEnterAnim().setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mSupport.getSupportDelegate().mFragmentClickable = false;  // 开启防抖动
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSupport.getSupportDelegate().mFragmentClickable = true;
+                    }
+                }, enter.getDuration());
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -550,7 +577,6 @@ public class SupportFragmentDelegate {
     }
 
     private void fixAnimationListener(Animation enterAnim) {
-        mSupport.getSupportDelegate().mFragmentClickable = false;
         // AnimationListener is not reliable.
         getHandler().postDelayed(mNotifyEnterAnimEndRunnable, enterAnim.getDuration());
         mSupport.getSupportDelegate().mFragmentClickable = true;
@@ -642,18 +668,25 @@ public class SupportFragmentDelegate {
         return _mActivity;
     }
 
-    public long getEnterAnimDuration() {
+    private Animation getEnterAnim() {
         if (mCustomEnterAnim == Integer.MIN_VALUE) {
             if (mAnimHelper != null && mAnimHelper.enterAnim != null) {
-                return mAnimHelper.enterAnim.getDuration();
+                return mAnimHelper.enterAnim;
             }
         } else {
             try {
-                return AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim).getDuration();
+                return AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        return null;
+    }
 
+    private long getEnterAnimDuration() {
+        Animation enter = getEnterAnim();
+        if (enter != null) {
+            return enter.getDuration();
         }
         return NOT_FOUND_ANIM_TIME;
     }
@@ -674,7 +707,7 @@ public class SupportFragmentDelegate {
         return NOT_FOUND_ANIM_TIME;
     }
 
-    public long getPopExitAnimDuration() {
+    private long getPopExitAnimDuration() {
         if (mCustomPopExitAnim == Integer.MIN_VALUE) {
             if (mAnimHelper != null && mAnimHelper.popExitAnim != null) {
                 return mAnimHelper.popExitAnim.getDuration();
@@ -688,6 +721,22 @@ public class SupportFragmentDelegate {
 
         }
         return NOT_FOUND_ANIM_TIME;
+    }
+
+    @Nullable
+    Animation getExitAnim() {
+        if (mCustomExitAnim == Integer.MIN_VALUE) {
+            if (mAnimHelper != null && mAnimHelper.exitAnim != null) {
+                return mAnimHelper.exitAnim;
+            }
+        } else {
+            try {
+                return AnimationUtils.loadAnimation(_mActivity, mCustomExitAnim);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     interface EnterAnimListener {

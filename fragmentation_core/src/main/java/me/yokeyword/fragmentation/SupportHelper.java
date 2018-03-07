@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentationMagician;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -168,5 +169,86 @@ public class SupportHelper {
             }
         }
         return parentFragment;
+    }
+
+    /**
+     * Get the topFragment from BackStack
+     */
+    public static ISupportFragment getBackStackTopFragment(FragmentManager fragmentManager) {
+        return getBackStackTopFragment(fragmentManager, 0);
+    }
+
+    /**
+     * Get the topFragment from BackStack
+     */
+    public static ISupportFragment getBackStackTopFragment(FragmentManager fragmentManager, int containerId) {
+        int count = fragmentManager.getBackStackEntryCount();
+
+        for (int i = count - 1; i >= 0; i--) {
+            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
+            Fragment fragment = fragmentManager.findFragmentByTag(entry.getName());
+            if (fragment instanceof ISupportFragment) {
+                ISupportFragment supportFragment = (ISupportFragment) fragment;
+                if (containerId == 0) return supportFragment;
+
+                if (containerId == supportFragment.getSupportDelegate().mContainerId) {
+                    return supportFragment;
+                }
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T extends ISupportFragment> T findBackStackFragment(Class<T> fragmentClass, String toFragmentTag, FragmentManager fragmentManager) {
+        int count = fragmentManager.getBackStackEntryCount();
+
+        if (toFragmentTag == null) {
+            toFragmentTag = fragmentClass.getName();
+        }
+
+        for (int i = count - 1; i >= 0; i--) {
+            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
+
+            if (toFragmentTag.equals(entry.getName())) {
+                Fragment fragment = fragmentManager.findFragmentByTag(entry.getName());
+                if (fragment instanceof ISupportFragment) {
+                    return (T) fragment;
+                }
+            }
+        }
+        return null;
+    }
+
+    static List<Fragment> getWillPopFragments(FragmentManager fm, String targetTag, boolean includeTarget) {
+        Fragment target = fm.findFragmentByTag(targetTag);
+        List<Fragment> willPopFragments = new ArrayList<>();
+
+        List<Fragment> fragmentList = FragmentationMagician.getActiveFragments(fm);
+        if (fragmentList == null) return willPopFragments;
+
+        int size = fragmentList.size();
+
+        int startIndex = -1;
+        for (int i = size - 1; i >= 0; i--) {
+            if (target == fragmentList.get(i)) {
+                if (includeTarget) {
+                    startIndex = i;
+                } else if (i + 1 < size) {
+                    startIndex = i + 1;
+                }
+                break;
+            }
+        }
+
+        if (startIndex == -1) return willPopFragments;
+
+        for (int i = size - 1; i >= startIndex; i--) {
+            Fragment fragment = fragmentList.get(i);
+            if (fragment != null) {
+                willPopFragments.add(fragmentList.get(i));
+            }
+        }
+        return willPopFragments;
     }
 }

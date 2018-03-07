@@ -14,7 +14,7 @@ import java.util.List;
  * Created by YoKey on 16/1/22.
  */
 public class FragmentationMagician {
-    private static boolean sSupportLessThan25dot4 = false;
+    public static boolean sSupportLessThan25dot4 = false;
 
     static {
         Field[] fields = FragmentManagerImpl.class.getDeclaredFields();
