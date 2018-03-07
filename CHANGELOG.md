@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+Added `startWithPopTo()`, Improve the stability of `pop()`/`popTo()`.
+
 ## 1.2.0
 Added ActionQueue mechanism, this will improve stability.
 
