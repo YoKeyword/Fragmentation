@@ -141,6 +141,7 @@ public class MainActivity extends MySupportActivity
                 int id = item.getItemId();
 
                 final ISupportFragment topFragment = getTopFragment();
+                MySupportFragment myHome = (MySupportFragment) topFragment;
 
                 if (id == R.id.nav_home) {
 
@@ -149,34 +150,23 @@ public class MainActivity extends MySupportActivity
                     newBundle.putString("from", "From:" + topFragment.getClass().getSimpleName());
                     fragment.putNewBundle(newBundle);
 
-                    start(fragment, SupportFragment.SINGLETASK);
+                    myHome.start(fragment, SupportFragment.SINGLETASK);
                 } else if (id == R.id.nav_discover) {
                     DiscoverFragment fragment = findFragment(DiscoverFragment.class);
                     if (fragment == null) {
-                        popTo(HomeFragment.class, false, new Runnable() {
-                            @Override
-                            public void run() {
-                                start(DiscoverFragment.newInstance());
-                            }
-                        });
+                        myHome.startWithPopTo(DiscoverFragment.newInstance(), HomeFragment.class, false);
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start
-                        start(fragment, SupportFragment.SINGLETASK);
+                        myHome.start(fragment, SupportFragment.SINGLETASK);
                     }
-                } else if (id == R.id.nav_msg) {
+                } else if (id == R.id.nav_shop) {
                     ShopFragment fragment = findFragment(ShopFragment.class);
                     if (fragment == null) {
-                        popTo(HomeFragment.class, false, new Runnable() {
-                            @Override
-                            public void run() {
-                                start(ShopFragment.newInstance());
-                                // 设置pop动画为： popExit， 配合start()，视觉上动画会很合理（类似startWithPop()的动画）
-                            }
-                        }, getFragmentAnimator().getPopExit());
+                        myHome.startWithPopTo(ShopFragment.newInstance(), HomeFragment.class, false);
                     } else {
                         // 如果已经在栈内,则以SingleTask模式start,也可以用popTo
 //                        start(fragment, SupportFragment.SINGLETASK);
-                        popTo(ShopFragment.class, false);
+                        myHome.popTo(ShopFragment.class, false);
                     }
                 } else if (id == R.id.nav_login) {
                     goLogin();
