@@ -562,7 +562,7 @@ class TransactionDelegate {
         List<Fragment> willPopFragments = SupportHelper.getWillPopFragments(fm, targetFragmentTag, includeTargetFragment);
         if (willPopFragments.size() <= 0) return;
 
-        Fragment top = willPopFragments.get(willPopFragments.size() - 1);
+        Fragment top = willPopFragments.get(0);
         mockPopToAnim(top, targetFragmentTag, fm, flag, willPopFragments, popAnim);
     }
 
