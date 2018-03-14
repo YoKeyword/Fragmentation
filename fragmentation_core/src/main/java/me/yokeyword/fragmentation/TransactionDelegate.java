@@ -396,7 +396,7 @@ class TransactionDelegate {
                     throw new IllegalStateException("Can't find container, please call loadRootFragment() first!");
                 }
             }
-            top = SupportHelper.getBackStackTopFragment(fm, from.getSupportDelegate().mContainerId);
+            top = SupportHelper.getTopFragment(fm, from.getSupportDelegate().mContainerId);
         }
         return top;
     }
