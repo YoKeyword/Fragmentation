@@ -245,8 +245,8 @@ public class SupportHelper {
 
         for (int i = size - 1; i >= startIndex; i--) {
             Fragment fragment = fragmentList.get(i);
-            if (fragment != null) {
-                willPopFragments.add(fragmentList.get(i));
+            if (fragment != null && fragment.getView() != null) {
+                willPopFragments.add(fragment);
             }
         }
         return willPopFragments;
