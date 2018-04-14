@@ -60,32 +60,39 @@ public class FragmentAnimator implements Parcelable {
         return enter;
     }
 
-    public void setEnter(int enter) {
+    public FragmentAnimator setEnter(int enter) {
         this.enter = enter;
+        return this;
     }
 
     public int getExit() {
         return exit;
     }
 
-    public void setExit(int exit) {
+    /**
+     * enter animation
+     */
+    public FragmentAnimator setExit(int exit) {
         this.exit = exit;
+        return this;
     }
 
     public int getPopEnter() {
         return popEnter;
     }
 
-    public void setPopEnter(int popEnter) {
+    public FragmentAnimator setPopEnter(int popEnter) {
         this.popEnter = popEnter;
+        return this;
     }
 
     public int getPopExit() {
         return popExit;
     }
 
-    public void setPopExit(int popExit) {
+    public FragmentAnimator setPopExit(int popExit) {
         this.popExit = popExit;
+        return this;
     }
 
     @Override
