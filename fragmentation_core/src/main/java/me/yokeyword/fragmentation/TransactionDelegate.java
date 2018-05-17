@@ -320,13 +320,8 @@ class TransactionDelegate {
             final ResultRecord resultRecord = args.getParcelable(FRAGMENTATION_ARG_RESULT_RECORD);
             if (resultRecord == null) return;
 
-            final ISupportFragment targetFragment = (ISupportFragment) from.getFragmentManager().getFragment(from.getArguments(), FRAGMENTATION_STATE_SAVE_RESULT);
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    targetFragment.onFragmentResult(resultRecord.requestCode, resultRecord.resultCode, resultRecord.resultBundle);
-                }
-            });
+            ISupportFragment targetFragment = (ISupportFragment) from.getFragmentManager().getFragment(from.getArguments(), FRAGMENTATION_STATE_SAVE_RESULT);
+            targetFragment.onFragmentResult(resultRecord.requestCode, resultRecord.resultCode, resultRecord.resultBundle);
         } catch (IllegalStateException ignored) {
             // Fragment no longer exists
         }
@@ -580,7 +575,7 @@ class TransactionDelegate {
         FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
         mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
 
-        if (FragmentationMagician.sSupportLessThan25dot4) {
+        if (FragmentationMagician.isSupportLessThan25dot4()) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
