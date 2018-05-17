@@ -14,8 +14,8 @@ import java.util.List;
  * Created by YoKey on 16/1/22.
  */
 public class FragmentationMagician {
-    public static boolean sSupportLessThan25dot4 = false;
-    public static boolean sSupportGreaterThan27dot1dot0 = false;
+    private static boolean sSupportLessThan25dot4 = false;
+    private static boolean sSupportGreaterThan27dot1dot0 = false;
 
     static {
         Field[] fields = FragmentManagerImpl.class.getDeclaredFields();
@@ -28,6 +28,10 @@ public class FragmentationMagician {
                 break;
             }
         }
+    }
+
+    public static boolean isSupportLessThan25dot4() {
+        return sSupportLessThan25dot4;
     }
 
     public static boolean isExecutingActions(FragmentManager fragmentManager) {
@@ -193,18 +197,19 @@ public class FragmentationMagician {
 
     /**
      * Compat v27.1.0+
-     *
+     * <p>
      * So the code to compile Fragmentation needs v27.1.0+
      *
      * @see FragmentManager#isStateSaved()
      */
     private static void compatRunAction(FragmentManagerImpl fragmentManagerImpl, Runnable runnable) {
-        if (sSupportGreaterThan27dot1dot0) {
-            fragmentManagerImpl.mStopped = false;
+        if (!sSupportGreaterThan27dot1dot0) {
             runnable.run();
-            fragmentManagerImpl.mStopped = true;
-        } else {
-            runnable.run();
+            return;
         }
+
+        fragmentManagerImpl.mStopped = false;
+        runnable.run();
+        fragmentManagerImpl.mStopped = true;
     }
 }

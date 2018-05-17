@@ -575,7 +575,7 @@ class TransactionDelegate {
         FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
         mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
 
-        if (FragmentationMagician.sSupportLessThan25dot4) {
+        if (FragmentationMagician.isSupportLessThan25dot4()) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
