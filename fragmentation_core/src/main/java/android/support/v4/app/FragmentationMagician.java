@@ -15,11 +15,15 @@ import java.util.List;
  */
 public class FragmentationMagician {
     public static boolean sSupportLessThan25dot4 = false;
+    public static boolean sSupportGreaterThan27dot1dot0 = false;
 
     static {
         Field[] fields = FragmentManagerImpl.class.getDeclaredFields();
         for (Field field : fields) {
-            if (field.getName().equals("mAvailIndices")) {
+            if (field.getName().equals("mStopped")) { //  > v27.1.0
+                sSupportGreaterThan27dot1dot0 = true;
+                break;
+            } else if (field.getName().equals("mAvailIndices")) { // < 25.4.0
                 sSupportLessThan25dot4 = true;
                 break;
             }
@@ -180,8 +184,25 @@ public class FragmentationMagician {
         FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
         if (isStateSaved(fragmentManager)) {
             fragmentManagerImpl.mStateSaved = false;
-            runnable.run();
+            compatRunAction(fragmentManagerImpl, runnable);
             fragmentManagerImpl.mStateSaved = true;
+        } else {
+            runnable.run();
+        }
+    }
+
+    /**
+     * Compat v27.1.0+
+     *
+     * So the code to compile Fragmentation needs v27.1.0+
+     *
+     * @see FragmentManager#isStateSaved()
+     */
+    private static void compatRunAction(FragmentManagerImpl fragmentManagerImpl, Runnable runnable) {
+        if (sSupportGreaterThan27dot1dot0) {
+            fragmentManagerImpl.mStopped = false;
+            runnable.run();
+            fragmentManagerImpl.mStopped = true;
         } else {
             runnable.run();
         }
