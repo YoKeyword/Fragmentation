@@ -68,6 +68,8 @@ public abstract class ExtraTransaction {
 
     public abstract void startDontHideSelf(ISupportFragment toFragment);
 
+    public abstract void startDontHideSelf(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode);
+
     public abstract void start(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode);
 
     public abstract void startForResult(ISupportFragment toFragment, int requestCode);
@@ -239,6 +241,12 @@ public abstract class ExtraTransaction {
         public void startDontHideSelf(ISupportFragment toFragment) {
             toFragment.getSupportDelegate().mTransactionRecord = mRecord;
             mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), mSupportF, toFragment, 0, ISupportFragment.STANDARD, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
+        }
+
+        @Override
+        public void startDontHideSelf(ISupportFragment toFragment, @ISupportFragment.LaunchMode int launchMode) {
+            toFragment.getSupportDelegate().mTransactionRecord = mRecord;
+            mTransactionDelegate.dispatchStartTransaction(getFragmentManager(), mSupportF, toFragment, 0, launchMode, TransactionDelegate.TYPE_ADD_WITHOUT_HIDE);
         }
 
         @Override
