@@ -247,19 +247,23 @@ class TransactionDelegate {
             @Override
             public void run() {
                 handleAfterSaveInStateTransactionException(fm, "pop()");
-                removeTopFragment(fm);
                 FragmentationMagician.popBackStackAllowingStateLoss(fm);
+                removeTopFragment(fm);
             }
         });
     }
 
     private void removeTopFragment(FragmentManager fm) {
-        ISupportFragment top = SupportHelper.getBackStackTopFragment(fm);
-        if (top != null) {
-            fm.beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                    .remove((Fragment) top)
-                    .commitAllowingStateLoss();
+        try { // Safe popBackStack()
+            ISupportFragment top = SupportHelper.getBackStackTopFragment(fm);
+            if (top != null) {
+                fm.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                        .remove((Fragment) top)
+                        .commitAllowingStateLoss();
+            }
+        } catch (Exception ignored) {
+
         }
     }
 
