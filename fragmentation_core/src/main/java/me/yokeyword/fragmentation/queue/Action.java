@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
  */
 
 public abstract class Action {
-    public static final int BUFFER_TIME = 60;
+    public static final long DEFAULT_POP_TIME = 300L;
 
     public static final int ACTION_NORMAL = 0;
     public static final int ACTION_POP = 1;

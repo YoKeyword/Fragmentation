@@ -58,8 +58,7 @@ public class ActionQueue {
     private void executeNextAction(Action action) {
         if (action.action == Action.ACTION_POP) {
             ISupportFragment top = SupportHelper.getBackStackTopFragment(action.fragmentManager);
-            if (top == null) return;
-            action.duration = top.getSupportDelegate().getExitAnimDuration();
+            action.duration = top == null ? Action.DEFAULT_POP_TIME : top.getSupportDelegate().getExitAnimDuration();
         }
 
         mMainHandler.postDelayed(new Runnable() {
