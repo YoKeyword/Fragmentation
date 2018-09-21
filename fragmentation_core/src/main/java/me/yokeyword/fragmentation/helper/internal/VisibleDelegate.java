@@ -177,7 +177,11 @@ public class VisibleDelegate {
     }
 
     private boolean isParentInvisible() {
-        ISupportFragment fragment = (ISupportFragment) mFragment.getParentFragment();
+        Fragment parentFragment = mFragment.getParentFragment();
+        ISupportFragment fragment = null;
+        if (parentFragment instanceof ISupportFragment) {       //此处强转是否要check? 在获得了parentManager的时候
+            fragment = (ISupportFragment) parentFragment;
+        }
         return fragment != null && !fragment.isSupportVisible();
     }
 
