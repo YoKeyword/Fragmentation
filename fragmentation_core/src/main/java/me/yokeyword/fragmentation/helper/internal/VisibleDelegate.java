@@ -135,7 +135,10 @@ public class VisibleDelegate {
     }
 
     private void dispatchSupportVisible(boolean visible) {
-        if (visible && isParentInvisible()) return;
+        if (visible && isParentInvisible()) {
+            mNeedDispatch = true;
+            return;
+        }
 
         if (mIsSupportVisible == visible) {
             mNeedDispatch = true;
