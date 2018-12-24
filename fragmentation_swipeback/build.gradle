@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -13,6 +12,6 @@ android {
 }
 
 dependencies {
-    provided "com.android.support:appcompat-v7:$rootProject.v4Version"
-    provided project(':fragmentation')
+    compileOnly "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+    compileOnly project(':fragmentation')
 }

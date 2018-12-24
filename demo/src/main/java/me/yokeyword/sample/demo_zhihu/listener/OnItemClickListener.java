@@ -1,6 +1,6 @@
 package me.yokeyword.sample.demo_zhihu.listener;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 public interface OnItemClickListener {

@@ -12,7 +12,6 @@ static def gitLatestTag() {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         applicationId "me.yokeyword.sample"
@@ -52,17 +51,17 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile "com.android.support:appcompat-v7:$rootProject.v4Version"
-    compile "com.android.support:design:$rootProject.v4Version"
-    compile "com.android.support:cardview-v7:$rootProject.v4Version"
-    compile "com.android.support:recyclerview-v7:$rootProject.v4Version"
-    compile project(':fragmentation')
-    compile project(':fragmentation_swipeback')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    api "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
+    api project(':fragmentation')
+    api project(':fragmentation_swipeback')
     // EventBus
-    compile project(':eventbus_activity_scope')
-    compile 'org.greenrobot:eventbus:3.0.0'
+    api project(':eventbus_activity_scope')
+    implementation 'org.greenrobot:eventbus:3.0.0'
     //    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 }
 

@@ -6,7 +6,7 @@
               android:gravity="center"
               android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="300dp"
         android:layout_height="150dp"
         android:background="@android:color/white">
@@ -17,5 +17,5 @@
             android:layout_gravity="center"
             android:text="ViewFragment"
             android:textSize="18sp"/>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>
