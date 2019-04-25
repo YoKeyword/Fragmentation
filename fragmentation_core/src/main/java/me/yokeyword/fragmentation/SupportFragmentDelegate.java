@@ -205,6 +205,9 @@ public class SupportFragmentDelegate {
                 || (mFragment.getTag() != null && mFragment.getTag().startsWith("android:switcher:"))
                 || (mReplaceMode && !mFirstCreateView)) {
             notifyEnterAnimEnd();
+        } else if (mCustomEnterAnim != Integer.MIN_VALUE) {
+            fixAnimationListener(mCustomEnterAnim == 0 ?
+                    mAnimHelper.getNoneAnim() : AnimationUtils.loadAnimation(_mActivity, mCustomEnterAnim));
         }
 
         if (mFirstCreateView) {

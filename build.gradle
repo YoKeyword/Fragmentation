@@ -28,5 +28,5 @@ ext {
     minSdkVersion = 14
     targetSdkVersion = compileSdkVersion
 
-    v4Version = "27.1.0"
+    v4Version = "27.1.1"
 }
