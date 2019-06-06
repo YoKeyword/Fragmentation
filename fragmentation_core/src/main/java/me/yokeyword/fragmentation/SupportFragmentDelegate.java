@@ -561,7 +561,7 @@ public class SupportFragmentDelegate {
     }
 
     public void popQuiet() {
-        mTransactionDelegate.popQuiet(mFragment.getFragmentManager());
+        mTransactionDelegate.popQuiet(mFragment.getFragmentManager(), mFragment);
     }
 
     private FragmentManager getChildFragmentManager() {

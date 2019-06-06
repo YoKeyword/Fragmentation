@@ -267,12 +267,13 @@ class TransactionDelegate {
         }
     }
 
-    void popQuiet(final FragmentManager fm) {
+    void popQuiet(final FragmentManager fm, final Fragment fragment) {
         enqueue(fm, new Action(Action.ACTION_POP_MOCK) {
             @Override
             public void run() {
                 mSupport.getSupportDelegate().mPopMultipleNoAnim = true;
                 removeTopFragment(fm);
+                FragmentationMagician.popBackStackAllowingStateLoss(fm, fragment.getTag(), 0);
                 FragmentationMagician.popBackStackAllowingStateLoss(fm);
                 FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
                 mSupport.getSupportDelegate().mPopMultipleNoAnim = false;
