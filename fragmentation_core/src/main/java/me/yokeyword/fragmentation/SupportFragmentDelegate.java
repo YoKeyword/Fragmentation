@@ -6,16 +6,15 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-
-import androidx.fragment.app.FragmentationMagician;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 import me.yokeyword.fragmentation.helper.internal.AnimatorHelper;
 import me.yokeyword.fragmentation.helper.internal.ResultRecord;
@@ -109,15 +108,8 @@ public class SupportFragmentDelegate {
             mFragmentAnimator = savedInstanceState.getParcelable(TransactionDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
             mContainerId = savedInstanceState.getInt(TransactionDelegate.FRAGMENTATION_ARG_CONTAINER);
-
-            // RootFragment
-            if (mRootStatus != STATUS_UN_ROOT) {
-                FragmentationMagician.reorderIndices(mFragment.getFragmentManager());
-            }
         }
 
-        // Fix the overlapping BUG on pre-24.0.0
-        processRestoreInstanceState(savedInstanceState);
         mAnimHelper = new AnimatorHelper(_mActivity.getApplicationContext(), mFragmentAnimator);
 
         final Animation enter = getEnterAnim();
@@ -570,18 +562,6 @@ public class SupportFragmentDelegate {
 
     private ISupportFragment getTopFragment() {
         return SupportHelper.getTopFragment(getChildFragmentManager());
-    }
-
-    private void processRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            FragmentTransaction ft = mFragment.getFragmentManager().beginTransaction();
-            if (mIsHidden) {
-                ft.hide(mFragment);
-            } else {
-                ft.show(mFragment);
-            }
-            ft.commitAllowingStateLoss();
-        }
     }
 
     private void fixAnimationListener(Animation enterAnim) {
