@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.FloatRange;
 import android.support.annotation.IntDef;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -102,6 +103,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private int mContentLeft;
     private int mContentTop;
+    private float mSwipeAlpha = 0.5f;
 
     /**
      * The set of listeners to be sent events through.
@@ -142,12 +144,21 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
     /**
+     * 滑动中，上一个页面View的阴影透明度
+     *
+     * @param alpha 0.0f:无阴影, 1.0f:较重的阴影, 默认:0.5f
+     */
+    public void setSwipeAlpha(@FloatRange(from = 0.0f, to = 1.0f) float alpha) {
+        this.mSwipeAlpha = alpha;
+    }
+
+    /**
      * Set scroll threshold, we will close the activity, when scrollPercent over
      * this value
      *
      * @param threshold
      */
-    public void setScrollThresHold(float threshold) {
+    public void setScrollThresHold(@FloatRange(from = 0.0f, to = 1.0f) float threshold) {
         if (threshold >= 1.0f || threshold <= 0) {
             throw new IllegalArgumentException("Threshold value should be between 0 and 1.0");
         }
@@ -282,7 +293,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private void drawScrim(Canvas canvas, View child) {
         final int baseAlpha = (DEFAULT_SCRIM_COLOR & 0xff000000) >>> 24;
-        final int alpha = (int) (baseAlpha * mScrimOpacity);
+        final int alpha = (int) (baseAlpha * mScrimOpacity * mSwipeAlpha);
         final int color = alpha << 24;
 
         if ((mCurrentSwipeOrientation & EDGE_LEFT) != 0) {
