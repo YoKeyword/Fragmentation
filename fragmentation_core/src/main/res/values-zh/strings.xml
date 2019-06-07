@@ -1,0 +1,4 @@
+<resources>
+    <string name="fragmentation_stack_view">栈视图</string>
+    <string name="fragmentation_stack_help">*: 不在回退栈中\n☀: 可见的Fragment</string>
+</resources>

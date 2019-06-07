@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.yokeyword.fragmentation.Fragmentation;
+import me.yokeyword.fragmentation.ISupportFragment;
 import me.yokeyword.fragmentation.R;
 
 /**
@@ -196,7 +197,7 @@ public class DebugStackDelegate implements SensorEventListener {
             int backStackCount = fragment.getFragmentManager().getBackStackEntryCount();
             CharSequence name = fragment.getClass().getSimpleName();
             if (backStackCount == 0) {
-                name = span(name);
+                name = span(name, " *");
             } else {
                 for (int j = 0; j < backStackCount; j++) {
                     FragmentManager.BackStackEntry entry = fragment.getFragmentManager().getBackStackEntryAt(j);
@@ -205,17 +206,22 @@ public class DebugStackDelegate implements SensorEventListener {
                         break;
                     }
                     if (j == backStackCount - 1) {
-                        name = span(name);
+                        name = span(name, " *");
                     }
                 }
             }
+
+            if (fragment instanceof ISupportFragment && ((ISupportFragment)fragment).isSupportVisible()) {
+                name = span(name, " ☀");
+            }
+
             fragmentRecords.add(new DebugFragmentRecord(name, getChildFragmentRecords(fragment)));
         }
     }
 
     @NonNull
-    private CharSequence span(CharSequence name) {
-        name = name + " *";
+    private CharSequence span(CharSequence name, String str) {
+        name = name + str;
         return name;
     }
 

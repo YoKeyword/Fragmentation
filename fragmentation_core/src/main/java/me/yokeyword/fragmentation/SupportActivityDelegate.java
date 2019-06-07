@@ -32,6 +32,7 @@ public class SupportActivityDelegate {
             throw new RuntimeException("Must extends FragmentActivity/AppCompatActivity");
         this.mSupport = support;
         this.mActivity = (FragmentActivity) support;
+        this.mDebugStackDelegate = new DebugStackDelegate(this.mActivity);
     }
 
     /**
@@ -44,8 +45,6 @@ public class SupportActivityDelegate {
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mTransactionDelegate = getTransactionDelegate();
-        mDebugStackDelegate = new DebugStackDelegate(mActivity);
-
         mFragmentAnimator = mSupport.onCreateFragmentAnimator();
         mDebugStackDelegate.onCreate(Fragmentation.getDefault().getMode());
     }
