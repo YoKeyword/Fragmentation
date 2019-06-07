@@ -1,8 +1,8 @@
 package me.yokeyword.sample.demo_zhihu.adapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import me.yokeyword.sample.demo_zhihu.ui.fragment.second.child.childpager.FirstPagerFragment;
 import me.yokeyword.sample.demo_zhihu.ui.fragment.second.child.childpager.OtherPagerFragment;

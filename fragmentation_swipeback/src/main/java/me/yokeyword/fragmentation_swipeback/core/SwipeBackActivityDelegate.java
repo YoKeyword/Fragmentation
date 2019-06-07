@@ -3,7 +3,7 @@ package me.yokeyword.fragmentation_swipeback.core;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.view.ViewGroup;
 
 import me.yokeyword.fragmentation.ISupportActivity;
