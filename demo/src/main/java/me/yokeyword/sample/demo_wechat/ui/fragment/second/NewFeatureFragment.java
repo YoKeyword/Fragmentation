@@ -53,6 +53,15 @@ public class NewFeatureFragment extends BaseBackFragment {
             }
         });
 
+        // 启动一个DialogFragment
+        view.findViewById(R.id.btn_dialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DemoDialogFragment dialogFragment = DemoDialogFragment.newInstance();
+                dialogFragment.show(getFragmentManager(), getClass().getSimpleName());
+            }
+        });
+
         return attachToSwipeBack(view);
     }
 
