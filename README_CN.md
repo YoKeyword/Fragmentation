@@ -1,9 +1,9 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Fragmentation-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5937)
 [![Build Status](https://travis-ci.org/YoKeyword/Fragmentation.svg?branch=master)](https://travis-ci.org/YoKeyword/Fragmentation)
-[![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
+[![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentationx/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentationx/_latestVersion)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-# Fragmentation
+# FragmentationX
 A powerful library that manage Fragment for Android!
 
 为"单Activity ＋ 多Fragment","多模块Activity + 多Fragment"架构而生，简化开发，轻松解决动画、嵌套、事务相关等问题。
@@ -11,7 +11,7 @@ A powerful library that manage Fragment for Android!
 ![](/gif/logo.png)
 
 
-为了更好的使用和了解该库，推荐阅读下面的文章:
+为了更好的使用该库，推荐阅读下面的文章:
 
 [Fragment全解析系列（一）：那些年踩过的坑](http://www.jianshu.com/p/d9143a92ad94)
 
@@ -48,21 +48,22 @@ A powerful library that manage Fragment for Android!
 <img src="/gif/stack.png" width="150px"/> <img src="/gif/log.png" width="300px"/>     <img src="/gif/SwipeBack.png" width="150px"/>
 
 # 如何使用
-
+### 注意：以下为androidx的使用方式，如果使用的是android.support包，[点击这里`master`分支](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
 **1. 项目下app的build.gradle中依赖：**
+
 ````gradle
-// appcompat-v7包是必须的
-compile 'me.yokeyword:fragmentation:1.3.7'
+// 以下为androidx的使用方式，如果使用的是android.support包，fragmentationx -> fragmentation 即可
+compile 'me.yokeyword:fragmentationx:1.0.0'
 
 // 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
-// compile 'me.yokeyword:fragmentation-core:1.3.7'
+// compile 'me.yokeyword:fragmentationx-core:1.0.0'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentation:1.3.7'
+compile 'me.yokeyword:fragmentationx:1.0.0'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentation-swipeback:1.3.7'
+compile 'me.yokeyword:fragmentationx-swipeback:1.0.0'
 
-// Activity作用域的EventBus，更安全，可有效避免after onSavenInstanceState()异常
+// Activity作用域的EventBus，通信更安全
 compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
 // Your EventBus's version
 compile 'org.greenrobot:eventbus:{version}'
