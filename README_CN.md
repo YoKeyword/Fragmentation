@@ -53,20 +53,20 @@ A powerful library that manage Fragment for Android!
 
 ````gradle
 // 以下为androidx的使用方式，如果使用的是android.support包，fragmentationx -> fragmentation 即可
-compile 'me.yokeyword:fragmentationx:1.0.0'
+implementation 'me.yokeyword:fragmentationx:1.0.1'
 
 // 如果不想继承SupportActivity/Fragment，自己定制Support，可仅依赖:
-// compile 'me.yokeyword:fragmentationx-core:1.0.0'
+// implementation 'me.yokeyword:fragmentationx-core:1.0.1'
 
 // 如果想使用SwipeBack 滑动边缘退出Fragment/Activity功能，完整的添加规则如下：
-compile 'me.yokeyword:fragmentationx:1.0.0'
+implementation 'me.yokeyword:fragmentationx:1.0.1'
 // swipeback基于fragmentation, 如果是自定制SupportActivity/Fragment，则参照SwipeBackActivity/Fragment实现即可
-compile 'me.yokeyword:fragmentationx-swipeback:1.0.0'
+implementation 'me.yokeyword:fragmentationx-swipeback:1.0.1'
 
 // Activity作用域的EventBus，通信更安全
-compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
+implementation 'me.yokeyword:eventbus-activity-scope:1.1.0'
 // Your EventBus's version
-compile 'org.greenrobot:eventbus:{version}'
+implementation 'org.greenrobot:eventbus:{version}'
 ````
 
 **2. Activity `extends` SupportActivity或者 `implements` ISupportActivity：(实现方式可参考[MySupportActivity](https://github.com/YoKeyword/Fragmentation/blob/master/demo/src/main/java/me/yokeyword/sample/demo_flow/base/MySupportActivity.java))**

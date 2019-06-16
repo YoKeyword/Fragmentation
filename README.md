@@ -46,20 +46,20 @@ The first demo shows the basic usage of the library. The second one shows the wa
 **1、build.gradle**
 ````gradle
 // This is the use of androidx, if you are using the android.support: fragmentationx -> fragmentation
-compile 'me.yokeyword:fragmentationx:1.0.0'
+implementation 'me.yokeyword:fragmentationx:1.0.1'
 
 // If you don't want to extends SupportActivity/Fragment and would like to customize your own support, just rely on fragmentation-core
-// compile 'me.yokeyword:fragmentationx-core:1.0.0'
+// implementation 'me.yokeyword:fragmentationx-core:1.0.1'
 
 // To get SwipeBack feature, rely on both fragmentation & fragmentation-swipeback
-compile 'me.yokeyword:fragmentationx:1.0.0'
+implementation 'me.yokeyword:fragmentationx:1.0.1'
 // Swipeback is based on fragmentation. Refer to SwipeBackActivity/Fragment for your Customized SupportActivity/Fragment
-compile 'me.yokeyword:fragmentationx-swipeback:1.0.0'
+implementation 'me.yokeyword:fragmentationx-swipeback:1.0.1'
 
 // To simplify the communication between Fragments.
-compile 'me.yokeyword:eventbus-activity-scope:1.1.0'
+implementation 'me.yokeyword:eventbus-activity-scope:1.1.0'
 // Your EventBus's version
-compile 'org.greenrobot:eventbus:{version}'
+implementation 'org.greenrobot:eventbus:{version}'
 ````
 
 **2. Activity `extends` SupportActivity or `implements` ISupportActivity：(refer to [MySupportActivity](https://github.com/YoKeyword/Fragmentation/blob/master/demo/src/main/java/me/yokeyword/sample/demo_flow/base/MySupportActivity.java))**

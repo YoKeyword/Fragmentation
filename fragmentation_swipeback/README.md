@@ -10,8 +10,8 @@ Activity内Fragment数大于1时，滑动返回的是Fragment，否则滑动返�
 ### 注意：以下为androidx的使用方式，如果使用的是android.support包，[点击这里](https://github.com/YoKeyword/Fragmentation/blob/master/fragmentation_swipeback/README.md)
 1、项目下app的build.gradle中依赖：
 ````gradle
-compile 'me.yokeyword:fragmentationx:1.0.0'
-compile 'me.yokeyword:fragmentationx-swipeback:1.0.0'
+implementation 'me.yokeyword:fragmentationx:1.0.1'
+implementation 'me.yokeyword:fragmentationx-swipeback:1.0.1'
 ````
 
 2、如果Activity也需要支持SwipeBack，则继承SwipeBackActivity:
