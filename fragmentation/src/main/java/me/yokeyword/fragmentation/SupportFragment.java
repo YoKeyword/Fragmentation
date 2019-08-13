@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.animation.Animation;
 
@@ -18,7 +19,7 @@ import me.yokeyword.fragmentation.anim.FragmentAnimator;
  */
 public class SupportFragment extends Fragment implements ISupportFragment {
     final SupportFragmentDelegate mDelegate = new SupportFragmentDelegate(this);
-    protected SupportActivity _mActivity;
+    protected FragmentActivity _mActivity;
 
     @Override
     public SupportFragmentDelegate getSupportDelegate() {
@@ -38,7 +39,7 @@ public class SupportFragment extends Fragment implements ISupportFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mDelegate.onAttach(activity);
-        _mActivity = (SupportActivity) mDelegate.getActivity();
+        _mActivity = mDelegate.getActivity();
     }
 
     @Override
