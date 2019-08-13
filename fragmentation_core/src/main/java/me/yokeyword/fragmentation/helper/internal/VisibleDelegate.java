@@ -26,6 +26,7 @@ public class VisibleDelegate {
     private boolean mInvisibleWhenLeave;
     private boolean mIsFirstVisible = true;
     private boolean mFirstCreateViewCompatReplace = true;
+    private Runnable taskDispatchSupportVisible;
 
     private Handler mHandler;
     private Bundle mSaveInstanceState;
@@ -80,6 +81,11 @@ public class VisibleDelegate {
     }
 
     public void onPause() {
+        if (taskDispatchSupportVisible != null) {
+            getHandler().removeCallbacks(taskDispatchSupportVisible);
+            return;
+        }
+
         if (mIsSupportVisible && isFragmentVisible(mFragment)) {
             mNeedDispatch = false;
             mInvisibleWhenLeave = false;
@@ -126,12 +132,14 @@ public class VisibleDelegate {
     }
 
     private void enqueueDispatchVisible() {
-        getHandler().post(new Runnable() {
+        taskDispatchSupportVisible = new Runnable() {
             @Override
             public void run() {
+                taskDispatchSupportVisible = null;
                 dispatchSupportVisible(true);
             }
-        });
+        };
+        getHandler().post(taskDispatchSupportVisible);
     }
 
     private void dispatchSupportVisible(boolean visible) {
