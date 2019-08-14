@@ -26,6 +26,7 @@ public class VisibleDelegate {
     private boolean mInvisibleWhenLeave;
     private boolean mIsFirstVisible = true;
     private boolean mFirstCreateViewCompatReplace = true;
+    private boolean mAbortInitVisible = false;
     private Runnable taskDispatchSupportVisible;
 
     private Handler mHandler;
@@ -62,6 +63,10 @@ public class VisibleDelegate {
             mFirstCreateViewCompatReplace = false;
         }
 
+        initVisible();
+    }
+
+    private void initVisible() {
         if (!mInvisibleWhenLeave && !mFragment.isHidden() && mFragment.getUserVisibleHint()) {
             if ((mFragment.getParentFragment() != null && isFragmentVisible(mFragment.getParentFragment()))
                     || mFragment.getParentFragment() == null) {
@@ -77,12 +82,18 @@ public class VisibleDelegate {
                 mNeedDispatch = false;
                 dispatchSupportVisible(true);
             }
+        } else {
+            if (mAbortInitVisible) {
+                mAbortInitVisible = false;
+                initVisible();
+            }
         }
     }
 
     public void onPause() {
         if (taskDispatchSupportVisible != null) {
             getHandler().removeCallbacks(taskDispatchSupportVisible);
+            mAbortInitVisible = true;
             return;
         }
 
