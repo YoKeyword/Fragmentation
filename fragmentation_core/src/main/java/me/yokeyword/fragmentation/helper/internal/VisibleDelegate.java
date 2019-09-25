@@ -109,13 +109,30 @@ public class VisibleDelegate {
     public void onHiddenChanged(boolean hidden) {
         if (!hidden && !mFragment.isResumed()) {
             //if fragment is shown but not resumed, ignore...
-            mInvisibleWhenLeave = false;
+            onFragmentShownWhenNotResumed();
             return;
         }
         if (hidden) {
             safeDispatchUserVisibleHint(false);
         } else {
             enqueueDispatchVisible();
+        }
+    }
+
+    private void onFragmentShownWhenNotResumed() {
+        mInvisibleWhenLeave = false;
+        dispatchChildOnFragmentShownWhenNotResumed();
+    }
+
+    private void dispatchChildOnFragmentShownWhenNotResumed() {
+        FragmentManager fragmentManager = mFragment.getChildFragmentManager();
+        List<Fragment> childFragments = FragmentationMagician.getActiveFragments(fragmentManager);
+        if (childFragments != null) {
+            for (Fragment child : childFragments) {
+                if (child instanceof ISupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
+                    ((ISupportFragment) child).getSupportDelegate().getVisibleDelegate().onFragmentShownWhenNotResumed();
+                }
+            }
         }
     }
 
