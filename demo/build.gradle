@@ -52,17 +52,17 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile "com.android.support:appcompat-v7:$rootProject.v4Version"
-    compile "com.android.support:design:$rootProject.v4Version"
-    compile "com.android.support:cardview-v7:$rootProject.v4Version"
-    compile "com.android.support:recyclerview-v7:$rootProject.v4Version"
-    compile project(':fragmentation')
-    compile project(':fragmentation_swipeback')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    testApi 'junit:junit:4.12'
+    api "com.android.support:appcompat-v7:$rootProject.v4Version"
+    api "com.android.support:design:$rootProject.v4Version"
+    api "com.android.support:cardview-v7:$rootProject.v4Version"
+    api "com.android.support:recyclerview-v7:$rootProject.v4Version"
+    api project(':fragmentation')
+    api project(':fragmentation_swipeback')
     // EventBus
-    compile project(':eventbus_activity_scope')
-    compile 'org.greenrobot:eventbus:3.0.0'
+    api project(':eventbus_activity_scope')
+    api 'org.greenrobot:eventbus:3.0.0'
     //    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 }
 

@@ -26,6 +26,8 @@ public class VisibleDelegate {
     private boolean mInvisibleWhenLeave;
     private boolean mIsFirstVisible = true;
     private boolean mFirstCreateViewCompatReplace = true;
+    private boolean mAbortInitVisible = false;
+    private Runnable taskDispatchSupportVisible;
 
     private Handler mHandler;
     private Bundle mSaveInstanceState;
@@ -61,6 +63,10 @@ public class VisibleDelegate {
             mFirstCreateViewCompatReplace = false;
         }
 
+        initVisible();
+    }
+
+    private void initVisible() {
         if (!mInvisibleWhenLeave && !mFragment.isHidden() && mFragment.getUserVisibleHint()) {
             if ((mFragment.getParentFragment() != null && isFragmentVisible(mFragment.getParentFragment()))
                     || mFragment.getParentFragment() == null) {
@@ -76,10 +82,21 @@ public class VisibleDelegate {
                 mNeedDispatch = false;
                 dispatchSupportVisible(true);
             }
+        } else {
+            if (mAbortInitVisible) {
+                mAbortInitVisible = false;
+                initVisible();
+            }
         }
     }
 
     public void onPause() {
+        if (taskDispatchSupportVisible != null) {
+            getHandler().removeCallbacks(taskDispatchSupportVisible);
+            mAbortInitVisible = true;
+            return;
+        }
+
         if (mIsSupportVisible && isFragmentVisible(mFragment)) {
             mNeedDispatch = false;
             mInvisibleWhenLeave = false;
@@ -92,13 +109,30 @@ public class VisibleDelegate {
     public void onHiddenChanged(boolean hidden) {
         if (!hidden && !mFragment.isResumed()) {
             //if fragment is shown but not resumed, ignore...
-            mInvisibleWhenLeave = false;
+            onFragmentShownWhenNotResumed();
             return;
         }
         if (hidden) {
             safeDispatchUserVisibleHint(false);
         } else {
             enqueueDispatchVisible();
+        }
+    }
+
+    private void onFragmentShownWhenNotResumed() {
+        mInvisibleWhenLeave = false;
+        dispatchChildOnFragmentShownWhenNotResumed();
+    }
+
+    private void dispatchChildOnFragmentShownWhenNotResumed() {
+        FragmentManager fragmentManager = mFragment.getChildFragmentManager();
+        List<Fragment> childFragments = FragmentationMagician.getActiveFragments(fragmentManager);
+        if (childFragments != null) {
+            for (Fragment child : childFragments) {
+                if (child instanceof ISupportFragment && !child.isHidden() && child.getUserVisibleHint()) {
+                    ((ISupportFragment) child).getSupportDelegate().getVisibleDelegate().onFragmentShownWhenNotResumed();
+                }
+            }
         }
     }
 
@@ -126,12 +160,14 @@ public class VisibleDelegate {
     }
 
     private void enqueueDispatchVisible() {
-        getHandler().post(new Runnable() {
+        taskDispatchSupportVisible = new Runnable() {
             @Override
             public void run() {
+                taskDispatchSupportVisible = null;
                 dispatchSupportVisible(true);
             }
-        });
+        };
+        getHandler().post(taskDispatchSupportVisible);
     }
 
     private void dispatchSupportVisible(boolean visible) {
