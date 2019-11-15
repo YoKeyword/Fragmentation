@@ -3,6 +3,8 @@
 [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
+# 注意：该项目不再维护
+
 # Fragmentation
 A powerful library that manage Fragment for Android!
 
