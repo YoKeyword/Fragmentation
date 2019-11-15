@@ -3,6 +3,8 @@
 [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
+# PLEASE NOTE, THIS PROJECT IS NO LONGER BEING MAINTAINED
+
 ### [中文版 README.md](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
 
 # Fragmentation
