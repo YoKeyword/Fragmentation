@@ -173,8 +173,8 @@ public class DebugHierarchyViewContainer extends ScrollView {
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight);
         tvItem.setLayoutParams(params);
+        tvItem.setTextColor(Color.parseColor("#333333"));
         if (hierarchy == 0) {
-            tvItem.setTextColor(Color.parseColor("#333333"));
             tvItem.setTextSize(16);
         }
         tvItem.setGravity(Gravity.CENTER_VERTICAL);
