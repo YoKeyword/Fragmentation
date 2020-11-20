@@ -12,7 +12,7 @@
         android:textSize="24sp"
         android:layout_height="wrap_content"/>
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarSettings"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"

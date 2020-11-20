@@ -1,7 +1,8 @@
 package me.yokeyword.sample.demo_flow.ui.fragment_swipe_back;
 
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment;
 import me.yokeyword.sample.R;

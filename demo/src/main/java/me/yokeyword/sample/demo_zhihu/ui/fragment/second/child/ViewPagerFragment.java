@@ -1,12 +1,14 @@
 package me.yokeyword.sample.demo_zhihu.ui.fragment.second.child;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;

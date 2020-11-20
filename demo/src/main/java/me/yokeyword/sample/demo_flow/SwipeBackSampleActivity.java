@@ -36,6 +36,7 @@ public class SwipeBackSampleActivity extends SwipeBackActivity {
         return super.swipeBackPriority();
     }
 
+    @Override
     public FragmentAnimator onCreateFragmentAnimator() {
         return new DefaultHorizontalAnimator();
     }

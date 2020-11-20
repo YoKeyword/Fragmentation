@@ -1,9 +1,10 @@
 package me.yokeyword.fragmentation_swipeback;
 
 import android.os.Bundle;
-import android.support.annotation.FloatRange;
-import android.support.annotation.Nullable;
 import android.view.View;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.fragmentation.SwipeBackLayout;
@@ -42,6 +43,7 @@ public class SwipeBackFragment extends SupportFragment implements ISwipeBackFrag
         mDelegate.onHiddenChanged(hidden);
     }
 
+    @Override
     public SwipeBackLayout getSwipeBackLayout() {
         return mDelegate.getSwipeBackLayout();
     }
@@ -51,6 +53,7 @@ public class SwipeBackFragment extends SupportFragment implements ISwipeBackFrag
      *
      * @param enable
      */
+    @Override
     public void setSwipeBackEnable(boolean enable) {
         mDelegate.setSwipeBackEnable(enable);
     }
@@ -68,6 +71,7 @@ public class SwipeBackFragment extends SupportFragment implements ISwipeBackFrag
     /**
      * Set the offset of the parallax slip.
      */
+    @Override
     public void setParallaxOffset(@FloatRange(from = 0.0f, to = 1.0f) float offset) {
         mDelegate.setParallaxOffset(offset);
     }

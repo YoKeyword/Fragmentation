@@ -2,10 +2,11 @@ package me.yokeyword.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import me.yokeyword.sample.demo_flow.MainActivity;
 
@@ -23,7 +24,7 @@ public class EnterActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolBar = findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
 
         findViewById(R.id.btn_flow).setOnClickListener(new View.OnClickListener() {

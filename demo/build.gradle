@@ -53,16 +53,18 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     testApi 'junit:junit:4.12'
-    api "com.android.support:appcompat-v7:$rootProject.v4Version"
-    api "com.android.support:design:$rootProject.v4Version"
-    api "com.android.support:cardview-v7:$rootProject.v4Version"
-    api "com.android.support:recyclerview-v7:$rootProject.v4Version"
+    api 'androidx.appcompat:appcompat:1.2.0'
+    api 'com.google.android.material:material:1.2.1'
+    api 'androidx.cardview:cardview:1.0.0'
+    api 'androidx.recyclerview:recyclerview:1.1.0'
     api project(':fragmentation')
     api project(':fragmentation_swipeback')
     // EventBus
     api project(':eventbus_activity_scope')
-    api 'org.greenrobot:eventbus:3.0.0'
+    api 'org.greenrobot:eventbus:3.2.0'
     //    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
+
 }
 

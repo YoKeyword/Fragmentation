@@ -2,11 +2,12 @@ package me.yokeyword.fragmentation_swipeback.core;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.FloatRange;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import me.yokeyword.fragmentation.ISupportFragment;
 import me.yokeyword.fragmentation.SwipeBackLayout;

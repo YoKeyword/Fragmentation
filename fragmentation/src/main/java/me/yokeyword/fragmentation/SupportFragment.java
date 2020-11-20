@@ -3,17 +3,18 @@ package me.yokeyword.fragmentation;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.animation.Animation;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
 
 /**
  * Base class for activities that use the support-based
  * {@link ISupportFragment} and
- * {@link android.support.v4.app.Fragment} APIs.
+ * {@link androidx.fragment.app.Fragment} APIs.
  * Created by YoKey on 17/6/22.
  */
 public class SupportFragment extends Fragment implements ISupportFragment {

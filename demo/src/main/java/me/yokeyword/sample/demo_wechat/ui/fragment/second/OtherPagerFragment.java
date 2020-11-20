@@ -1,10 +1,11 @@
 package me.yokeyword.sample.demo_wechat.ui.fragment.second;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import me.yokeyword.fragmentation.SupportFragment;
 import me.yokeyword.sample.R;

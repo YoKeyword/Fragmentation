@@ -2,8 +2,6 @@ package me.yokeyword.sample.demo_flow.ui.fragment.account;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import me.yokeyword.sample.R;
 import me.yokeyword.sample.demo_flow.base.BaseBackFragment;

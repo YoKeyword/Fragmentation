@@ -3,12 +3,13 @@ package me.yokeyword.fragmentation;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentationMagician;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentationMagician;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -194,13 +195,16 @@ class TransactionDelegate {
                 List<Fragment> willPopFragments = SupportHelper.getWillPopFragments(fm, fragmentTag, includeTargetFragment);
 
                 final ISupportFragment top = getTopFragmentForStart(from, fm);
-                if (top == null)
+                if (top == null) {
                     throw new NullPointerException("There is no Fragment in the FragmentManager, maybe you need to call loadRootFragment() first!");
+                }
 
                 int containerId = top.getSupportDelegate().mContainerId;
                 bindContainerId(containerId, to);
 
-                if (willPopFragments.size() <= 0) return;
+                if (willPopFragments.size() <= 0) {
+                    return;
+                }
 
                 handleAfterSaveInStateTransactionException(fm, "startWithPopTo()");
                 FragmentationMagician.executePendingTransactionsAllowingStateLoss(fm);
