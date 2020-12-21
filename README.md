@@ -3,6 +3,8 @@
 [![Download](https://api.bintray.com/packages/yokeyword/maven/Fragmentation/images/download.svg) ](https://bintray.com/yokeyword/maven/Fragmentation/_latestVersion)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
+# PLEASE NOTE, THIS PROJECT IS NO LONGER BEING MAINTAINED
+
 ### [中文版 README.md](https://github.com/YoKeyword/Fragmentation/blob/master/README_CN.md)
 
 # Fragmentation
@@ -46,15 +48,15 @@ The first demo shows the basic usage of the library. The second one shows the wa
 **1、build.gradle**
 ````gradle
 // appcompat-v7 is required
-compile 'me.yokeyword:fragmentation:1.3.6'
+compile 'me.yokeyword:fragmentation:1.3.8'
 
 // If you don't want to extends SupportActivity/Fragment and would like to customize your own support, just rely on fragmentation-core
-// compile 'me.yokeyword:fragmentation-core:1.3.6'
+// compile 'me.yokeyword:fragmentation-core:1.3.8'
 
 // To get SwipeBack feature, rely on both fragmentation & fragmentation-swipeback
-compile 'me.yokeyword:fragmentation:1.3.6'
+compile 'me.yokeyword:fragmentation:1.3.8'
 // Swipeback is based on fragmentation. Refer to SwipeBackActivity/Fragment for your Customized SupportActivity/Fragment
-compile 'me.yokeyword:fragmentation-swipeback:1.3.6'
+compile 'me.yokeyword:fragmentation-swipeback:1.3.8'
 
 // To simplify the communication between Fragments.
 compile 'me.yokeyword:eventbus-activity-scope:1.1.0'

@@ -74,6 +74,9 @@ public class FragmentationMagician {
             return false;
         try {
             FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
+            if (sSupportGreaterThan27dot1dot0) {
+                return fragmentManagerImpl.isStateSaved();
+            }
             return fragmentManagerImpl.mStateSaved;
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,9 +190,10 @@ public class FragmentationMagician {
 
         FragmentManagerImpl fragmentManagerImpl = (FragmentManagerImpl) fragmentManager;
         if (isStateSaved(fragmentManager)) {
+            boolean tempStateSaved = fragmentManagerImpl.mStateSaved;
             fragmentManagerImpl.mStateSaved = false;
             compatRunAction(fragmentManagerImpl, runnable);
-            fragmentManagerImpl.mStateSaved = true;
+            fragmentManagerImpl.mStateSaved = tempStateSaved;
         } else {
             runnable.run();
         }
@@ -207,9 +211,9 @@ public class FragmentationMagician {
             runnable.run();
             return;
         }
-
+        boolean tempStopped = fragmentManagerImpl.mStopped;
         fragmentManagerImpl.mStopped = false;
         runnable.run();
-        fragmentManagerImpl.mStopped = true;
+        fragmentManagerImpl.mStopped = tempStopped;
     }
 }

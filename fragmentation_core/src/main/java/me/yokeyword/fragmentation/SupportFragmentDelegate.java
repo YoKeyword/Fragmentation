@@ -104,6 +104,7 @@ public class SupportFragmentDelegate {
         if (savedInstanceState == null) {
             getFragmentAnimator();
         } else {
+            savedInstanceState.setClassLoader(getClass().getClassLoader());
             mSaveInstanceState = savedInstanceState;
             mFragmentAnimator = savedInstanceState.getParcelable(TransactionDelegate.FRAGMENTATION_STATE_SAVE_ANIMATOR);
             mIsHidden = savedInstanceState.getBoolean(TransactionDelegate.FRAGMENTATION_STATE_SAVE_IS_HIDDEN);
@@ -560,7 +561,7 @@ public class SupportFragmentDelegate {
     }
 
     public void popQuiet() {
-        mTransactionDelegate.popQuiet(mFragment.getFragmentManager());
+        mTransactionDelegate.popQuiet(mFragment.getFragmentManager(), mFragment);
     }
 
     private FragmentManager getChildFragmentManager() {

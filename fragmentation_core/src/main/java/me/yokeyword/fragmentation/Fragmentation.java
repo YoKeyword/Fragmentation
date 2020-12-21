@@ -99,9 +99,9 @@ public class Fragmentation {
 
         /**
          * Sets the mode to display the stack view
-         *
+         * <p>
          * None if debug(false).
-         *
+         * <p>
          * Default:NONE
          */
         public FragmentationBuilder stackViewMode(@StackViewMode int mode) {
@@ -118,14 +118,8 @@ public class Fragmentation {
         }
 
         public Fragmentation install() {
-            synchronized (Fragmentation.class) {
-                if (Fragmentation.INSTANCE != null) {
-                    throw new RuntimeException("Default instance already exists." +
-                            " It may be only set once before it's used the first time to ensure consistent behavior.");
-                }
-                Fragmentation.INSTANCE = new Fragmentation(this);
-                return Fragmentation.INSTANCE;
-            }
+            Fragmentation.INSTANCE = new Fragmentation(this);
+            return Fragmentation.INSTANCE;
         }
     }
 }

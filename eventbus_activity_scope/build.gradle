@@ -13,5 +13,5 @@ android {
 }
 
 dependencies {
-    provided 'org.greenrobot:eventbus:3.0.0'
+    compileOnly 'org.greenrobot:eventbus:3.0.0'
 }

@@ -9,9 +9,8 @@ Activity内Fragment数大于1时，滑动返回的是Fragment，否则滑动返�
 # 如何使用
 1、项目下app的build.gradle中依赖：
 ````gradle
-// appcompat v7包是必须的
-compile 'me.yokeyword:fragmentation:1.3.6'
-compile 'me.yokeyword:fragmentation-swipeback:1.3.6'
+compile 'me.yokeyword:fragmentation:1.3.8'
+compile 'me.yokeyword:fragmentation-swipeback:1.3.8'
 ````
 
 2、如果Activity也需要支持SwipeBack，则继承SwipeBackActivity:
@@ -44,6 +43,8 @@ public class SwipeBackSampleFragment extends SwipeBackFragment {
   getSwipeBackLayout().setParallaxOffset(0.0f - 1.0f); // （类iOS）滑动退出视觉差，默认0.3
 
   setSwipeBackEnable(boolean enable); // 是否允许滑动
+  
+  getSwipeBackLayout().setSwipeAlpha(0.0f ~ 1.0f); // 滑动中，设置上一个页面View的阴影透明程度度，默认0.5f
 
   getSwipeBackLayout().addSwipeListener(new SwipeBackLayout.OnSwipeListener() {
             @Override
