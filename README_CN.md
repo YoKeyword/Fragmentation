@@ -21,6 +21,14 @@ A powerful library that manage Fragment for Android!
 [Fragment全解析系列（二）：正确的使用姿势](http://www.jianshu.com/p/fd71d65f0ec6)
 
 
+
+## For Arctic Fox
+![](/gif/for-arctic-fox/images/QQ20250330-175441.png)
+![](/gif/for-arctic-fox/images/QQ20250330-175509.png)
+
+
+
+
 # Demo演示：
 均为单Activity + 多Fragment，第一个为简单流式demo，第二个为仿微信交互的demo(全页面支持滑动退出)，第三个为仿知乎交互的复杂嵌套demo
 
